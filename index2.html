@@ -146,11 +146,21 @@ button {
   pointer-events: none;
 }
 
-.orbit-backdrop span {
+.orbit-backdrop span.star {
   position: absolute;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--accent);
   box-shadow: 0 0 4px var(--accent);
+  animation: v-twinkle var(--tw-dur, 4s) ease-in-out var(--tw-delay, 0s) infinite alternate;
+}
+
+@keyframes v-twinkle {
+  0% { opacity: var(--tw-lo, 0.12); transform: scale(0.8); }
+  100% { opacity: var(--tw-hi, 0.85); transform: scale(1.15); }
+}
+
+.orbit-backdrop span.star.bright {
+  box-shadow: 0 0 8px 2px var(--accent);
 }
 
 .orbit-glow {
@@ -345,18 +355,37 @@ button {
   max-width: 320px;
 }
 
+.orbit-verse-box {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
 .orbit-arabic {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  direction: rtl;
+  font-feature-settings: "calt" 1, "liga" 1;
   font-size: 28px;
   line-height: 2;
   color: var(--ink);
-  max-width: 380px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .orbit-arabic-med {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  direction: rtl;
+  font-feature-settings: "calt" 1, "liga" 1;
   font-size: 22px;
   line-height: 2;
   color: var(--ink);
-  max-width: 400px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .orbit-translation {
@@ -364,7 +393,9 @@ button {
   line-height: 1.7;
   color: var(--ink-soft);
   font-style: italic;
-  max-width: 360px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Action */
@@ -680,6 +711,9 @@ button {
   .orbit-step { transform: scale(0.8); }
   .orbit-title { font-size: 28px; }
   .orbit-prompt { font-size: 22px; }
+  .orbit-arabic { font-size: 22px; line-height: 1.8; }
+  .orbit-arabic-med { font-size: 18px; line-height: 1.8; }
+  .orbit-translation { font-size: 13px; line-height: 1.6; }
 }
 
 
@@ -872,20 +906,26 @@ function OrbitRoot() {
 }
 
 function OrbitBackdrop({ light }) {
-  // Constellation dots
-  const stars = Array.from({ length: 80 }, (_, i) => ({
-    x: (i * 37) % 100,
-    y: (i * 53) % 100,
-    s: 0.5 + ((i * 13) % 7) / 10,
-    o: 0.1 + ((i * 7) % 5) / 10,
-  }));
+  const stars = Array.from({ length: 100 }, (_, i) => {
+    const x = (i * 37 + i * i * 7) % 100;
+    const y = (i * 53 + i * i * 3) % 100;
+    const s = 0.6 + ((i * 13) % 5) / 4;
+    const oLo = (0.08 + ((i * 7) % 4) / 12).toFixed(2);
+    const oHi = (0.45 + ((i * 11) % 5) / 8).toFixed(2);
+    const dur = (3.5 + (i % 7) * 0.9).toFixed(1);
+    const delay = (0 - (i % 11) * 0.4).toFixed(1);
+    const bright = i % 19 === 0;
+    return { x, y, s, oLo, oHi, dur, delay, bright, i };
+  });
   return (
     <div className="orbit-backdrop" aria-hidden>
-      {!light && stars.map((s, i) => (
-        <span key={i} style={{
-          left: `${s.x}%`, top: `${s.y}%`,
-          width: `${s.s}px`, height: `${s.s}px`,
-          opacity: s.o,
+      {!light && stars.map(st => (
+        <span key={st.i} className={`star${st.bright ? ' bright' : ''}`} style={{
+          left: `${st.x}%`, top: `${st.y}%`,
+          width: `${st.s}px`, height: `${st.s}px`,
+          '--tw-lo': st.oLo, '--tw-hi': st.oHi,
+          '--tw-dur': `${st.dur}s`, '--tw-delay': `${st.delay}s`,
+          animationDelay: `${st.delay}s`,
         }} />
       ))}
       <div className="orbit-glow" />
@@ -991,7 +1031,9 @@ function OrbitContent({ step, setStep, stepIdx }) {
       {step === 'listen' && (
         <>
           <div className="orbit-eyebrow">Listen</div>
-          <div className="orbit-arabic arabic-font">{v.arabic.split('۔')[0].slice(0, 60)}…</div>
+          <div className="orbit-verse-box">
+            <div className="orbit-arabic arabic-font">{v.arabic.slice(0, 60)}…</div>
+          </div>
           <OrbitWaveform />
           <div className="orbit-hint">Mishary al-ʿAfāsy · 0:38 / 1:12</div>
           <OrbitAction onClick={next} label="Continue" />
@@ -1011,8 +1053,10 @@ function OrbitContent({ step, setStep, stepIdx }) {
       {step === 'recite' && (
         <>
           <div className="orbit-eyebrow">Say it with your own voice</div>
-          <div className="orbit-arabic-med arabic-font">{v.arabic.slice(0, 90)}</div>
-          <div className="orbit-translation serif">{v.translation.slice(0, 160)}…</div>
+          <div className="orbit-verse-box">
+            <div className="orbit-arabic-med arabic-font">{v.arabic.slice(0, 90)}</div>
+            <div className="orbit-translation serif">{v.translation.slice(0, 160)}…</div>
+          </div>
           <OrbitAction onClick={next} label="I have recited" />
         </>
       )}

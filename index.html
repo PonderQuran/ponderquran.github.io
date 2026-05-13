@@ -146,11 +146,21 @@ button {
   pointer-events: none;
 }
 
-.orbit-backdrop span {
+.orbit-backdrop span.star {
   position: absolute;
   border-radius: 50%;
-  background: var(--ink);
+  background: var(--accent);
   box-shadow: 0 0 4px var(--accent);
+  animation: v-twinkle var(--tw-dur, 4s) ease-in-out var(--tw-delay, 0s) infinite alternate;
+}
+
+@keyframes v-twinkle {
+  0% { opacity: var(--tw-lo, 0.12); transform: scale(0.8); }
+  100% { opacity: var(--tw-hi, 0.85); transform: scale(1.15); }
+}
+
+.orbit-backdrop span.star.bright {
+  box-shadow: 0 0 8px 2px var(--accent);
 }
 
 .orbit-glow {
@@ -345,6 +355,15 @@ button {
   max-width: 320px;
 }
 
+.orbit-verse-box {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
 .orbit-arabic {
   font-family: 'Amiri Quran', 'Scheherazade New', serif;
   direction: rtl;
@@ -352,7 +371,9 @@ button {
   font-size: 28px;
   line-height: 2;
   color: var(--ink);
-  max-width: 380px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .orbit-arabic-med {
@@ -362,7 +383,9 @@ button {
   font-size: 22px;
   line-height: 2;
   color: var(--ink);
-  max-width: 400px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .orbit-translation {
@@ -370,7 +393,9 @@ button {
   line-height: 1.7;
   color: var(--ink-soft);
   font-style: italic;
-  max-width: 360px;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Action */
@@ -715,6 +740,9 @@ button {
   .orbit-step { transform: scale(0.8); }
   .orbit-title { font-size: 28px; }
   .orbit-prompt { font-size: 22px; }
+  .orbit-arabic { font-size: 22px; line-height: 1.8; }
+  .orbit-arabic-med { font-size: 18px; line-height: 1.8; }
+  .orbit-translation { font-size: 13px; line-height: 1.6; }
 }
 
 
@@ -850,8 +878,10 @@ function renderContent() {
     const tafsirData = v && v.tafsirLoaded ? v.tafsir : null;
     html += `
       <div class="orbit-eyebrow">Listen</div>
-      <div class="orbit-arabic arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      <div class="orbit-verse-box">
+        <div class="orbit-arabic arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+        <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      </div>
       <div style="display:flex;gap:12px;justify-content:center;align-items:center;">
         <button class="picker-arrow" data-action="prev-verse" ${state.verse <= 1 ? 'disabled' : ''}>
           <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
@@ -893,8 +923,10 @@ function renderContent() {
   else if (currentStep === 'recite') {
     html += `
       <div class="orbit-eyebrow">Say it with your own voice</div>
-      <div class="orbit-arabic-med arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      <div class="orbit-verse-box">
+        <div class="orbit-arabic-med arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+        <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      </div>
       <button class="orbit-action" data-action="go-next">
         <span class="orbit-action-text">I have recited</span>
         <span class="orbit-action-line"></span>
@@ -1002,14 +1034,18 @@ function buildConstellation(isLight) {
   existing.forEach(s => s.remove());
   if (isLight) return;
   const frag = document.createDocumentFragment();
-  for (let i = 0; i < 80; i++) {
-    const x = (i * 37) % 100;
-    const y = (i * 53) % 100;
-    const s = 0.5 + ((i * 13) % 7) / 10;
-    const o = 0.1 + ((i * 7) % 5) / 10;
+  for (let i = 0; i < 100; i++) {
+    const x = (i * 37 + i * i * 7) % 100;
+    const y = (i * 53 + i * i * 3) % 100;
+    const s = 0.6 + ((i * 13) % 5) / 4;
+    const oLo = (0.08 + ((i * 7) % 4) / 12).toFixed(2);
+    const oHi = (0.45 + ((i * 11) % 5) / 8).toFixed(2);
+    const dur = (3.5 + (i % 7) * 0.9).toFixed(1);
+    const delay = (0 - (i % 11) * 0.4).toFixed(1);
+    const bright = i % 19 === 0;
     const span = document.createElement('span');
-    span.className = 'star';
-    span.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${o};`;
+    span.className = `star${bright ? ' bright' : ''}`;
+    span.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s}px;--tw-lo:${oLo};--tw-hi:${oHi};--tw-dur:${dur}s;--tw-delay:${delay}s;animation-delay:${delay}s;`;
     frag.appendChild(span);
   }
   wrap.appendChild(frag);
