@@ -345,18 +345,40 @@ button {
   max-width: 320px;
 }
 
+.orbit-verse-box {
+  width: 380px;
+  max-width: 88vw;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+}
+
 .orbit-arabic {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  direction: rtl;
+  font-feature-settings: "calt" 1, "liga" 1;
   font-size: 28px;
   line-height: 2;
   color: var(--ink);
-  max-width: 380px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .orbit-arabic-med {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  direction: rtl;
+  font-feature-settings: "calt" 1, "liga" 1;
   font-size: 22px;
   line-height: 2;
   color: var(--ink);
-  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .orbit-translation {
@@ -364,7 +386,11 @@ button {
   line-height: 1.7;
   color: var(--ink-soft);
   font-style: italic;
-  max-width: 360px;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
 /* Action */
@@ -991,7 +1017,12 @@ function OrbitContent({ step, setStep, stepIdx }) {
       {step === 'listen' && (
         <>
           <div className="orbit-eyebrow">Listen</div>
-          <div className="orbit-arabic arabic-font">{v.arabic.split('۔')[0].slice(0, 60)}…</div>
+          <div className="orbit-verse-box">
+            <div className="orbit-arabic arabic-font" style={{ fontSize: VERSE.arabic.length > 400 ? '16px' : VERSE.arabic.length > 250 ? '20px' : VERSE.arabic.length > 150 ? '24px' : '28px' }}>
+              {v.arabic.split('۔')[0].slice(0, 60)}…
+            </div>
+            <div className="orbit-translation serif">Listen with your heart first.</div>
+          </div>
           <OrbitWaveform />
           <div className="orbit-hint">Mishary al-ʿAfāsy · 0:38 / 1:12</div>
           <OrbitAction onClick={next} label="Continue" />
@@ -1011,8 +1042,14 @@ function OrbitContent({ step, setStep, stepIdx }) {
       {step === 'recite' && (
         <>
           <div className="orbit-eyebrow">Say it with your own voice</div>
-          <div className="orbit-arabic-med arabic-font">{v.arabic.slice(0, 90)}</div>
-          <div className="orbit-translation serif">{v.translation.slice(0, 160)}…</div>
+          <div className="orbit-verse-box">
+            <div className="orbit-arabic-med arabic-font" style={{ fontSize: v.arabic.length > 400 ? '14px' : v.arabic.length > 250 ? '17px' : v.arabic.length > 150 ? '20px' : '22px' }}>
+              {v.arabic.slice(0, 90)}
+            </div>
+            <div className="orbit-translation serif" style={{ fontSize: v.translation.length > 400 ? '12px' : v.translation.length > 250 ? '13px' : v.translation.length > 150 ? '14px' : '15px', WebkitLineClamp: v.translation.length > 400 ? 3 : v.translation.length > 250 ? 4 : 5 }}>
+              {v.translation.slice(0, 160)}…
+            </div>
+          </div>
           <OrbitAction onClick={next} label="I have recited" />
         </>
       )}

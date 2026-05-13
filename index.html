@@ -345,6 +345,18 @@ button {
   max-width: 320px;
 }
 
+.orbit-verse-box {
+  width: 380px;
+  max-width: 88vw;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  overflow: hidden;
+}
+
 .orbit-arabic {
   font-family: 'Amiri Quran', 'Scheherazade New', serif;
   direction: rtl;
@@ -352,7 +364,9 @@ button {
   font-size: 28px;
   line-height: 2;
   color: var(--ink);
-  max-width: 380px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .orbit-arabic-med {
@@ -362,7 +376,9 @@ button {
   font-size: 22px;
   line-height: 2;
   color: var(--ink);
-  max-width: 400px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .orbit-translation {
@@ -370,7 +386,11 @@ button {
   line-height: 1.7;
   color: var(--ink-soft);
   font-style: italic;
-  max-width: 360px;
+  width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }
 
 /* Action */
@@ -848,10 +868,18 @@ function renderContent() {
 
   else if (currentStep === 'listen') {
     const tafsirData = v && v.tafsirLoaded ? v.tafsir : null;
+    const arLen = v ? (v.arabic || '').length : 0;
+    const trLen = v ? (v.translation || '').length : 0;
+    const maxLen = Math.max(arLen, trLen);
+    const arFontSize = maxLen > 400 ? '16px' : maxLen > 250 ? '20px' : maxLen > 150 ? '24px' : '28px';
+    const trFontSize = maxLen > 400 ? '12px' : maxLen > 250 ? '13px' : maxLen > 150 ? '14px' : '15px';
+    const trClamp  = maxLen > 400 ? 3 : maxLen > 250 ? 4 : 5;
     html += `
       <div class="orbit-eyebrow">Listen</div>
-      <div class="orbit-arabic arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      <div class="orbit-verse-box">
+        <div class="orbit-arabic arabic-font" style="font-size:${arFontSize}">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+        <div class="orbit-translation serif" style="font-size:${trFontSize};-webkit-line-clamp:${trClamp}">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      </div>
       <div style="display:flex;gap:12px;justify-content:center;align-items:center;">
         <button class="picker-arrow" data-action="prev-verse" ${state.verse <= 1 ? 'disabled' : ''}>
           <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
@@ -891,10 +919,18 @@ function renderContent() {
   }
 
   else if (currentStep === 'recite') {
+    const arLen = v ? (v.arabic || '').length : 0;
+    const trLen = v ? (v.translation || '').length : 0;
+    const maxLen = Math.max(arLen, trLen);
+    const arFontSize = maxLen > 400 ? '14px' : maxLen > 250 ? '17px' : maxLen > 150 ? '20px' : '22px';
+    const trFontSize = maxLen > 400 ? '12px' : maxLen > 250 ? '13px' : maxLen > 150 ? '14px' : '15px';
+    const trClamp  = maxLen > 400 ? 3 : maxLen > 250 ? 4 : 5;
     html += `
       <div class="orbit-eyebrow">Say it with your own voice</div>
-      <div class="orbit-arabic-med arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      <div class="orbit-verse-box">
+        <div class="orbit-arabic-med arabic-font" style="font-size:${arFontSize}">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+        <div class="orbit-translation serif" style="font-size:${trFontSize};-webkit-line-clamp:${trClamp}">${v ? (v.translation || '\u2026') : '\u2026'}</div>
+      </div>
       <button class="orbit-action" data-action="go-next">
         <span class="orbit-action-text">I have recited</span>
         <span class="orbit-action-line"></span>
