@@ -15,13 +15,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   color: var(--ink);
   background: var(--bg);
   user-select: none;
   -webkit-font-smoothing: antialiased;
-  -webkit-overflow-scrolling: touch;
 }
 
 .v-root * {
@@ -148,21 +146,11 @@ button {
   pointer-events: none;
 }
 
-.orbit-backdrop span.star {
+.orbit-backdrop span {
   position: absolute;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 3px 1px var(--accent);
-  animation: v-twinkle var(--tw-dur, 4s) ease-in-out var(--tw-delay, 0s) infinite alternate;
-}
-
-@keyframes v-twinkle {
-  0% { opacity: var(--tw-lo, 0.15); transform: scale(0.7); }
-  100% { opacity: var(--tw-hi, 0.9); transform: scale(1.2); }
-}
-
-.orbit-backdrop span.star.bright {
-  box-shadow: 0 0 6px 2px var(--accent);
+  background: var(--ink);
+  box-shadow: 0 0 4px var(--accent);
 }
 
 .orbit-glow {
@@ -218,8 +206,6 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .orbit-ring {
@@ -313,15 +299,10 @@ button {
 .orbit-center {
   position: relative;
   z-index: 3;
-  width: 100%;
-  max-width: 720px;
+  width: 420px;
+  max-width: 90vw;
   text-align: center;
-  padding: 80px 24px 100px;
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 32px;
 }
 
 .orbit-content {
@@ -329,7 +310,6 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  width: 100%;
 }
 
 .orbit-eyebrow {
@@ -365,17 +345,6 @@ button {
   max-width: 320px;
 }
 
-.orbit-verse-box {
-  width: 100%;
-  max-width: 640px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 18px;
-  padding: 24px 0;
-}
-
 .orbit-arabic {
   font-family: 'Amiri Quran', 'Scheherazade New', serif;
   direction: rtl;
@@ -383,9 +352,7 @@ button {
   font-size: 28px;
   line-height: 2;
   color: var(--ink);
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: 380px;
 }
 
 .orbit-arabic-med {
@@ -395,9 +362,7 @@ button {
   font-size: 22px;
   line-height: 2;
   color: var(--ink);
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: 400px;
 }
 
 .orbit-translation {
@@ -405,9 +370,7 @@ button {
   line-height: 1.7;
   color: var(--ink-soft);
   font-style: italic;
-  width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: 360px;
 }
 
 /* Action */
@@ -752,21 +715,12 @@ button {
   .orbit-step { transform: scale(0.8); }
   .orbit-title { font-size: 28px; }
   .orbit-prompt { font-size: 22px; }
-  .orbit-center { padding: 80px 16px 90px; min-height: 100vh; }
-  .orbit-verse-box { padding: 16px 0; }
-  .orbit-arabic { font-size: 22px; line-height: 1.9; }
-  .orbit-arabic-med { font-size: 18px; line-height: 1.9; }
-  .orbit-translation { font-size: 14px; line-height: 1.6; }
-  .orbit-header { top: 16px; }
-  .orbit-brand-name { font-size: 18px; }
-  .orbit-brand-sub { font-size: 9px; }
-  .orbit-themes { bottom: 16px; }
 }
 
 
 html, body { margin: 0; padding: 0; height: 100%; background: #070a14;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
-#orbit-mount { width: 100vw; min-height: 100vh; }
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+#orbit-mount { width: 100vw; height: 100vh; }
 </style>
 </head>
 <body>
@@ -896,10 +850,8 @@ function renderContent() {
     const tafsirData = v && v.tafsirLoaded ? v.tafsir : null;
     html += `
       <div class="orbit-eyebrow">Listen</div>
-      <div class="orbit-verse-box">
-        <div class="orbit-arabic arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-        <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
-      </div>
+      <div class="orbit-arabic arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
       <div style="display:flex;gap:12px;justify-content:center;align-items:center;">
         <button class="picker-arrow" data-action="prev-verse" ${state.verse <= 1 ? 'disabled' : ''}>
           <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
@@ -941,10 +893,8 @@ function renderContent() {
   else if (currentStep === 'recite') {
     html += `
       <div class="orbit-eyebrow">Say it with your own voice</div>
-      <div class="orbit-verse-box">
-        <div class="orbit-arabic-med arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
-        <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
-      </div>
+      <div class="orbit-arabic-med arabic-font">${v ? (v.arabic || '\u2026') : '\u2026'}</div>
+      <div class="orbit-translation serif">${v ? (v.translation || '\u2026') : '\u2026'}</div>
       <button class="orbit-action" data-action="go-next">
         <span class="orbit-action-text">I have recited</span>
         <span class="orbit-action-line"></span>
@@ -1052,18 +1002,14 @@ function buildConstellation(isLight) {
   existing.forEach(s => s.remove());
   if (isLight) return;
   const frag = document.createDocumentFragment();
-  for (let i = 0; i < 120; i++) {
-    const x = (i * 37 + i * i * 7) % 100;
-    const y = (i * 53 + i * i * 3) % 100;
-    const s = 0.6 + ((i * 13) % 5) / 4;
-    const oLo = (0.1 + ((i * 7) % 4) / 10).toFixed(2);
-    const oHi = (0.5 + ((i * 11) % 5) / 10).toFixed(2);
-    const dur = (3 + (i % 7) * 0.8).toFixed(1);
-    const delay = (0 - (i % 9) * 0.5).toFixed(1);
-    const bright = i % 17 === 0;
+  for (let i = 0; i < 80; i++) {
+    const x = (i * 37) % 100;
+    const y = (i * 53) % 100;
+    const s = 0.5 + ((i * 13) % 7) / 10;
+    const o = 0.1 + ((i * 7) % 5) / 10;
     const span = document.createElement('span');
-    span.className = `star${bright ? ' bright' : ''}`;
-    span.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s}px;--tw-lo:${oLo};--tw-hi:${oHi};--tw-dur:${dur}s;--tw-delay:${delay}s;animation-delay:${delay}s;`;
+    span.className = 'star';
+    span.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${o};`;
     frag.appendChild(span);
   }
   wrap.appendChild(frag);
