@@ -745,6 +745,80 @@ button {
   .orbit-translation { font-size: 13px; line-height: 1.6; }
 }
 
+/* Verse-mode: full-screen blurred backdrop + centered large verse */
+.orbit-stage.verse-mode .orbit-backdrop {
+  filter: blur(24px);
+  transform: scale(1.1);
+  transition: filter 800ms ease, transform 800ms ease;
+}
+.orbit-stage.verse-mode .orbit-glow {
+  opacity: 0.25;
+  transition: opacity 800ms ease;
+}
+.orbit-stage.verse-mode .orbit-ring,
+.orbit-stage.verse-mode .orbit-corner {
+  opacity: 0.04;
+  transition: opacity 800ms ease;
+}
+
+.verse-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 48px 5vw;
+  pointer-events: none;
+}
+.verse-overlay > * { pointer-events: auto; }
+
+.verse-arabic {
+  font-family: 'Amiri Quran', 'Scheherazade New', serif;
+  direction: rtl;
+  font-feature-settings: "calt" 1, "liga" 1;
+  font-size: clamp(22px, 4vw, 48px);
+  line-height: 2;
+  color: var(--ink);
+  width: 100%;
+  max-width: 90vw;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+.verse-translation {
+  font-size: clamp(13px, 1.8vw, 18px);
+  line-height: 1.7;
+  color: var(--ink-soft);
+  font-style: italic;
+  width: 100%;
+  max-width: 800px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+.verse-heartbeat {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent) 0%, transparent) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.verse-heartbeat.active {
+  opacity: 1;
+  animation: v-heartbeat 1.4s ease-in-out infinite;
+}
+
+@keyframes v-heartbeat {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.08); opacity: 0.55; }
+}
 
 html, body { margin: 0; padding: 0; height: 100%; background: #070a14;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; overflow: hidden; }
@@ -758,12 +832,6 @@ html, body { margin: 0; padding: 0; height: 100%; background: #070a14;
 <script>
 const THEMES = [
   {
-    id: 'night', name: 'Night', subtitle: 'Deep sky, gold',
-    bg: '#0a0812', bgSoft: '#141020', ink: '#ece3d0', inkSoft: '#b5a98f', inkFaint: '#6b5f48',
-    accent: '#c9a14a', accentSoft: '#8f6f32', light: false,
-    ring: 'radial-gradient(circle at 30% 30%, #e9cc7a, #8f6a24 60%, #3a2a0e)',
-  },
-  {
     id: 'dusk', name: 'Dusk', subtitle: 'Plum horizon',
     bg: '#14101a', bgSoft: '#1e1726', ink: '#f0e3d5', inkSoft: '#bfa99a', inkFaint: '#6e5d6a',
     accent: '#d7826a', accentSoft: '#9a5540', light: false,
@@ -774,18 +842,6 @@ const THEMES = [
     bg: '#0f1410', bgSoft: '#171e18', ink: '#e7e0cd', inkSoft: '#a9b099', inkFaint: '#5a6352',
     accent: '#a8b266', accentSoft: '#6d7840', light: false,
     ring: 'radial-gradient(circle at 30% 30%, #d6dc9a, #7a8840 55%, #2a3014)',
-  },
-  {
-    id: 'paper', name: 'Paper', subtitle: 'Warm parchment',
-    bg: '#f2ebdb', bgSoft: '#e7ddc7', ink: '#2a231a', inkSoft: '#5a4d3c', inkFaint: '#a08f75',
-    accent: '#8a6a2b', accentSoft: '#b89759', light: true,
-    ring: 'radial-gradient(circle at 30% 30%, #e9cc7a, #8a6a2b 55%, #3a2a0e)',
-  },
-  {
-    id: 'indigo', name: 'Indigo', subtitle: 'Cold midnight',
-    bg: '#070a14', bgSoft: '#0f1428', ink: '#e4e7f0', inkSoft: '#9ba3bf', inkFaint: '#4a5375',
-    accent: '#8aa6ff', accentSoft: '#5370c8', light: false,
-    ring: 'radial-gradient(circle at 30% 30%, #c4d1ff, #4760c0 55%, #14204a)',
   },
 ];
 
@@ -804,8 +860,9 @@ const ORBIT_STEPS = [
   { id: 'close',   label: 'Close',   glyph: '❋', screens: ['close'] },
 ];
 
-let currentThemeIdx = 4;
+let currentThemeIdx = 0;
 let currentStep = 'arrive';
+let verseMode = false;
 
 const state = {
   surah: 0,
@@ -849,8 +906,37 @@ function renderThemePicker() {
 
 function setStep(stepId) {
   currentStep = stepId;
+  const isVerse = (stepId === 'listen' || stepId === 'recite');
+  setVerseMode(isVerse);
   renderContent();
   updateStepHighlight();
+}
+
+function setVerseMode(active) {
+  verseMode = active;
+  const stage = document.getElementById('orbitStage');
+  const overlay = document.getElementById('verseOverlay');
+  if (!stage || !overlay) return;
+  stage.classList.toggle('verse-mode', active);
+  if (active) {
+    const v = state.cache[verseKey(state.surah, state.verse)] || null;
+    const content = document.getElementById('verseOverlayContent');
+    if (content && v) {
+      content.innerHTML = `
+        <div class="verse-arabic">${v.arabic || ''}</div>
+        <div class="verse-translation serif">${v.translation || ''}</div>
+      `;
+    }
+    overlay.style.display = 'flex';
+  } else {
+    overlay.style.display = 'none';
+    document.getElementById('verseHeartbeat').classList.remove('active');
+  }
+}
+
+function setHeartbeat(active) {
+  const hb = document.getElementById('verseHeartbeat');
+  if (hb) hb.classList.toggle('active', active && verseMode);
 }
 
 function renderContent() {
@@ -1172,9 +1258,9 @@ function setupAudio(url) {
   const audio = new Audio(url);
   audio.preload = "auto";
   state.currentAudio = audio;
-  audio.onended = () => { state.playing = false; state.audioFinished = true; if (currentStep === 'listen') renderContent(); };
-  audio.onplay = () => { state.playing = true; state.audioFinished = false; if (currentStep === 'listen') renderContent(); };
-  audio.onpause = () => { if (audio.currentTime > 0 && audio.currentTime < audio.duration - 0.1) { state.playing = false; if (currentStep === 'listen') renderContent(); } };
+  audio.onended = () => { state.playing = false; state.audioFinished = true; setHeartbeat(false); if (currentStep === 'listen') { renderContent(); } };
+  audio.onplay = () => { state.playing = true; state.audioFinished = false; setHeartbeat(true); if (currentStep === 'listen') { renderContent(); } };
+  audio.onpause = () => { if (audio.currentTime > 0 && audio.currentTime < audio.duration - 0.1) { state.playing = false; setHeartbeat(false); if (currentStep === 'listen') { renderContent(); } } };
 }
 
 function togglePlay() {
@@ -1262,7 +1348,7 @@ function boot() {
       <div class="orbit-brand-sub">Listen · Reflect</div>
     </div>
 
-    <div class="orbit-stage">
+    <div class="orbit-stage" id="orbitStage">
       <div class="orbit-ring ring-1"></div>
       <div class="orbit-ring ring-2"></div>
       <div class="orbit-ring ring-3"></div>
@@ -1285,6 +1371,12 @@ function boot() {
       <div class="orbit-center">
         <div id="centerContent"></div>
       </div>
+    </div>
+
+    <div class="verse-heartbeat" id="verseHeartbeat"></div>
+
+    <div class="verse-overlay" id="verseOverlay" style="display:none;">
+      <div id="verseOverlayContent"></div>
     </div>
 
     <div class="orbit-themes" id="themePicker"></div>
