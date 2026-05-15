@@ -638,15 +638,6 @@ input, textarea { font-family: inherit; }
   animation: v-translation-pulse 2.4s ease-in-out infinite;
 }
 
-/* word highlighting during recitation */
-.verse-word {
-  transition: color 320ms ease, text-shadow 320ms ease;
-}
-.verse-word.active {
-  color: var(--accent) !important;
-  text-shadow: 0 0 18px color-mix(in oklab, var(--accent) 60%, transparent);
-}
-
 /* Verse position dots */
 .verse-position {
   display: flex;
@@ -1829,6 +1820,22 @@ input, textarea { font-family: inherit; }
 .tt-row:hover .tt-remove { opacity: 0.6; }
 .tt-remove:hover { color: var(--accent); opacity: 1; }
 .tt-remove svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+.tt-arrow {
+  width: 22px; height: 22px;
+  color: var(--ink-faint);
+  opacity: 0.5;
+  transition: opacity 200ms, color 200ms;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tt-arrow:hover { color: var(--accent); opacity: 1; }
+.tt-arrow svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 .tt-prayer-badge {
   width: 90px;
   flex-shrink: 0;
@@ -2051,8 +2058,8 @@ input, textarea { font-family: inherit; }
   position: relative;
   padding: 22px 20px;
   border-radius: 18px;
-  border: 1px solid color-mix(in oklab, var(--accent) 32%, transparent);
-  background: color-mix(in oklab, var(--bg-soft) 45%, var(--bg)) !important;
+  border: 1.5px solid color-mix(in oklab, var(--accent) 42%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 50%, var(--bg)) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   transition: all 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -2062,27 +2069,27 @@ input, textarea { font-family: inherit; }
 .dash-card::before {
   content: "";
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 60%);
-  opacity: 0.35;
+  background: radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%);
+  opacity: 0.4;
   transition: opacity 400ms;
   pointer-events: none;
 }
 .dash-card:hover {
-  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 65%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px color-mix(in oklab, var(--accent) 18%, transparent);
+  box-shadow: 0 12px 40px color-mix(in oklab, var(--accent) 22%, transparent);
 }
-.dash-card:hover::before { opacity: 0.7; }
+.dash-card:hover::before { opacity: 0.75; }
 .dash-card-icon {
-  font-size: 24px;
+  font-size: 26px;
   margin-bottom: 10px;
-  opacity: 0.95;
+  opacity: 1;
   line-height: 1;
 }
 .dash-card-title {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 20px;
+  font-size: 22px;
   color: var(--ink);
   letter-spacing: -0.005em;
   line-height: 1.15;
@@ -2090,20 +2097,20 @@ input, textarea { font-family: inherit; }
 }
 .dash-card-eyebrow {
   font-family: 'Inter Tight', sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--accent);
-  opacity: 0.85;
+  opacity: 0.92;
   margin-bottom: 8px;
 }
 .dash-card-preview {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 13px;
-  color: var(--ink-soft);
-  line-height: 1.5;
-  opacity: 0.92;
+  font-size: 14px;
+  color: var(--ink);
+  opacity: 0.88;
+  line-height: 1.55;
   max-height: 2.7em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2112,8 +2119,8 @@ input, textarea { font-family: inherit; }
   -webkit-box-orient: vertical;
 }
 .dash-card-preview.empty {
-  color: var(--ink-faint);
-  opacity: 0.5;
+  color: var(--ink-soft);
+  opacity: 0.65;
 }
 .dash-card-help {
   position: absolute;
@@ -2993,7 +3000,9 @@ function buildDB(ydoc) {
     });
   };
   DB.timetableAdd = (time, label) => {
-    DB.timetable.push([{ id: uuid(), label, time, isPrayer: false }]);
+    const existing = DB.timetable.toArray();
+    const maxPos = existing.length ? Math.max(...existing.map(b => (typeof b.position === 'number' ? b.position : 0))) : -1;
+    DB.timetable.push([{ id: uuid(), label, time, isPrayer: false, position: maxPos + 1 }]);
   };
   DB.timetableUpdate = (id, patch) => {
     const arr = DB.timetable.toArray();
@@ -3008,6 +3017,14 @@ function buildDB(ydoc) {
     const arr = DB.timetable.toArray();
     const idx = arr.findIndex(b => b.id === id);
     if (idx >= 0) DB.timetable.delete(idx, 1);
+  };
+  DB.timetableSwapPositions = (i, j) => {
+    const arr = DB.timetable.toArray();
+    if (i < 0 || i >= arr.length || j < 0 || j >= arr.length) return;
+    const posI = arr[i].position ?? i;
+    const posJ = arr[j].position ?? j;
+    DB.timetableUpdate(arr[i].id, { position: posJ });
+    DB.timetableUpdate(arr[j].id, { position: posI });
   };
 
   return DB;
@@ -3546,7 +3563,6 @@ function InSessionCenter({ cs, versesLoading, startNewSession, enterCurrentStep,
         ))}
       </div>
       <div className="center-hub-button-wrap">
-        <div className="center-aura" />
         <button className="center-button" onClick={onClick} aria-label={`Begin ${label}`} disabled={versesLoading}>
           <span className="center-button-label">
             {versesLoading ? <span className="loading-dots"><span/><span/><span/></span> : label}
@@ -3629,7 +3645,6 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
       {!dailyDoneToday && (
         <div className="home-center">
           <div className="center-hub-button-wrap">
-            <div className="center-aura" style={{ opacity: 0.55 }} />
             <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
               <span className="center-button-label">Listen</span>
             </button>
@@ -4117,7 +4132,7 @@ function HelpButton({ onClick }) {
 }
 
 /* ─────────── VERSE BODY (shared) ─────────── */
-function VerseBody({ verse, loading, currentWordIdx }) {
+function VerseBody({ verse, loading }) {
   const arabicRef = useRef(null);
   const transRef = useRef(null);
   useEffect(() => {
@@ -4136,25 +4151,11 @@ function VerseBody({ verse, loading, currentWordIdx }) {
     window.addEventListener('resize', onR);
     return () => { obs.forEach(o => o.disconnect()); window.removeEventListener('resize', onR); };
   }, [verse?.arabic, verse?.translation]);
-
-  const words = verse?.arabic ? verse.arabic.trim().split(/\s+/) : [];
-  const hasHighlight = typeof currentWordIdx === 'number' && currentWordIdx >= 0;
-
   return (
     <div className="step-fs-body">
       <div className="verse-fs-arabic-wrap" ref={arabicRef}>
         {verse?.arabic ? (
-          <div className="verse-fs-arabic arabic-font">
-            {hasHighlight ? (
-              words.map((w, i) => (
-                <span key={i} className={`verse-word ${i === currentWordIdx ? 'active' : ''}`} style={{ whiteSpace: 'pre-wrap' }}>
-                  {w}{i < words.length - 1 ? ' ' : ''}
-                </span>
-              ))
-            ) : (
-              verse.arabic
-            )}
-          </div>
+          <div className="verse-fs-arabic arabic-font">{verse.arabic}</div>
         ) : (
           <div className="verse-skeleton">···</div>
         )}
@@ -4194,21 +4195,12 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
   const audioRef = useRef(null);
   const autoPlayNextRef = useRef(true);
   const [audioState, setAudioState] = useState({ playing: false, finished: false, current: 0, duration: 0 });
-  const [currentWordIdx, setCurrentWordIdx] = useState(-1);
-
-  // Compute word counts for current verse
-  const wordCountRef = useRef(0);
-  useEffect(() => {
-    wordCountRef.current = verse?.arabic ? verse.arabic.trim().split(/\s+/).length : 0;
-    setCurrentWordIdx(-1);
-  }, [verse?.arabic]);
 
   // Set up audio for current verse
   useEffect(() => {
     if (!verse?.audioUrl) {
       if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
       setAudioState({ playing: false, finished: false, current: 0, duration: 0 });
-      setCurrentWordIdx(-1);
       return;
     }
     const a = new Audio(verse.audioUrl);
@@ -4216,12 +4208,9 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
     audioRef.current = a;
 
     const onPlay = () => setAudioState(s => ({ ...s, playing: true, finished: false }));
-    const onPause = () => {
-      setAudioState(s => ({ ...s, playing: false }));
-    };
+    const onPause = () => { setAudioState(s => ({ ...s, playing: false })); };
     const onEnded = () => {
       setAudioState(s => ({ ...s, playing: false, finished: true }));
-      setCurrentWordIdx(wordCountRef.current - 1);
       if (idx < total - 1) {
         autoPlayNextRef.current = true;
         setIdx(i => i + 1);
@@ -4230,14 +4219,7 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
         setReachedIdx(total - 1);
       }
     };
-    const onTime = () => {
-      const dur = a.duration || 1;
-      setAudioState(s => ({ ...s, current: a.currentTime, duration: dur }));
-      const wc = wordCountRef.current;
-      if (wc > 0 && dur > 0) {
-        setCurrentWordIdx(Math.min(wc - 1, Math.floor((a.currentTime / dur) * wc)));
-      }
-    };
+    const onTime = () => setAudioState(s => ({ ...s, current: a.currentTime, duration: a.duration || s.duration }));
     const onMeta = () => setAudioState(s => ({ ...s, duration: a.duration || 0 }));
     a.addEventListener('play', onPlay);
     a.addEventListener('pause', onPause);
@@ -4245,10 +4227,7 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('loadedmetadata', onMeta);
 
-    // Auto-play if we should continue
-    if (autoPlayNextRef.current) {
-      a.play().catch(() => { autoPlayNextRef.current = false; });
-    }
+    if (autoPlayNextRef.current) { a.play().catch(() => { autoPlayNextRef.current = false; }); }
 
     return () => {
       a.pause();
@@ -4263,14 +4242,14 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
   const togglePlay = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
-    if (a.paused) {
-      autoPlayNextRef.current = true; // resume auto-play on manual play
+    if (!audioState.playing) {
+      autoPlayNextRef.current = true;
       a.play().catch(() => {});
     } else {
-      autoPlayNextRef.current = false; // user paused — stop auto-play chain
+      autoPlayNextRef.current = false;
       a.pause();
     }
-  }, []);
+  }, [audioState.playing]);
   const replayCurrent = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
@@ -4315,7 +4294,7 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
         <VersePositionIndicator idx={idx} total={total} reachedIdx={reachedIdx} />
         <div className="step-fs-ref">{surahRef}</div>
       </div>
-      <VerseBody verse={verse} loading={versesLoading} currentWordIdx={playing ? currentWordIdx : -1} />
+      <VerseBody verse={verse} loading={versesLoading} />
       <div className="step-fs-bottom">
         <div className="verse-fs-audio">
           <div className="verse-nav">
@@ -4780,25 +4759,29 @@ function TomorrowBody({ DB }) {
   useEffect(() => { DB.timetableEnsurePrayers(); }, []);
   const all = DB.timetable.toArray();
 
-  // Sort purely by time ascending. Empty times go last.
+  // Timed blocks sort by time ascending, then untimed blocks by position
   const sorted = useMemo(() => {
-    return [...all].sort((a, b) => {
-      if (a.time && b.time) return a.time.localeCompare(b.time);
-      if (a.time && !b.time) return -1;
-      if (!a.time && b.time) return 1;
-      return 0;
-    });
+    const timed = all.filter(b => b.time && b.time.trim());
+    const untimed = all.filter(b => !b.time || !b.time.trim());
+    timed.sort((a, b) => a.time.localeCompare(b.time));
+    untimed.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    return [...timed, ...untimed];
   }, [all]);
-
-  const idxMap = useMemo(() => {
-    const m = {};
-    sorted.forEach((b, i) => { m[b.id] = i; });
-    return m;
-  }, [sorted]);
 
   const updateTime = (id, time) => DB.timetableUpdate(id, { time });
   const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
   const remove = (id) => DB.timetableRemove(id);
+  const swapAdjacent = (i) => {
+    // Swap untimed block at position i with neighbor below (i+1)
+    const untimedList = sorted.filter(b => !b.time || !b.time.trim());
+    const idxA = all.findIndex(b => b.id === sorted[i].id);
+    const idxB = all.findIndex(b => b.id === sorted[i + 1].id);
+    if (idxA < 0 || idxB < 0) return;
+    DB.timetableSwapPositions(idxA, idxB);
+  };
+  const moveUp = (i) => { if (i > 0) swapAdjacent(i - 1); };
+  const moveDown = (i) => swapAdjacent(i);
+
   const [newTime, setNewTime] = useState('06:00');
   const [newLabel, setNewLabel] = useState('');
   const addBlock = () => {
@@ -4807,26 +4790,54 @@ function TomorrowBody({ DB }) {
     setNewTime('06:00'); setNewLabel('');
   };
 
+  // Check if a given block is untimed (so we show reorder arrows + can move it)
+  const isUntimed = (b) => !b.time || !b.time.trim();
+
   return (
     <>
       <div className="tt-list">
-        {sorted.map((b, i) => (
-          <div key={b.id} className="tt-row" data-prayer={b.isPrayer ? 'true' : 'false'}>
-            {b.isPrayer ? (
-              <span className="tt-prayer-badge">{b.label === "ʿAsr" ? "‎عصر‎" : b.label === "ʿIshāʾ" ? "‎عشاء‎" : b.label}</span>
-            ) : (
+        {sorted.map((b, i) => {
+          const untimed = isUntimed(b);
+          return (
+            <div key={b.id} className="tt-row" data-prayer={b.isPrayer ? 'true' : 'false'}>
               <input className="tt-time" type="time" value={b.time || ''} placeholder="--:--" onChange={(e) => updateTime(b.id, e.target.value)} />
-            )}
-            <input className="tt-label" type="text" value={b.label || ''} placeholder={b.isPrayer ? '' : 'What you\'ll do…'} onChange={(e) => updateLabel(b.id, e.target.value)} readOnly={b.isPrayer} />
-            <div className="tt-controls">
-              {!b.isPrayer && (
-                <button className="tt-remove" style={{ display: 'inline-flex', opacity: 1, marginRight: 2 }} onClick={() => remove(b.id)} aria-label="Remove">
-                  <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-                </button>
-              )}
+              <input
+                className="tt-label"
+                type="text"
+                value={b.label || ''}
+                placeholder={b.isPrayer ? '' : 'What you\'ll do…'}
+                onChange={(e) => updateLabel(b.id, e.target.value)}
+                readOnly={b.isPrayer}
+              />
+              <div className="tt-controls">
+                {b.isPrayer && (
+                  <button className="tt-remove tt-prayer-lock" style={{ display: 'inline-flex', opacity: 0.35, cursor: 'default' }} disabled aria-label="Locked">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+                  </button>
+                )}
+                {untimed && (
+                  <>
+                    {i > 0 && isUntimed(sorted[i - 1]) && (
+                      <button className="tt-arrow" style={{ display: 'inline-flex', opacity: 0.7, padding: '0 2px' }} onClick={() => moveUp(i)} aria-label="Move up">
+                        <svg viewBox="0 0 24 24"><path d="M6 14l6-6 6 6"/></svg>
+                      </button>
+                    )}
+                    {i < sorted.length - 1 && isUntimed(sorted[i + 1]) && (
+                      <button className="tt-arrow" style={{ display: 'inline-flex', opacity: 0.7, padding: '0 2px' }} onClick={() => moveDown(i)} aria-label="Move down">
+                        <svg viewBox="0 0 24 24"><path d="M6 10l6 6 6-6"/></svg>
+                      </button>
+                    )}
+                  </>
+                )}
+                {!b.isPrayer && (
+                  <button className="tt-remove" style={{ display: 'inline-flex', opacity: 1, marginLeft: 4 }} onClick={() => remove(b.id)} aria-label="Remove">
+                    <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="sub-section-label" style={{ marginTop: 12 }}>Add a block</div>
       <div className="tt-row" style={{ background: 'transparent' }}>
@@ -4837,7 +4848,7 @@ function TomorrowBody({ DB }) {
         <span className="action-text">Add</span>
         <span className="action-line" />
       </button>
-      <div className="res-meta">Set prayer times, then fill the spaces between. Blocks sort by time automatically.</div>
+      <div className="res-meta">Set times to order blocks chronologically. Untimed blocks can be reordered freely with the arrows.</div>
     </>
   );
 }
