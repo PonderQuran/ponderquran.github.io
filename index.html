@@ -767,8 +767,8 @@ input, textarea { font-family: inherit; }
   gap: 14px;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1px solid transparent;
-  background: color-mix(in oklab, var(--bg) 0%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 35%, var(--bg));
   transition: all 280ms;
   text-align: left;
   cursor: pointer;
@@ -952,9 +952,9 @@ input, textarea { font-family: inherit; }
 .verse-panel {
   width: 100%;
   max-width: 640px;
-  border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
   border-radius: 14px;
-  background: color-mix(in oklab, var(--bg) 30%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 45%, var(--bg));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: hidden;
@@ -1605,8 +1605,8 @@ input, textarea { font-family: inherit; }
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(ellipse at top, color-mix(in oklab, var(--accent) 4%, transparent) 0%, transparent 50%),
-    var(--bg);
+    radial-gradient(ellipse at top, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 50%),
+    color-mix(in oklab, var(--bg-soft) 40%, var(--bg));
   animation: v-step-in 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .sub-fs-top {
@@ -1657,9 +1657,9 @@ input, textarea { font-family: inherit; }
 
 .sub-textarea {
   width: 100%;
-  border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
   border-radius: 14px;
-  background: color-mix(in oklab, var(--bg) 30%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 50%, var(--bg));
   color: var(--ink);
   font-family: 'Cormorant Garamond', serif;
   font-size: 15px;
@@ -1670,8 +1670,8 @@ input, textarea { font-family: inherit; }
   outline: none;
   transition: border-color 300ms;
 }
-.sub-textarea:focus { border-color: var(--accent); }
-.sub-textarea::placeholder { color: var(--ink-faint); opacity: 0.55; font-style: italic; }
+.sub-textarea:focus { border-color: var(--accent); box-shadow: 0 0 16px color-mix(in oklab, var(--accent) 14%, transparent); }
+.sub-textarea::placeholder { color: var(--ink-soft); opacity: 0.55; font-style: italic; }
 
 .sub-textfield {
   width: 100%;
@@ -1749,14 +1749,14 @@ input, textarea { font-family: inherit; }
   gap: 12px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: color-mix(in oklab, var(--bg) 30%, transparent);
-  border: 1px solid color-mix(in oklab, var(--accent) 12%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 40%, var(--bg));
+  border: 1px solid color-mix(in oklab, var(--accent) 24%, transparent);
   transition: border-color 200ms;
 }
-.tt-row:focus-within { border-color: var(--accent); }
+.tt-row:focus-within { border-color: var(--accent); box-shadow: 0 0 12px color-mix(in oklab, var(--accent) 12%, transparent); }
 .tt-row[data-prayer="true"] {
-  background: color-mix(in oklab, var(--accent) 7%, transparent);
-  border-color: color-mix(in oklab, var(--accent) 25%, transparent);
+  background: color-mix(in oklab, var(--accent) 14%, var(--bg-soft));
+  border-color: color-mix(in oklab, var(--accent) 38%, transparent);
 }
 .tt-time {
   width: 70px;
@@ -1823,8 +1823,8 @@ input, textarea { font-family: inherit; }
   gap: 14px;
   padding: 12px 14px;
   border-radius: 12px;
-  background: color-mix(in oklab, var(--bg) 25%, transparent);
-  border: 1px solid color-mix(in oklab, var(--accent) 10%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 45%, var(--bg));
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
 }
 .res-row-rank {
   width: 24px;
@@ -1880,7 +1880,7 @@ input, textarea { font-family: inherit; }
   flex-direction: column;
   gap: 5px;
   padding: 16px 4px;
-  border-bottom: 1px solid color-mix(in oklab, var(--accent) 10%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
   cursor: pointer;
   transition: padding 200ms;
 }
@@ -1898,15 +1898,15 @@ input, textarea { font-family: inherit; }
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
 }
-.sit-row-range { color: var(--accent); opacity: 0.85; }
+.sit-row-range { color: var(--accent); opacity: 0.95; }
 .sit-empty {
   text-align: center;
   padding: 32px 0;
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   font-size: 14px;
 }
 .sit-show-more {
@@ -2028,8 +2028,8 @@ input, textarea { font-family: inherit; }
   position: relative;
   padding: 22px 20px;
   border-radius: 18px;
-  border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
-  background: color-mix(in oklab, var(--bg) 50%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 32%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 45%, var(--bg)) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   transition: all 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -2039,21 +2039,21 @@ input, textarea { font-family: inherit; }
 .dash-card::before {
   content: "";
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 6%, transparent) 0%, transparent 60%);
-  opacity: 0;
+  background: radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 60%);
+  opacity: 0.35;
   transition: opacity 400ms;
   pointer-events: none;
 }
 .dash-card:hover {
-  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px color-mix(in oklab, var(--accent) 10%, transparent);
+  box-shadow: 0 12px 40px color-mix(in oklab, var(--accent) 18%, transparent);
 }
-.dash-card:hover::before { opacity: 1; }
+.dash-card:hover::before { opacity: 0.7; }
 .dash-card-icon {
   font-size: 24px;
   margin-bottom: 10px;
-  opacity: 0.85;
+  opacity: 0.95;
   line-height: 1;
 }
 .dash-card-title {
@@ -2071,7 +2071,7 @@ input, textarea { font-family: inherit; }
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: var(--accent);
-  opacity: 0.72;
+  opacity: 0.85;
   margin-bottom: 8px;
 }
 .dash-card-preview {
@@ -2080,7 +2080,7 @@ input, textarea { font-family: inherit; }
   font-size: 13px;
   color: var(--ink-soft);
   line-height: 1.5;
-  opacity: 0.82;
+  opacity: 0.92;
   max-height: 2.7em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2128,8 +2128,8 @@ input, textarea { font-family: inherit; }
   font-size: 9px;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  opacity: 0.6;
+  color: var(--ink-soft);
+  opacity: 0.7;
   text-align: center;
   margin-bottom: 12px;
 }
@@ -2140,8 +2140,8 @@ input, textarea { font-family: inherit; }
   max-width: 760px;
   padding: 16px 22px;
   border-radius: 18px;
-  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
-  background: color-mix(in oklab, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  background: color-mix(in oklab, var(--accent) 14%, var(--bg-soft));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   display: flex;
@@ -2153,7 +2153,7 @@ input, textarea { font-family: inherit; }
 }
 .dash-locked-card:hover {
   border-color: var(--accent);
-  box-shadow: 0 8px 30px color-mix(in oklab, var(--accent) 16%, transparent);
+  box-shadow: 0 8px 30px color-mix(in oklab, var(--accent) 24%, transparent);
 }
 .dash-locked-icon {
   width: 44px; height: 44px;
@@ -2309,8 +2309,8 @@ input, textarea { font-family: inherit; }
 .settings-panel {
   width: min(480px, 100%);
   max-height: 85dvh;
-  background: color-mix(in oklab, var(--bg) 90%, var(--bg-soft));
-  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+  background: color-mix(in oklab, var(--bg-soft) 60%, var(--bg));
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   overflow-y: auto;
@@ -3043,7 +3043,6 @@ function MiranRoot() {
   const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
   const [showSettings, setShowSettings] = useState(false);
   const [showSync, setShowSync] = useState(false);
-  const [reviewSession, setReviewSession] = useState(null); // { id, title, verseKeys, ponderedKeys, actionIds, date }
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -3088,7 +3087,6 @@ function MiranRoot() {
     if (sessionInProgress) return;
     const { surah: lastS, verse: lastV } = DB.getLastPondered();
     const start = computeNextSessionStart(lastS, lastV);
-    // Fetch surah info first to know its size
     setVersesLoading(true);
     let surahInfo = await fetchSurahInfo(start.surah);
     if (!surahInfo) {
@@ -3098,7 +3096,6 @@ function MiranRoot() {
     }
     let surah = start.surah;
     let startVerse = start.verse;
-    // If we've overflowed the surah, jump to next surah
     if (startVerse > surahInfo.verses_count) {
       surah = surah + 1;
       startVerse = 1;
@@ -3128,6 +3125,45 @@ function MiranRoot() {
     });
     setVersesLoading(false);
     setView('listen');
+  }, [sessionInProgress, showToast]);
+
+  /* replay a past sitting */
+  const replaySitting = useCallback(async (sitting) => {
+    if (sessionInProgress) return;
+    const verseKeys = sitting.verseKeys || [];
+    if (!verseKeys.length) { showToast('Nothing to replay', ''); return; }
+    setVersesLoading(true);
+    try {
+      const verses = await Promise.all(verseKeys.map(k => fetchVerseDetails(k)));
+      verses.forEach(v => { verseCacheRef.current[v.key] = v; });
+      bumpCache();
+      const first = parseKey(verseKeys[0]);
+      let surahInfo = await fetchSurahInfo(first.surah);
+      if (!surahInfo) surahInfo = { name: '', verses_count: 999 };
+      DB.replaceCurrentSession({
+        id: uuid(),
+        startedAt: Date.now(),
+        surah: first.surah,
+        surahName: surahInfo.name,
+        surahVersesCount: surahInfo.verses_count,
+        verseKeys,
+        completedSteps: 0,
+        listenIdx: 0,
+        listenReached: 0,
+        selectedEndIdx: verseKeys.length - 1,
+        ponderIdx: 0,
+        qIdx: 0,
+        writeActions: [''],
+        title: '',
+        isReplay: true,
+        replaySittingId: sitting.id,
+      });
+      setVersesLoading(false);
+      setView('listen');
+    } catch (e) {
+      setVersesLoading(false);
+      showToast('Failed to load sitting', '');
+    }
   }, [sessionInProgress, showToast]);
 
   /* continue an existing session by entering its current step */
@@ -3164,16 +3200,42 @@ function MiranRoot() {
     if (!cs) return;
     const finalTitle = (title || '').trim() || 'A sitting';
     const today = todayStr();
-    // Save actions
+    const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
+
+    if (cs.isReplay && cs.replaySittingId) {
+      // Update the existing sitting
+      const actionIds = [];
+      (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
+        actionIds.push(DB.addAction(txt, cs.replaySittingId));
+      });
+      DB.updateSessionTitle(cs.replaySittingId, finalTitle);
+      // Also update ponderedKeys and actionIds on the session
+      // We update the session's data through Yjs transact
+      const arr = DB.sessions.toArray();
+      const idx = arr.findIndex(s => s.id === cs.replaySittingId);
+      if (idx >= 0) {
+        window.YDOC.transact(() => {
+          DB.sessions.delete(idx, 1);
+          DB.sessions.insert(idx, [{
+            ...arr[idx],
+            title: finalTitle,
+            ponderedKeys,
+            actionIds: actionIds,
+          }]);
+        });
+      }
+      DB.clearCurrentSession();
+      setView('home');
+      return;
+    }
+
+    // Normal: finalize session with a title
     const actionIds = [];
     (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
       actionIds.push(DB.addAction(txt, cs.id));
     });
-    // Determine pondered range
-    const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
     const lastKey = ponderedKeys[ponderedKeys.length - 1];
     const { surah: lastS, verse: lastV } = parseKey(lastKey);
-    // Save session
     DB.addSession({
       id: cs.id,
       title: finalTitle,
@@ -3182,10 +3244,8 @@ function MiranRoot() {
       ponderedKeys,
       actionIds,
     });
-    // Update lastPondered to last verse user actually pondered
     DB.setLastPondered(lastS, lastV);
     DB.setLastSessionDate(today);
-    // Ensure prayers exist in timetable for the user
     DB.timetableEnsurePrayers();
     DB.clearCurrentSession();
     setView('home');
@@ -3202,7 +3262,7 @@ function MiranRoot() {
     '--ink': theme.ink, '--ink-soft': theme.inkSoft, '--ink-faint': theme.inkFaint,
     '--accent': theme.accent, '--accent-soft': theme.accentSoft,
   };
-  const fullscreen = view !== 'home' || !!subView || !!reviewSession;
+  const fullscreen = view !== 'home' || !!subView;
 
   /* current verse details from cache */
   const getVerse = useCallback((idx) => {
@@ -3220,11 +3280,11 @@ function MiranRoot() {
       <OrbitBackdrop />
 
       {/* Settings button — only on home */}
-      {view === 'home' && !subView && !showIntro && !showSettings && !showSync && !reviewSession && (
+      {view === 'home' && !subView && !showIntro && !showSettings && !showSync && (
         <SettingsButton onClick={() => setShowSettings(true)} />
       )}
 
-      {view === 'home' && !subView && !reviewSession && (
+      {view === 'home' && !subView && (
         <HomeView
           DB={DB}
           cs={cs}
@@ -3302,23 +3362,13 @@ function MiranRoot() {
         />
       )}
 
-      {subView && !reviewSession && (
+      {subView && (
         <SubsectionRouter
           subView={subView}
           DB={DB}
           onClose={() => setSubView(null)}
           openHelp={(key) => setHelpKey(key)}
-          onOpenSitting={(s) => { setSubView(null); setReviewSession(s); }}
-        />
-      )}
-
-      {reviewSession && (
-        <ReviewSitting
-          review={reviewSession}
-          DB={DB}
-          onClose={() => setReviewSession(null)}
-          openTafsir={openTafsir}
-          showToast={showToast}
+          onReplaySitting={replaySitting}
         />
       )}
 
@@ -3420,12 +3470,11 @@ function OrbitBackdrop() {
 
 /* ─────────── HOME ─────────── */
 function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme }) {
-  return (
-    <div className="home-scroll">
-      <div className="home-center">
-        {dailyDoneToday ? (
-          <LockedCountdownButton onHelp={() => openHelp('nextSession')} />
-        ) : (
+  // During a session: only the center button + pills, no dashboard
+  if (cs) {
+    return (
+      <div className="home-scroll">
+        <div className="home-center">
           <InSessionCenter
             cs={cs}
             versesLoading={versesLoading}
@@ -3433,9 +3482,15 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
             enterCurrentStep={enterCurrentStep}
             revisitStep={revisitStep}
           />
-        )}
+        </div>
       </div>
-      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} />
+    );
+  }
+
+  // No session in progress → show dashboard with the banner
+  return (
+    <div className="home-scroll">
+      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
     </div>
   );
 }
@@ -3473,30 +3528,8 @@ function InSessionCenter({ cs, versesLoading, startNewSession, enterCurrentStep,
   );
 }
 
-function LockedCountdownButton({ onHelp }) {
-  const [t, setT] = useState(countdownToMidnight);
-  useEffect(() => {
-    const i = setInterval(() => setT(countdownToMidnight()), 1000);
-    return () => clearInterval(i);
-  }, []);
-  return (
-    <div className="center-hub-button-wrap">
-      <div className="center-aura" style={{ opacity: 0.35 }} />
-      <button className="center-button" data-locked="true" onClick={onHelp} aria-label="Next sitting opens at midnight">
-        <span className="center-button-lock" aria-hidden>
-          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
-        </span>
-        <div className="center-button-countdown">
-          <div className="center-button-countdown-time">{pad2(t.h)}:{pad2(t.m)}:{pad2(t.s)}</div>
-          <div className="center-button-countdown-label">until tomorrow</div>
-        </div>
-      </button>
-    </div>
-  );
-}
-
 /* ─────────── DASHBOARD (card grid) ─────────── */
-function Dashboard({ DB, openSection, openHelp, dailyDoneToday }) {
+function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession }) {
   useYjsTick();
   const sessions = DB.sessions.toArray();
   const actions = DB.getActionsSorted();
@@ -3533,21 +3566,29 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday }) {
     { key: 'horizons',    icon: '🎯', title: 'Horizons',       eyebrow: 'Your aims',                 preview: horizonsPreview,    empty: !goalsAny, helpKey: 'horizons' },
   ];
 
-  /* the locked-banner that also links to help */
   function DashLockedBanner() {
     const [t, setT] = useState(countdownToMidnight);
+    const ready = t.h === 0 && t.m === 0 && t.s === 0;
     useEffect(() => {
       const i = setInterval(() => setT(countdownToMidnight()), 1000);
       return () => clearInterval(i);
     }, []);
+    const handleClick = () => {
+      if (ready) startNewSession();
+      else openHelp('nextSession');
+    };
     return (
-      <div className="dash-locked-card" onClick={() => openHelp('nextSession')}>
+      <div className="dash-locked-card" onClick={handleClick}>
         <div className="dash-locked-icon">
-          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+          {ready ? (
+            <svg viewBox="0 0 24 24" style={{ stroke: 'var(--accent)' }}><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></svg>
+          ) : (
+            <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+          )}
         </div>
         <div className="dash-locked-info">
-          <div className="dash-locked-label">Next sitting opens in</div>
-          <div className="dash-locked-time">{pad2(t.h)}:{pad2(t.m)}:{pad2(t.s)}</div>
+          <div className="dash-locked-label">{ready ? 'Your sitting is ready' : 'Next sitting opens in'}</div>
+          <div className="dash-locked-time">{ready ? 'Begin' : `${pad2(t.h)}:${pad2(t.m)}:${pad2(t.s)}`}</div>
         </div>
       </div>
     );
@@ -3556,6 +3597,19 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday }) {
   return (
     <>
       {dailyDoneToday && <DashLockedBanner />}
+      {!dailyDoneToday && (
+        <div className="home-center">
+          <div className="center-hub-button-wrap">
+            <div className="center-aura" style={{ opacity: 0.55 }} />
+            <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
+              <span className="center-button-label">Listen</span>
+            </button>
+          </div>
+          <div className="center-pills" style={{ minHeight: 28, marginTop: 8 }}>
+            <span style={{ fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--ink-faint)', opacity: 0.5, fontFamily: "'Inter Tight', sans-serif" }}>Begin your sitting</span>
+          </div>
+        </div>
+      )}
       <div className="dash-daily-label">{dailyDoneToday ? 'While you wait' : 'Your dashboard'}</div>
       <div className="dash-grid">
         {cards.map(c => (
@@ -4541,137 +4595,8 @@ function TitleStep({ cs, onSubmit }) {
     </div>
   );
 }
-
-/* ─────────── REVIEW SITTING ─────────── */
-function ReviewSitting({ review, DB, onClose, openTafsir, showToast }) {
-  useYjsTick();
-  const [viewMode, setViewMode] = useState('review'); // 'review' | 'edit-actions'
-  // The verses from the saved session
-  const verseKeys = review.verseKeys || [];
-  const ponderedKeys = review.ponderedKeys || verseKeys;
-  const [idx, setIdx] = useState(0);
-  const total = ponderedKeys.length;
-  const [verseCache, setVerseCache] = useState({}); // { key: details }
-
-  // Fetch verse details on mount
-  useEffect(() => {
-    let cancelled = false;
-    const keysToFetch = ponderedKeys.filter(k => !verseCache[k]);
-    if (keysToFetch.length === 0) return;
-    Promise.all(keysToFetch.map(k => fetchVerseDetails(k))).then(results => {
-      if (cancelled) return;
-      const newCache = { ...verseCache };
-      results.forEach((d, i) => { newCache[keysToFetch[i]] = d; });
-      setVerseCache(newCache);
-    });
-    return () => { cancelled = true; };
-  }, [review.id]);
-
-  const verse = verseCache[ponderedKeys[idx]] || null;
-  const vk = ponderedKeys[idx] || '—';
-  const { surah, verse: vNum } = parseKey(vk);
-
-  // Actions from DB for this session
-  const allActions = DB.getActionsSorted();
-  const sessionActions = allActions.filter(a => a.sessionId === review.id);
-  const [actions, setActions] = useState(sessionActions.map(a => ({ id: a.id, text: a.text, ranking: a.ranking })));
-  useEffect(() => {
-    const updated = allActions.filter(a => a.sessionId === review.id);
-    setActions(updated.map(a => ({ id: a.id, text: a.text, ranking: a.ranking })));
-  }, [allActions]);
-
-  const updateActionText = (id, text) => {
-    DB.updateAction(id, { text });
-  };
-  const addAction = () => {
-    const newId = DB.addAction('', review.id);
-    setActions(prev => [...prev, { id: newId, text: '', ranking: prev.length }]);
-  };
-  const removeAction = (id) => {
-    const idx2 = allActions.findIndex(a => a.id === id);
-    if (idx2 < 0) return;
-    window.YDOC.transact(() => { DB.actions.delete(idx2, 1); });
-  };
-
-  return (
-    <div className="step-fs">
-      <BackButton onClick={onClose} />
-      <div className="step-fs-top">
-        <div className="step-fs-eyebrow">{review.title || 'A sitting'}</div>
-        <div className="step-fs-ref">{review.date} · {ponderedKeys[0] || '—'} → {ponderedKeys[ponderedKeys.length - 1] || '—'}</div>
-      </div>
-
-      {viewMode === 'review' && (
-        <>
-          <div className="step-fs-body">
-            {verse ? (
-              <VerseBody verse={verse} />
-            ) : (
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span className="loading-dots"><span/><span/><span/></span>
-              </div>
-            )}
-          </div>
-          <div className="step-fs-bottom">
-            <div className="verse-nav">
-              <button className="verse-nav-arrow" onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx <= 0} aria-label="Previous verse">
-                <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
-              </button>
-              <VersePositionIndicator idx={idx} total={total} reachedIdx={total - 1} />
-              <button className="verse-nav-arrow" onClick={() => setIdx(i => Math.min(total - 1, i + 1))} disabled={idx >= total - 1} aria-label="Next verse">
-                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-              </button>
-            </div>
-            <div className="verse-fs-actions">
-              <button className="action-soft" onClick={() => openTafsir(verse?.key)} disabled={!verse?.key}>Tafsir</button>
-              <button className="action" onClick={() => setViewMode('edit-actions')}>
-                <span className="action-text">Edit commitments</span>
-                <span className="action-line" />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {viewMode === 'edit-actions' && (
-        <>
-          <div className="step-fs-body">
-            <div className="write-scroll">
-              <div className="write-intro">
-                These are the commitments you wrote after this sitting.
-                <strong>Add, refine, or remove them.</strong>
-              </div>
-              <div className="write-list">
-                {actions.map((a, i) => (
-                  <div className="write-row" key={a.id}>
-                    <span className="write-row-num">{String(i + 1).padStart(2, '0')}</span>
-                    <input className="write-input" type="text" value={a.text} placeholder="An action you will take…" onChange={(e) => updateActionText(a.id, e.target.value)} />
-                    <button className="write-remove" onClick={() => removeAction(a.id)} aria-label="Remove" tabIndex={-1}>
-                      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-                    </button>
-                  </div>
-                ))}
-                <button className="write-add" onClick={addAction}>
-                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                  Add another
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="step-fs-bottom">
-            <button className="action" onClick={() => setViewMode('review')}>
-              <span className="action-text">Back to verses</span>
-              <span className="action-line" />
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
 /* ─────────── SUBSECTION ROUTER ─────────── */
-function SubsectionRouter({ subView, DB, onClose, openHelp, onOpenSitting }) {
+function SubsectionRouter({ subView, DB, onClose, openHelp, onReplaySitting }) {
   useYjsTick();
   const titles = {
     sittings: 'Sittings',
@@ -4682,7 +4607,7 @@ function SubsectionRouter({ subView, DB, onClose, openHelp, onOpenSitting }) {
     horizons: 'Horizons',
   };
   const Body = () => {
-    if (subView === 'sittings')    return <SittingsBody DB={DB} onOpenSitting={onOpenSitting} onClose={onClose} />;
+    if (subView === 'sittings')    return <SittingsBody DB={DB} onReplaySitting={onReplaySitting} onClose={onClose} />;
     if (subView === 'abodes')      return <AbodesBody DB={DB} />;
     if (subView === 'resolutions') return <ResolutionsBody DB={DB} />;
     if (subView === 'tomorrow')    return <TomorrowBody DB={DB} />;
@@ -4709,7 +4634,7 @@ function SubsectionRouter({ subView, DB, onClose, openHelp, onOpenSitting }) {
 }
 
 /* ── Sittings ── */
-function SittingsBody({ DB, onOpenSitting, onClose }) {
+function SittingsBody({ DB, onReplaySitting, onClose }) {
   const sessions = DB.sessions.toArray().slice().reverse();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? sessions : sessions.slice(0, 3);
@@ -4720,7 +4645,7 @@ function SittingsBody({ DB, onOpenSitting, onClose }) {
         const first = s.verseKeys?.[0] || '—';
         const last = s.ponderedKeys?.[s.ponderedKeys.length - 1] || s.verseKeys?.[s.verseKeys.length - 1] || '—';
         return (
-          <div key={s.id} className="sit-row" onClick={() => { if (onClose) onClose(); if (onOpenSitting) onOpenSitting(s); }}>
+           <div key={s.id} className="sit-row" onClick={() => { if (onClose) onClose(); if (onReplaySitting) onReplaySitting(s); }}>
             <div className="sit-row-title">{s.title || 'A sitting'}</div>
             <div className="sit-row-meta">
               <span className="sit-row-range">{first} → {last}</span>
