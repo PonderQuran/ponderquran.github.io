@@ -249,14 +249,17 @@ input, textarea { font-family: inherit; }
 .center-aura {
   position: absolute;
   top: 50%; left: 50%;
-  width: 240px; height: 240px;
-  margin-top: -120px;
-  margin-left: -120px;
+  width: 280px; height: 280px;
+  margin-top: -140px;
+  margin-left: -140px;
   border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 65%);
+  background:
+    radial-gradient(circle at 40% 35%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 60% 60%, color-mix(in oklab, var(--ink) 4%, transparent) 0%, transparent 45%);
   animation: v-aura-breathe 4.8s ease-in-out infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
+  opacity: 0.85;
 }
 /* The aura sits behind the button, not behind the pills */
 .center-hub-button-wrap {
@@ -270,18 +273,21 @@ input, textarea { font-family: inherit; }
   position: relative;
   width: 168px; height: 168px;
   border-radius: 50%;
-  border: 1px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  border: 1.5px solid color-mix(in oklab, var(--accent) 65%, transparent);
   background:
-    radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--accent) 14%, var(--bg)) 0%, color-mix(in oklab, var(--bg) 92%, var(--accent)) 65%, color-mix(in oklab, var(--bg) 98%, var(--accent)) 100%);
+    radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--ink) 18%, var(--accent)) 0%, color-mix(in oklab, var(--accent) 30%, var(--bg-soft)) 30%, color-mix(in oklab, var(--bg) 60%, var(--accent)) 70%, color-mix(in oklab, var(--accent) 55%, var(--bg)) 100%);
+  box-shadow:
+    0 0 40px color-mix(in oklab, var(--accent) 30%, transparent),
+    inset 0 0 30px color-mix(in oklab, var(--accent) 10%, transparent);
   display: flex;
   align-items: center; justify-content: center;
   color: var(--ink);
   cursor: pointer;
   animation: v-center-pulse 3.6s ease-in-out infinite;
-  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease, opacity 500ms ease;
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease, opacity 500ms ease, box-shadow 500ms ease;
 }
-.center-button:hover { transform: scale(1.035); border-color: var(--accent); }
-.center-button:active { transform: scale(0.98); }
+.center-button:hover { transform: scale(1.04); border-color: var(--accent); box-shadow: 0 0 60px color-mix(in oklab, var(--accent) 45%, transparent), inset 0 0 40px color-mix(in oklab, var(--accent) 16%, transparent); }
+.center-button:active { transform: scale(0.97); }
 .center-button-label {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
@@ -1501,9 +1507,11 @@ input, textarea { font-family: inherit; }
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 16px;
-  margin: clamp(40px, 16vh, 140px) 0 clamp(20px, 4vh, 36px);
-  min-height: 200px;
+  min-height: 72dvh;
+  padding: 20px 0;
+  flex-shrink: 0;
 }
 
 /* Dashboard sections */
@@ -1795,6 +1803,18 @@ input, textarea { font-family: inherit; }
 .tt-row:hover .tt-remove { opacity: 0.6; }
 .tt-remove:hover { color: var(--accent); opacity: 1; }
 .tt-remove svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+.tt-prayer-badge {
+  width: 90px;
+  flex-shrink: 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  opacity: 0.9;
+  text-align: center;
+}
 
 /* Resolutions */
 .res-row {
@@ -1940,7 +1960,7 @@ input, textarea { font-family: inherit; }
   .player-btn svg { width: 20px; height: 20px; }
   .home-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 120px); }
   .dash-section-title { font-size: 19px; }
-  .home-center { margin: clamp(24px, 8vh, 60px) 0 clamp(16px, 3vh, 28px); }
+  .home-center { min-height: 58dvh; margin: 0; }
   .center-button-countdown-time { font-size: 16px; }
 }
 @media (max-width: 380px) {
@@ -1959,7 +1979,7 @@ input, textarea { font-family: inherit; }
 @media (max-height: 720px) and (max-width: 480px) {
   .verse-fs-arabic-wrap { max-height: 38vh; }
   .verse-fs-translation-wrap { max-height: 18vh; }
-  .home-center { margin: clamp(16px, 4vh, 28px) 0 16px; min-height: 160px; }
+  .home-center { min-height: 55dvh; margin: 0; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
   .step-fs { padding-top: 12px; padding-bottom: 12px; }
@@ -1973,14 +1993,585 @@ input, textarea { font-family: inherit; }
   .center-button-label { font-size: 19px; }
   .center-aura { width: 150px; height: 150px; margin-top: -75px; margin-left: -75px; }
 }
+/* ── Settings button ── */
+.settings-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 16px);
+  right: 16px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  background: color-mix(in oklab, var(--bg) 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center; justify-content: center;
+  z-index: 8;
+  transition: all 300ms;
+  cursor: pointer;
+}
+.settings-btn:hover { color: var(--ink); border-color: var(--accent); transform: rotate(30deg); }
+.settings-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Dashboard cards grid ── */
+.dash-grid {
+  width: 100%;
+  max-width: 760px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 16px;
+  margin-top: 0;
+  padding-bottom: clamp(20px, 4vh, 40px);
+}
+.dash-card {
+  position: relative;
+  padding: 22px 20px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+  background: color-mix(in oklab, var(--bg) 50%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  overflow: hidden;
+}
+.dash-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at top left, color-mix(in oklab, var(--accent) 6%, transparent) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 400ms;
+  pointer-events: none;
+}
+.dash-card:hover {
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px color-mix(in oklab, var(--accent) 10%, transparent);
+}
+.dash-card:hover::before { opacity: 1; }
+.dash-card-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+  opacity: 0.85;
+  line-height: 1;
+}
+.dash-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.dash-card-eyebrow {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.72;
+  margin-bottom: 8px;
+}
+.dash-card-preview {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  opacity: 0.82;
+  max-height: 2.7em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.dash-card-preview.empty {
+  color: var(--ink-faint);
+  opacity: 0.5;
+}
+.dash-card-help {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 11px;
+  transition: all 200ms;
+  z-index: 2;
+}
+.dash-card-help:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Dashboard section divider */
+.dash-divider {
+  width: 100%;
+  max-width: 760px;
+  margin: 4px 0 18px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 16%, transparent) 40%, color-mix(in oklab, var(--accent) 16%, transparent) 60%, transparent);
+  opacity: 0.6;
+}
+.dash-daily-label {
+  width: 100%;
+  max-width: 760px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0.6;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ── Locked button inside dashboard ── */
+.dash-locked-card {
+  width: 100%;
+  max-width: 760px;
+  padding: 16px 22px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 300ms;
+  margin-bottom: 20px;
+}
+.dash-locked-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 30px color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.dash-locked-icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  display: flex;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent);
+  opacity: 0.8;
+}
+.dash-locked-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+.dash-locked-info { display: flex; flex-direction: column; gap: 3px; }
+.dash-locked-label {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0.8;
+}
+.dash-locked-time {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+/* ── Intro overlay ── */
+.intro-backdrop {
+  position: fixed; inset: 0;
+  z-index: 90;
+  background: color-mix(in oklab, var(--bg) 92%, black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  animation: v-fade-in 600ms ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.intro-card {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: v-step-in 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.intro-star {
+  color: var(--accent);
+  font-size: 18px;
+  opacity: 0.6;
+  margin-bottom: 28px;
+  letter-spacing: 8px;
+}
+.intro-title {
+  font-family: 'Fraunces', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
+}
+.intro-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(13px, 1vw + 8px, 16px);
+  color: var(--accent);
+  opacity: 0.8;
+  margin-bottom: 36px;
+  letter-spacing: 0.04em;
+}
+.intro-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 0.5vw + 13px, 17px);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  max-width: 460px;
+}
+.intro-body p { margin: 0 0 16px; }
+.intro-body p:last-child { margin-bottom: 0; }
+.intro-body strong { color: var(--ink); font-weight: 400; font-style: italic; }
+.intro-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 20px;
+  margin: 28px 0;
+  max-width: 400px;
+}
+.intro-step {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.intro-step-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.8;
+}
+.intro-rule {
+  width: 120px; height: 1px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--accent) 40%, transparent), transparent);
+  margin: 28px 0 24px;
+}
+.intro-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.intro-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.intro-checkbox input {
+  width: 14px; height: 14px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── Settings modal ── */
+.settings-backdrop {
+  position: fixed; inset: 0;
+  z-index: 80;
+  background: color-mix(in oklab, var(--bg) 64%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  animation: v-fade-in 300ms ease;
+}
+.settings-panel {
+  width: min(480px, 100%);
+  max-height: 85dvh;
+  background: color-mix(in oklab, var(--bg) 90%, var(--bg-soft));
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: v-step-in 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--accent) 30%, transparent) transparent;
+}
+.settings-panel::-webkit-scrollbar { width: 3px; }
+.settings-panel::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--accent) 30%, transparent); border-radius: 2px; }
+.sett-header {
+  display: flex;
+  align-items: center; justify-content: space-between;
+  padding: 22px 24px 14px;
+  flex-shrink: 0;
+}
+.sett-title {
+  font-family: 'Fraunces', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.sett-close {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center; justify-content: center;
+  transition: all 250ms;
+}
+.sett-close:hover { color: var(--ink); border-color: var(--accent); transform: rotate(90deg); }
+.sett-close svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.5; fill: none; stroke-linecap: round; }
+.sett-section {
+  padding: 20px 24px;
+  border-top: 1px solid color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.sett-section-label {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.78;
+  margin-bottom: 14px;
+}
+.sett-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.sett-row:last-child { margin-bottom: 0; }
+.sett-row-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+  flex: 1;
+}
+.sett-select {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  background: color-mix(in oklab, var(--bg) 40%, transparent);
+  color: var(--ink);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  outline: none;
+  cursor: pointer;
+  max-width: 180px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 200ms;
+}
+.sett-select:focus { border-color: var(--accent); }
+.sett-select option { background: var(--bg); color: var(--ink); }
+.sett-theme-row {
+  display: flex;
+  gap: 14px;
+  padding: 4px 0;
+}
+.sett-theme-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  position: relative;
+  transition: transform 300ms;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+.sett-theme-dot:hover { transform: scale(1.12); }
+.sett-theme-dot.active {
+  transform: scale(1.12);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 0 0 2px var(--ink), 0 0 16px var(--accent);
+}
+.sett-sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+.sett-sync-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sett-sync-dot.connected { background: #5ec27a; box-shadow: 0 0 8px #5ec27a; }
+.sett-sync-dot.connecting { background: #e5a850; box-shadow: 0 0 8px #e5a850; animation: v-twinkle 1s ease-in-out infinite; }
+.sett-sync-dot.disconnected { background: #8a6e7a; }
+
+/* ── Sync modal ── */
+.sync-backdrop {
+  position: fixed; inset: 0;
+  z-index: 85;
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  animation: v-fade-in 300ms ease;
+}
+.sync-panel {
+  width: min(500px, 100%);
+  background: color-mix(in oklab, var(--bg) 92%, var(--bg-soft));
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  padding: 32px 24px;
+  animation: v-step-in 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sync-title {
+  font-family: 'Fraunces', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  text-align: center;
+}
+.sync-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sync-step-label {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+}
+.sync-step-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  line-height: 1.5;
+}
+.sync-code-area {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+  background: color-mix(in oklab, var(--bg) 40%, transparent);
+  color: var(--ink);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  word-break: break-all;
+  line-height: 1.55;
+  min-height: 48px;
+  user-select: all;
+  -webkit-user-select: all;
+  transition: border-color 200ms;
+}
+.sync-code-area:focus { border-color: var(--accent); outline: none; }
+.sync-copy-btn {
+  align-self: flex-end;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 200ms;
+  padding: 4px 8px;
+}
+.sync-copy-btn:hover { color: var(--accent); }
+.sync-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+/* ── Review mode layout ── */
+.review-banner {
+  width: 100%;
+  max-width: 640px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.review-banner-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.review-banner-close {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 200ms;
+}
+.review-banner-close:hover { color: var(--accent); }
+
+/* ── Responsive additions ── */
+@media (max-width: 768px) {
+  .dash-grid { grid-template-columns: 1fr; gap: 12px; }
+  .dash-card { padding: 18px 16px; border-radius: 16px; }
+  .dash-card-title { font-size: 18px; }
+  .dash-locked-card { padding: 14px 16px; }
+  .dash-locked-time { font-size: 18px; }
+  .home-center { min-height: 58dvh; }
+  .center-aura { width: 220px; height: 220px; margin-top: -110px; margin-left: -110px; }
+  .settings-btn { top: calc(env(safe-area-inset-top) + 12px); right: 10px; }
+}
+@media (max-width: 380px) {
+  .dash-locked-time { font-size: 16px; }
+  .center-aura { width: 180px; height: 180px; margin-top: -90px; margin-left: -90px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .home-center { min-height: 40dvh; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .step-fs.playing .verse-fs-arabic,
-  .step-fs.playing .verse-fs-translation,
-  .center-button,
-  .center-aura,
-  .plasma-blob,
-  .orbit-backdrop span {
-    animation: none !important;
+  .dash-card:hover, .settings-btn:hover, .sett-close:hover {
+    transform: none !important;
   }
 }
 </style>
@@ -2018,6 +2609,20 @@ window.TAFSIR_ERA = "20th c.";
 window.SESSION_VERSES_TARGET = 10;
 window.QUESTION_SECONDS = 60;
 window.PROVISION_WORD_LIMIT = 1500;
+
+// ───── Language / translation config ─────
+window.LANGUAGES = [
+  { code: 'en', label: 'English',     translationId: 20,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'fr', label: 'Français',    translationId: 31,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'es', label: 'Español',     translationId: 40,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'de', label: 'Deutsch',     translationId: 27,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'tr', label: 'Türkçe',      translationId: 77,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'ur', label: 'اردو',         translationId: 97,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'ru', label: 'Русский',      translationId: 45,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'id', label: 'Indonesia',   translationId: 33,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+  { code: 'zh', label: '中文',         translationId: 56,  tafsirId: 168, recitationId: 7,  tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c." },
+];
+window.LANG_DEFAULTS = { translationId: 20, tafsirId: 168, recitationId: 7, tafsirName: "Maʿārif al-Qurʾān", tafsirEra: "20th c.", code: 'en' };
 
 window.QUESTIONS = [
   "What do these verses really mean — what message is Allah sending you, what do they teach you?",
@@ -2155,6 +2760,19 @@ function countdownToMidnight() {
 }
 function pad2(n) { return String(n).padStart(2, '0'); }
 
+// ── simple compression helpers for sync codes ──
+function compressForSync(str) {
+  try {
+    // compress via deflate-like approach: repeat chars
+    return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  } catch(e) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+}
+function decompressForSync(s) {
+  try {
+    return decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
+  } catch(e) { return atob(s.replace(/-/g,'+').replace(/_/g,'/')); }
+}
+
 async function fetchSurahInfo(n) {
   try {
     const r = await fetch(`${window.API_BASE}/chapters/${n}`);
@@ -2166,16 +2784,18 @@ async function fetchSurahInfo(n) {
 }
 async function fetchVerseDetails(vk) {
   const data = { key: vk, arabic: "", translation: "", audioUrl: "" };
+  const translationId = (window.DB && window.DB.getTranslationId) ? window.DB.getTranslationId() : window.TRANSLATION_ID;
+  const recitationId = (window.DB && window.DB.getRecitationId) ? window.DB.getRecitationId() : window.RECITATION_ID;
   try {
     const r = await fetch(`${window.API_BASE}/verses/by_key/${vk}?fields=text_uthmani`);
     if (r.ok) data.arabic = (await r.json()).verse?.text_uthmani || "";
   } catch (e) {}
   try {
-    const r = await fetch(`${window.API_BASE}/quran/translations/${window.TRANSLATION_ID}?verse_key=${vk}`);
+    const r = await fetch(`${window.API_BASE}/quran/translations/${translationId}?verse_key=${vk}`);
     if (r.ok) data.translation = stripHtml((await r.json()).translations?.[0]?.text || "");
   } catch (e) {}
   try {
-    const r = await fetch(`${window.API_BASE}/recitations/${window.RECITATION_ID}/by_ayah/${vk}`);
+    const r = await fetch(`${window.API_BASE}/recitations/${recitationId}/by_ayah/${vk}`);
     if (r.ok) {
       const url = (await r.json()).audio_files?.[0]?.url || "";
       data.audioUrl = url.startsWith("http") ? url : window.AUDIO_BASE + url;
@@ -2184,8 +2804,9 @@ async function fetchVerseDetails(vk) {
   return data;
 }
 async function fetchTafsir(vk) {
+  const tafsirId = (window.DB && window.DB.getTafsirId) ? window.DB.getTafsirId() : window.TAFSIR_ID;
   try {
-    const r = await fetch(`${window.API_BASE}/tafsirs/${window.TAFSIR_ID}/by_ayah/${vk}`);
+    const r = await fetch(`${window.API_BASE}/tafsirs/${tafsirId}/by_ayah/${vk}`);
     if (!r.ok) return "";
     return cleanTafsirHtml((await r.json()).tafsir?.text || "");
   } catch (e) { return ""; }
@@ -2237,6 +2858,16 @@ function buildDB(ydoc) {
   };
   DB.getTheme = () => DB.meta.get('themeIdx') ?? 0;
   DB.setTheme = (i) => DB.meta.set('themeIdx', i);
+  DB.getHideIntro = () => DB.meta.get('hideIntro') ?? false;
+  DB.setHideIntro = (v) => DB.meta.set('hideIntro', !!v);
+  DB.getLangCode = () => DB.meta.get('langCode') ?? 'en';
+  DB.setLangCode = (c) => DB.meta.set('langCode', c);
+  DB.getTranslationId = () => DB.meta.get('translationId') ?? window.LANG_DEFAULTS.translationId;
+  DB.setTranslationId = (id) => DB.meta.set('translationId', id);
+  DB.getTafsirId = () => DB.meta.get('tafsirId') ?? window.LANG_DEFAULTS.tafsirId;
+  DB.setTafsirId = (id) => DB.meta.set('tafsirId', id);
+  DB.getRecitationId = () => DB.meta.get('recitationId') ?? window.LANG_DEFAULTS.recitationId;
+  DB.setRecitationId = (id) => DB.meta.set('recitationId', id);
   DB.getLastPondered = () => ({
     surah: DB.meta.get('lastPonderedSurah') ?? 1,
     verse: DB.meta.get('lastPonderedVerse') ?? 7,
@@ -2409,6 +3040,10 @@ function MiranRoot() {
   const [view, setView] = useState('home'); // 'home' | 'listen' | 'select' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
   const [subView, setSubView] = useState(null); // dashboard subsection key
   const [helpKey, setHelpKey] = useState(null);
+  const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
+  const [showSettings, setShowSettings] = useState(false);
+  const [showSync, setShowSync] = useState(false);
+  const [reviewSession, setReviewSession] = useState(null); // { id, title, verseKeys, ponderedKeys, actionIds, date }
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -2567,7 +3202,7 @@ function MiranRoot() {
     '--ink': theme.ink, '--ink-soft': theme.inkSoft, '--ink-faint': theme.inkFaint,
     '--accent': theme.accent, '--accent-soft': theme.accentSoft,
   };
-  const fullscreen = view !== 'home' || !!subView;
+  const fullscreen = view !== 'home' || !!subView || !!reviewSession;
 
   /* current verse details from cache */
   const getVerse = useCallback((idx) => {
@@ -2584,7 +3219,12 @@ function MiranRoot() {
       <PlasmaLayer />
       <OrbitBackdrop />
 
-      {view === 'home' && !subView && (
+      {/* Settings button — only on home */}
+      {view === 'home' && !subView && !showIntro && !showSettings && !showSync && !reviewSession && (
+        <SettingsButton onClick={() => setShowSettings(true)} />
+      )}
+
+      {view === 'home' && !subView && !reviewSession && (
         <HomeView
           DB={DB}
           cs={cs}
@@ -2662,16 +3302,52 @@ function MiranRoot() {
         />
       )}
 
-      {subView && (
+      {subView && !reviewSession && (
         <SubsectionRouter
           subView={subView}
           DB={DB}
           onClose={() => setSubView(null)}
           openHelp={(key) => setHelpKey(key)}
+          onOpenSitting={(s) => { setSubView(null); setReviewSession(s); }}
         />
       )}
 
-      {tafsirOpen && (
+      {reviewSession && (
+        <ReviewSitting
+          review={reviewSession}
+          DB={DB}
+          onClose={() => setReviewSession(null)}
+          openTafsir={openTafsir}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Intro overlay */}
+      {showIntro && (
+        <IntroOverlay
+          DB={DB}
+          onDismiss={() => setShowIntro(false)}
+        />
+      )}
+
+      {/* Settings modal */}
+      {showSettings && (
+        <SettingsModal
+          DB={DB}
+          onClose={() => setShowSettings(false)}
+          onOpenSync={() => { setShowSettings(false); setShowSync(true); }}
+        />
+      )}
+
+      {/* Sync panel */}
+      {showSync && (
+        <SyncPanel
+          DB={DB}
+          onClose={() => setShowSync(false)}
+        />
+      )}
+
+      {tafsirOpen && !showIntro && (
         <TafsirSheet
           tafsirText={tafsirText}
           loading={tafsirLoading}
@@ -2759,7 +3435,7 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
           />
         )}
       </div>
-      {dailyDoneToday && <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} />}
+      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} />
     </div>
   );
 }
@@ -2819,8 +3495,9 @@ function LockedCountdownButton({ onHelp }) {
   );
 }
 
-/* ─────────── DASHBOARD ─────────── */
-function Dashboard({ DB, openSection, openHelp }) {
+/* ─────────── DASHBOARD (card grid) ─────────── */
+function Dashboard({ DB, openSection, openHelp, dailyDoneToday }) {
+  useYjsTick();
   const sessions = DB.sessions.toArray();
   const actions = DB.getActionsSorted();
   const tomorrow = DB.timetable.toArray();
@@ -2829,46 +3506,515 @@ function Dashboard({ DB, openSection, openHelp }) {
   const provision = DB.getText('provision');
   const provisionWords = wordCount(provision);
 
-  /* previews */
   const sittingsPreview = sessions.length
-    ? sessions.slice(-3).reverse().map(s => s.title).filter(Boolean).join(' · ') || `${sessions.length} past`
-    : 'No sittings yet';
+    ? (sessions.slice(-2).reverse().map(s => s.title).filter(Boolean).join(' · ') || `${sessions.length} sitting${sessions.length > 1 ? 's' : ''}`)
+    : 'Complete your first cycle';
   const abodesPreview = paradise || hellfire
-    ? `${paradise ? wordCount(paradise) + ' words on Paradise' : 'Paradise empty'} · ${hellfire ? wordCount(hellfire) + ' words on Fire' : 'Fire empty'}`
-    : 'Both writings await you';
+    ? (paradise ? wordCount(paradise) + ' words on Paradise' : 'Paradise empty') + (hellfire ? ' · ' + wordCount(hellfire) + ' words on Fire' : '')
+    : 'Picture both abodes';
   const resolutionsPreview = actions.length
-    ? (actions[0]?.text || '—')
+    ? (actions[0]?.text?.slice(0, 70) || '—') + (actions.length > 1 ? ` +${actions.length - 1} more` : '')
     : 'No commitments yet';
   const tomorrowPreview = tomorrow.length
-    ? `${tomorrow.length} blocks set`
-    : 'Awaiting your plan';
+    ? (`${tomorrow.length} blocks for the day`)
+    : 'Plan tomorrow tonight';
   const provisionPreview = provision
-    ? (provision.slice(0, 110) + (provision.length > 110 ? '…' : ''))
-    : 'Empty — write what you would carry';
+    ? (provision.slice(0, 80) + (provision.length > 80 ? '…' : ''))
+    : 'Write what you carry daily';
   const goalsAny = window.GOAL_FIELDS.some(g => (DB.getGoal(g.key) || '').trim());
-  const horizonsPreview = goalsAny ? 'Set' : 'Awaiting your aims';
+  const horizonsPreview = goalsAny ? 'Your aims are set' : 'Set your horizons';
 
-  const sections = [
-    { key: 'sittings',    title: 'Sittings',       eyebrow: 'Past visits',       preview: sittingsPreview,    empty: !sessions.length, helpKey: 'sittings' },
-    { key: 'abodes',      title: 'Paradise & Fire',eyebrow: 'Two writings',      preview: abodesPreview,      empty: !(paradise || hellfire), helpKey: 'abodes' },
-    { key: 'resolutions', title: 'Resolutions',    eyebrow: 'Fix my life',       preview: resolutionsPreview, empty: !actions.length, helpKey: 'resolutions' },
-    { key: 'tomorrow',    title: 'Tomorrow',       eyebrow: 'The day ahead',     preview: tomorrowPreview,    empty: !tomorrow.length, helpKey: 'tomorrow' },
-    { key: 'provision',   title: 'Provision',      eyebrow: `${provisionWords} / ${window.PROVISION_WORD_LIMIT} words`, preview: provisionPreview, empty: !provision, helpKey: 'provision' },
-    { key: 'horizons',    title: 'Horizons',       eyebrow: 'Your aims',         preview: horizonsPreview,    empty: !goalsAny, helpKey: 'horizons' },
+  const cards = [
+    { key: 'sittings',    icon: '📜', title: 'Sittings',       eyebrow: `${sessions.length} past`,   preview: sittingsPreview,    empty: !sessions.length, helpKey: 'sittings' },
+    { key: 'abodes',      icon: '🌿', title: 'Paradise & Fire',eyebrow: 'Two writings',              preview: abodesPreview,      empty: !(paradise || hellfire), helpKey: 'abodes' },
+    { key: 'resolutions', icon: '⚡', title: 'Resolutions',    eyebrow: `${actions.length} active`,  preview: resolutionsPreview, empty: !actions.length, helpKey: 'resolutions' },
+    { key: 'tomorrow',    icon: '🌙', title: 'Tomorrow',       eyebrow: 'The day ahead',             preview: tomorrowPreview,    empty: !tomorrow.length, helpKey: 'tomorrow' },
+    { key: 'provision',   icon: '📖', title: 'Provision',      eyebrow: `${provisionWords} / ${window.PROVISION_WORD_LIMIT} words`, preview: provisionPreview, empty: !provision, helpKey: 'provision' },
+    { key: 'horizons',    icon: '🎯', title: 'Horizons',       eyebrow: 'Your aims',                 preview: horizonsPreview,    empty: !goalsAny, helpKey: 'horizons' },
   ];
 
-  return (
-    <div className="dash-sections">
-      {sections.map(s => (
-        <div key={s.key} className="dash-section" onClick={() => openSection(s.key)}>
-          <div className="dash-section-head">
-            <div className="dash-section-title">{s.title}</div>
-            <button className="dash-section-help" onClick={(e) => { e.stopPropagation(); openHelp(s.helpKey); }} aria-label="What is this">?</button>
-          </div>
-          <div className="dash-section-eyebrow">{s.eyebrow}</div>
-          <div className={`dash-section-preview ${s.empty ? 'empty' : ''}`}>{s.preview}</div>
+  /* the locked-banner that also links to help */
+  function DashLockedBanner() {
+    const [t, setT] = useState(countdownToMidnight);
+    useEffect(() => {
+      const i = setInterval(() => setT(countdownToMidnight()), 1000);
+      return () => clearInterval(i);
+    }, []);
+    return (
+      <div className="dash-locked-card" onClick={() => openHelp('nextSession')}>
+        <div className="dash-locked-icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
         </div>
-      ))}
+        <div className="dash-locked-info">
+          <div className="dash-locked-label">Next sitting opens in</div>
+          <div className="dash-locked-time">{pad2(t.h)}:{pad2(t.m)}:{pad2(t.s)}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {dailyDoneToday && <DashLockedBanner />}
+      <div className="dash-daily-label">{dailyDoneToday ? 'While you wait' : 'Your dashboard'}</div>
+      <div className="dash-grid">
+        {cards.map(c => (
+          <div key={c.key} className="dash-card" onClick={() => openSection(c.key)}>
+            <button className="dash-card-help" onClick={(e) => { e.stopPropagation(); openHelp(c.helpKey); }} aria-label="What is this">?</button>
+            <div className="dash-card-icon">{c.icon}</div>
+            <div className="dash-card-title">{c.title}</div>
+            <div className="dash-card-eyebrow">{c.eyebrow}</div>
+            <div className={`dash-card-preview ${c.empty ? 'empty' : ''}`}>{c.preview}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/* ─────────── SETTINGS BUTTON ─────────── */
+function SettingsButton({ onClick }) {
+  return (
+    <button className="settings-btn" onClick={onClick} aria-label="Settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  );
+}
+
+/* ─────────── INTRO OVERLAY ─────────── */
+function IntroOverlay({ DB, onDismiss }) {
+  const [dontShow, setDontShow] = useState(false);
+  const handleBegin = () => {
+    if (dontShow) DB.setHideIntro(true);
+    onDismiss();
+  };
+  return (
+    <div className="intro-backdrop">
+      <div className="intro-card">
+        <div className="intro-star">✦ ✦ ✦</div>
+        <div className="intro-title">Mirān</div>
+        <div className="intro-subtitle">A daily visit with the Qurʾān</div>
+        <div className="intro-body">
+          <p>
+            <strong>Mirān</strong> is a quiet place for one sitting each day.
+            You read a short passage, listen to its recitation, then sit with it in silence.
+            You ask yourself what it means for your life — and you write down what you will do about it.
+          </p>
+          <p>
+            The goal is not speed. It is to let the words move through you.
+            One cycle. One day. A small, honest visit.
+          </p>
+        </div>
+        <div className="intro-steps">
+          {STEPS.map((s, i) => (
+            <div key={s.id} className="intro-step">
+              <span className="intro-step-dot" />
+              <span>{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="intro-rule" />
+        <div className="intro-footer">
+          <label className="intro-checkbox">
+            <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} />
+            Don't show again
+          </label>
+          <button className="action" onClick={handleBegin}>
+            <span className="action-text">Begin</span>
+            <span className="action-line" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────── SETTINGS MODAL ─────────── */
+function SettingsModal({ DB, onClose, onOpenSync }) {
+  useYjsTick();
+  const langCode = DB.getLangCode();
+  const translationId = DB.getTranslationId();
+  const tafsirId = DB.getTafsirId();
+  const recitationId = DB.getRecitationId();
+
+  const handleLangChange = (code) => {
+    const l = window.LANGUAGES.find(x => x.code === code);
+    if (!l) return;
+    DB.setLangCode(code);
+    DB.setTranslationId(l.translationId);
+    DB.setTafsirId(l.tafsirId);
+    DB.setRecitationId(l.recitationId);
+  };
+
+  return (
+    <div className="settings-backdrop" onClick={onClose}>
+      <div className="settings-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="sett-header">
+          <div className="sett-title">Settings</div>
+          <button className="sett-close" onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+
+        <div className="sett-section">
+          <div className="sett-section-label">Language</div>
+          <div className="sett-row">
+            <span className="sett-row-label">Translation</span>
+            <select className="sett-select" value={langCode} onChange={(e) => handleLangChange(e.target.value)}>
+              {window.LANGUAGES.map(l => (
+                <option key={l.code} value={l.code}>{l.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="sett-row">
+            <span className="sett-row-label">Tafsir</span>
+            <span className="sett-row-label" style={{ textAlign: 'right', opacity: 0.65, fontSize: 12 }}>
+              {window.LANGUAGES.find(l => l.code === langCode)?.tafsirName || 'Maʿārif al-Qurʾān'}
+            </span>
+          </div>
+        </div>
+
+        <div className="sett-section">
+          <div className="sett-section-label">Theme</div>
+          <div className="sett-theme-row">
+            {window.THEMES.map((t, i) => (
+              <button
+                key={t.id}
+                className={`sett-theme-dot ${i === (DB.getTheme()) ? 'active' : ''}`}
+                style={{ background: t.ring }}
+                onClick={() => DB.setTheme(i)}
+                title={t.name}
+                aria-label={`${t.name} theme`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="sett-section">
+          <div className="sett-section-label">Sync</div>
+          <p className="sync-step-hint" style={{ marginBottom: 12 }}>Keep your sittings, resolutions, and writings in sync between your phone and computer.</p>
+          <button className="action" onClick={onOpenSync}>
+            <span className="action-text">Open sync</span>
+            <span className="action-line" />
+          </button>
+        </div>
+
+        <div className="sett-section" style={{ borderBottom: 'none', paddingBottom: 28 }}>
+          <div className="sett-section-label">About</div>
+          <button className="action-soft" onClick={() => { DB.setHideIntro(false); onClose(); window.location.reload(); }}>
+            Show introduction again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────── SYNC PANEL (WebRTC + Yjs) ─────────── */
+function SyncPanel({ DB, onClose }) {
+  useYjsTick();
+  const [mode, setMode] = useState(null); // null | 'host' | 'guest'
+  const [step, setStep] = useState(0); // 0 = offer/exchange, 1 = answer/exchange
+  const [hostCode, setHostCode] = useState('');
+  const [guestCode, setGuestCode] = useState('');
+  const [pasteInput, setPasteInput] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [copied, setCopied] = useState({ host: false, guest: false });
+
+  const iceServers = useMemo(() => [{ urls: 'stun:stun.l.google.com:19302' }], []);
+
+  // Shared: set up Yjs sync over a given data channel
+  const attachDataChannel = useCallback((dc) => {
+    const sendUpdate = (update, origin) => {
+      if (origin === 'remote') return;
+      if (dc.readyState === 'open') {
+        dc.send(JSON.stringify({ type: 'sync-update', data: Array.from(update) }));
+      }
+    };
+    window.YDOC.on('update', sendUpdate);
+
+    dc.onopen = () => {
+      setStatus('connected');
+      setStatusMessage('Connected — syncing your data.');
+      const state = window.Y.encodeStateAsUpdate(window.YDOC);
+      dc.send(JSON.stringify({ type: 'sync-init', state: Array.from(state) }));
+      dc.send(JSON.stringify({ type: 'sync-ready' }));
+    };
+    dc.onmessage = (evt) => {
+      try {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'sync-init') {
+          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.state), 'remote');
+        } else if (msg.type === 'sync-update') {
+          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.data), 'remote');
+        } else if (msg.type === 'sync-ready') {
+          setStatus('connected');
+          setStatusMessage('Connected — syncing your data.');
+        }
+      } catch(e) {}
+    };
+    dc.onerror = () => {
+      setStatus('error');
+      setStatusMessage('Data channel error.');
+    };
+
+    return () => { window.YDOC.off('update', sendUpdate); };
+  }, []);
+
+  // Host: create offer
+  const startHost = useCallback(async () => {
+    setMode('host');
+    setStep(0);
+    setStatus('generating');
+    setStatusMessage('Preparing connection…');
+    try {
+      const pc = new RTCPeerConnection({ iceServers });
+      window.__miranSyncPC = pc;
+      const dc = pc.createDataChannel('miran-sync', { ordered: true });
+
+      attachDataChannel(dc);
+
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'connected') {
+          setStep(1);
+        } else if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+          setStatus('error');
+          setStatusMessage('Peer disconnected or unreachable.');
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await new Promise(resolve => {
+        if (pc.iceGatheringState === 'complete') resolve();
+        else pc.addEventListener('icegatheringstatechange', () => {
+          if (pc.iceGatheringState === 'complete') resolve();
+        });
+      });
+
+      const code = compressForSync(JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp }));
+      setHostCode(code);
+      setStatus('waiting');
+      setStatusMessage('Copy your code and send it to the other device.');
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Failed: ' + String(e).slice(0, 60));
+    }
+  }, [iceServers, attachDataChannel]);
+
+  // Guest: apply offer and create answer
+  const applyOffer = useCallback(async () => {
+    if (!pasteInput.trim()) return;
+    try {
+      const data = JSON.parse(decompressForSync(pasteInput.trim()));
+      if (data.type !== 'offer') { setStatus('error'); setStatusMessage('Not a valid host code.'); return; }
+
+      setStatus('connecting');
+      setStatusMessage('Creating connection…');
+
+      const pc = new RTCPeerConnection({ iceServers });
+
+      pc.ondatachannel = (evt) => {
+        attachDataChannel(evt.channel);
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'connected') {
+          setStep(1);
+        }
+      };
+
+      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: data.sdp }));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      await new Promise(resolve => {
+        if (pc.iceGatheringState === 'complete') resolve();
+        else pc.addEventListener('icegatheringstatechange', () => {
+          if (pc.iceGatheringState === 'complete') resolve();
+        });
+      });
+
+      const code = compressForSync(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp }));
+      setGuestCode(code);
+      setStep(1);
+      setStatus('waiting');
+      setStatusMessage('Send this answer code back to the host device.');
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Failed: ' + String(e).slice(0, 60));
+    }
+  }, [pasteInput, iceServers, attachDataChannel]);
+
+  // Host: apply answer from guest
+  const applyAnswer = useCallback(async () => {
+    if (!pasteInput.trim()) return;
+    setStatus('connecting');
+    setStatusMessage('Establishing connection…');
+    try {
+      const data = JSON.parse(decompressForSync(pasteInput.trim()));
+      if (data.type === 'answer') {
+        // We need the stored pc — store it on window temporarily
+        if (window.__miranSyncPC) {
+          await window.__miranSyncPC.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
+          setStep(1);
+        } else {
+          setStatus('error');
+          setStatusMessage('Connection lost. Please restart sync.');
+        }
+      }
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Invalid answer code.');
+    }
+  }, [pasteInput]);
+
+  const copyToClipboard = (text, key) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopied(prev => ({ ...prev, [key]: true }));
+    setTimeout(() => setCopied(prev => ({ ...prev, [key]: false })), 2000);
+  };
+
+  const startGuest = useCallback(() => {
+    setMode('guest');
+    setStep(0);
+    setStatus('idle');
+    setStatusMessage('Paste the host code below…');
+  }, []);
+
+  const reset = () => {
+    if (window.__miranSyncPC) { window.__miranSyncPC.close(); delete window.__miranSyncPC; }
+    setMode(null); setStep(0);
+    setHostCode(''); setGuestCode(''); setPasteInput('');
+    setStatus('idle'); setStatusMessage('');
+    setCopied({ host: false, guest: false });
+  };
+
+  const statusDotClass = status === 'connected' ? 'connected' : (status === 'connecting' || status === 'generating' || status === 'waiting' ? 'connecting' : 'disconnected');
+
+  if (!mode) {
+    return (
+      <div className="sync-backdrop" onClick={onClose}>
+        <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="sync-title">Sync devices</div>
+          <p className="sync-step-hint" style={{ textAlign: 'center' }}>
+            Connect your phone and computer so your sittings, resolutions, and writings stay in sync — no account needed.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', marginTop: 8 }}>
+            <button className="action" onClick={startHost}>
+              <span className="action-text">Start sync → get a code</span>
+              <span className="action-line" />
+            </button>
+            <span style={{ fontSize: 12, color: 'var(--ink-faint)', fontStyle: 'italic' }}>or</span>
+            <button className="action-soft" onClick={startGuest}>I have a code → join</button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <button className="action-soft" onClick={onClose}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sync-backdrop" onClick={onClose}>
+      <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="sync-title">{mode === 'host' ? 'Hosting sync' : 'Joining sync'}</div>
+
+        <div className="sett-sync-status">
+          <span className={`sett-sync-dot ${statusDotClass}`} />
+          <span>{statusMessage || status}</span>
+        </div>
+
+        {mode === 'host' && step === 0 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">1. Your code</div>
+              <div className="sync-step-hint">Copy this code. Send it to the other device — paste it in Messages, AirDrop, or any messenger.</div>
+              {hostCode ? (
+                <>
+                  <div className="sync-code-area" onClick={() => copyToClipboard(hostCode, 'host')}>{hostCode}</div>
+                  <button className="sync-copy-btn" onClick={() => copyToClipboard(hostCode, 'host')}>
+                    {copied.host ? 'Copied' : 'Copy'}
+                  </button>
+                </>
+              ) : (
+                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
+              )}
+            </div>
+            <div className="sync-step">
+              <div className="sync-step-label">2. Paste their answer</div>
+              <div className="sync-step-hint">Once you get a code back from the other device, paste it here.</div>
+              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the answer code…" onChange={(e) => setPasteInput(e.target.value)} />
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+              <button className="action" onClick={applyAnswer} disabled={!pasteInput.trim()}>
+                <span className="action-text">Connect</span>
+                <span className="action-line" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'guest' && step === 0 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">1. Paste the host code</div>
+              <div className="sync-step-hint">Copy the code from the host device and paste it below.</div>
+              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the host code…" onChange={(e) => setPasteInput(e.target.value)} />
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+              <button className="action" onClick={applyOffer} disabled={!pasteInput.trim()}>
+                <span className="action-text">Connect</span>
+                <span className="action-line" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'guest' && step === 1 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">2. Send this code back</div>
+              <div className="sync-step-hint">Copy this answer code and send it back to the host. The host will paste it on their device.</div>
+              {guestCode ? (
+                <>
+                  <div className="sync-code-area" onClick={() => copyToClipboard(guestCode, 'guest')}>{guestCode}</div>
+                  <button className="sync-copy-btn" onClick={() => copyToClipboard(guestCode, 'guest')}>
+                    {copied.guest ? 'Copied' : 'Copy'}
+                  </button>
+                </>
+              ) : (
+                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
+              )}
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+            </div>
+          </>
+        )}
+
+        {mode === 'host' && step === 1 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">Connected</div>
+              <div className="sync-step-hint">Your devices are syncing. Data will merge automatically.</div>
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Disconnect</button>
+            </div>
+          </>
+        )}
+
+        {status === 'error' && (
+          <div className="sync-actions">
+            <button className="action-soft" onClick={reset}>Try again</button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -2944,14 +4090,13 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
   const total = verses.length;
   const [idx, setIdx] = useState(cs.listenIdx ?? 0);
   const [reachedIdx, setReachedIdx] = useState(cs.listenReached ?? 0);
-  // Persist idx/reachedIdx in DB
   useEffect(() => { DB.setCurrentSessionField('listenIdx', idx); }, [idx]);
   useEffect(() => { DB.setCurrentSessionField('listenReached', reachedIdx); }, [reachedIdx]);
 
   const verse = verses[idx];
   const audioRef = useRef(null);
+  const autoPlayNextRef = useRef(true); // auto-play the next verse when auto-advancing
   const [audioState, setAudioState] = useState({ playing: false, finished: false, current: 0, duration: 0 });
-  const [autoAdvance, setAutoAdvance] = useState(true);
 
   // Set up audio for current verse
   useEffect(() => {
@@ -2963,18 +4108,20 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
     const a = new Audio(verse.audioUrl);
     a.preload = 'auto';
     audioRef.current = a;
+
     const onPlay = () => setAudioState(s => ({ ...s, playing: true, finished: false }));
-    const onPause = () => setAudioState(s => ({ ...s, playing: false }));
+    const onPause = () => {
+      // If the audio didn't end naturally and no next audio was auto-created, user manually paused
+      setAudioState(s => ({ ...s, playing: false }));
+    };
     const onEnded = () => {
       setAudioState(s => ({ ...s, playing: false, finished: true }));
-      // auto-advance to next verse
-      if (autoAdvance) {
-        if (idx < total - 1) {
-          setIdx(i => i + 1);
-          setReachedIdx(r => Math.max(r, idx + 1));
-        } else {
-          setReachedIdx(total - 1);
-        }
+      if (idx < total - 1) {
+        autoPlayNextRef.current = true;
+        setIdx(i => i + 1);
+        setReachedIdx(r => Math.max(r, idx + 1));
+      } else {
+        setReachedIdx(total - 1);
       }
     };
     const onTime = () => setAudioState(s => ({ ...s, current: a.currentTime, duration: a.duration || s.duration }));
@@ -2984,6 +4131,12 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
     a.addEventListener('ended', onEnded);
     a.addEventListener('timeupdate', onTime);
     a.addEventListener('loadedmetadata', onMeta);
+
+    // Auto-play if we should continue
+    if (autoPlayNextRef.current) {
+      a.play().catch(() => { autoPlayNextRef.current = false; });
+    }
+
     return () => {
       a.pause();
       a.removeEventListener('play', onPlay);
@@ -2992,34 +4145,43 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
       a.removeEventListener('timeupdate', onTime);
       a.removeEventListener('loadedmetadata', onMeta);
     };
-  }, [verse?.audioUrl, idx, total, autoAdvance]);
+  }, [verse?.audioUrl, idx, total]);
 
   const togglePlay = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
-    if (a.paused) a.play().catch(() => {});
-    else a.pause();
+    if (a.paused) {
+      autoPlayNextRef.current = true; // resume auto-play on manual play
+      a.play().catch(() => {});
+    } else {
+      autoPlayNextRef.current = false; // user paused — stop auto-play chain
+      a.pause();
+    }
   }, []);
   const replayCurrent = useCallback(() => {
     const a = audioRef.current;
     if (!a) return;
     a.currentTime = 0;
+    autoPlayNextRef.current = true;
     a.play().catch(() => {});
   }, []);
   const goPrev = useCallback(() => {
     if (idx <= 0) return;
     if (audioRef.current) audioRef.current.pause();
+    autoPlayNextRef.current = false; // don't auto-play when manually navigating
     setIdx(i => i - 1);
   }, [idx]);
   const goNext = useCallback(() => {
     if (idx >= total - 1) return;
     if (audioRef.current) audioRef.current.pause();
+    autoPlayNextRef.current = false; // don't auto-play when manually navigating
     setIdx(i => i + 1);
     setReachedIdx(r => Math.max(r, idx + 1));
   }, [idx, total]);
   const repeatAll = useCallback(() => {
     setIdx(0);
     setReachedIdx(0);
+    autoPlayNextRef.current = true;
     setTimeout(() => {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
@@ -3181,7 +4343,7 @@ function PonderStep({ cs, DB, verses, onBack, onContinue, openTafsir, showToast 
         <div className="verse-fs-actions">
           <button className="action-soft" onClick={() => openTafsir(verse.key)} disabled={!verse?.key}>Tafsir</button>
           <button className="action" data-blocked={!ready} onClick={tryContinue}>
-            <span className="action-text">{ready ? 'Continue' : formatTime(remaining)}</span>
+            <span className="action-text">Continue</span>
             <span className="action-line" />
           </button>
         </div>
@@ -3380,8 +4542,136 @@ function TitleStep({ cs, onSubmit }) {
   );
 }
 
+/* ─────────── REVIEW SITTING ─────────── */
+function ReviewSitting({ review, DB, onClose, openTafsir, showToast }) {
+  useYjsTick();
+  const [viewMode, setViewMode] = useState('review'); // 'review' | 'edit-actions'
+  // The verses from the saved session
+  const verseKeys = review.verseKeys || [];
+  const ponderedKeys = review.ponderedKeys || verseKeys;
+  const [idx, setIdx] = useState(0);
+  const total = ponderedKeys.length;
+  const [verseCache, setVerseCache] = useState({}); // { key: details }
+
+  // Fetch verse details on mount
+  useEffect(() => {
+    let cancelled = false;
+    const keysToFetch = ponderedKeys.filter(k => !verseCache[k]);
+    if (keysToFetch.length === 0) return;
+    Promise.all(keysToFetch.map(k => fetchVerseDetails(k))).then(results => {
+      if (cancelled) return;
+      const newCache = { ...verseCache };
+      results.forEach((d, i) => { newCache[keysToFetch[i]] = d; });
+      setVerseCache(newCache);
+    });
+    return () => { cancelled = true; };
+  }, [review.id]);
+
+  const verse = verseCache[ponderedKeys[idx]] || null;
+  const vk = ponderedKeys[idx] || '—';
+  const { surah, verse: vNum } = parseKey(vk);
+
+  // Actions from DB for this session
+  const allActions = DB.getActionsSorted();
+  const sessionActions = allActions.filter(a => a.sessionId === review.id);
+  const [actions, setActions] = useState(sessionActions.map(a => ({ id: a.id, text: a.text, ranking: a.ranking })));
+  useEffect(() => {
+    const updated = allActions.filter(a => a.sessionId === review.id);
+    setActions(updated.map(a => ({ id: a.id, text: a.text, ranking: a.ranking })));
+  }, [allActions]);
+
+  const updateActionText = (id, text) => {
+    DB.updateAction(id, { text });
+  };
+  const addAction = () => {
+    const newId = DB.addAction('', review.id);
+    setActions(prev => [...prev, { id: newId, text: '', ranking: prev.length }]);
+  };
+  const removeAction = (id) => {
+    const idx2 = allActions.findIndex(a => a.id === id);
+    if (idx2 < 0) return;
+    window.YDOC.transact(() => { DB.actions.delete(idx2, 1); });
+  };
+
+  return (
+    <div className="step-fs">
+      <BackButton onClick={onClose} />
+      <div className="step-fs-top">
+        <div className="step-fs-eyebrow">{review.title || 'A sitting'}</div>
+        <div className="step-fs-ref">{review.date} · {ponderedKeys[0] || '—'} → {ponderedKeys[ponderedKeys.length - 1] || '—'}</div>
+      </div>
+
+      {viewMode === 'review' && (
+        <>
+          <div className="step-fs-body">
+            {verse ? (
+              <VerseBody verse={verse} />
+            ) : (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span className="loading-dots"><span/><span/><span/></span>
+              </div>
+            )}
+          </div>
+          <div className="step-fs-bottom">
+            <div className="verse-nav">
+              <button className="verse-nav-arrow" onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx <= 0} aria-label="Previous verse">
+                <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+              </button>
+              <VersePositionIndicator idx={idx} total={total} reachedIdx={total - 1} />
+              <button className="verse-nav-arrow" onClick={() => setIdx(i => Math.min(total - 1, i + 1))} disabled={idx >= total - 1} aria-label="Next verse">
+                <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+            <div className="verse-fs-actions">
+              <button className="action-soft" onClick={() => openTafsir(verse?.key)} disabled={!verse?.key}>Tafsir</button>
+              <button className="action" onClick={() => setViewMode('edit-actions')}>
+                <span className="action-text">Edit commitments</span>
+                <span className="action-line" />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {viewMode === 'edit-actions' && (
+        <>
+          <div className="step-fs-body">
+            <div className="write-scroll">
+              <div className="write-intro">
+                These are the commitments you wrote after this sitting.
+                <strong>Add, refine, or remove them.</strong>
+              </div>
+              <div className="write-list">
+                {actions.map((a, i) => (
+                  <div className="write-row" key={a.id}>
+                    <span className="write-row-num">{String(i + 1).padStart(2, '0')}</span>
+                    <input className="write-input" type="text" value={a.text} placeholder="An action you will take…" onChange={(e) => updateActionText(a.id, e.target.value)} />
+                    <button className="write-remove" onClick={() => removeAction(a.id)} aria-label="Remove" tabIndex={-1}>
+                      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
+                  </div>
+                ))}
+                <button className="write-add" onClick={addAction}>
+                  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                  Add another
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="step-fs-bottom">
+            <button className="action" onClick={() => setViewMode('review')}>
+              <span className="action-text">Back to verses</span>
+              <span className="action-line" />
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ─────────── SUBSECTION ROUTER ─────────── */
-function SubsectionRouter({ subView, DB, onClose, openHelp }) {
+function SubsectionRouter({ subView, DB, onClose, openHelp, onOpenSitting }) {
   useYjsTick();
   const titles = {
     sittings: 'Sittings',
@@ -3392,7 +4682,7 @@ function SubsectionRouter({ subView, DB, onClose, openHelp }) {
     horizons: 'Horizons',
   };
   const Body = () => {
-    if (subView === 'sittings')    return <SittingsBody DB={DB} />;
+    if (subView === 'sittings')    return <SittingsBody DB={DB} onOpenSitting={onOpenSitting} onClose={onClose} />;
     if (subView === 'abodes')      return <AbodesBody DB={DB} />;
     if (subView === 'resolutions') return <ResolutionsBody DB={DB} />;
     if (subView === 'tomorrow')    return <TomorrowBody DB={DB} />;
@@ -3419,7 +4709,7 @@ function SubsectionRouter({ subView, DB, onClose, openHelp }) {
 }
 
 /* ── Sittings ── */
-function SittingsBody({ DB }) {
+function SittingsBody({ DB, onOpenSitting, onClose }) {
   const sessions = DB.sessions.toArray().slice().reverse();
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? sessions : sessions.slice(0, 3);
@@ -3430,7 +4720,7 @@ function SittingsBody({ DB }) {
         const first = s.verseKeys?.[0] || '—';
         const last = s.ponderedKeys?.[s.ponderedKeys.length - 1] || s.verseKeys?.[s.verseKeys.length - 1] || '—';
         return (
-          <div key={s.id} className="sit-row">
+          <div key={s.id} className="sit-row" onClick={() => { if (onClose) onClose(); if (onOpenSitting) onOpenSitting(s); }}>
             <div className="sit-row-title">{s.title || 'A sitting'}</div>
             <div className="sit-row-meta">
               <span className="sit-row-range">{first} → {last}</span>
@@ -3503,27 +4793,46 @@ function ResolutionsBody({ DB }) {
 
 /* ── Tomorrow (timetable) ── */
 function TomorrowBody({ DB }) {
-  // Make sure prayer rows exist
   useEffect(() => { DB.timetableEnsurePrayers(); }, []);
   const all = DB.timetable.toArray();
-  // Sort by time (empty times go last among prayers, etc.) — keep insertion order for now
+
+  // Sort: prayers first (Fajr→Isha), then custom by time ascending. Empty times go last.
+  const sorted = useMemo(() => {
+    const PRAYER_ORDER = { 'Fajr': 0, 'Dhuhr': 1, "ʿAsr": 2, 'Maghrib': 3, "ʿIshāʾ": 4 };
+    return [...all].sort((a, b) => {
+      if (a.isPrayer && !b.isPrayer) return -1;
+      if (!a.isPrayer && b.isPrayer) return 1;
+      if (a.isPrayer && b.isPrayer) return (PRAYER_ORDER[a.label] ?? 99) - (PRAYER_ORDER[b.label] ?? 99);
+      // both custom — sort by time
+      if (a.time && b.time) return a.time.localeCompare(b.time);
+      if (a.time && !b.time) return -1;
+      if (!a.time && b.time) return 1;
+      return 0;
+    });
+  }, [all]);
+
   const updateTime = (id, time) => DB.timetableUpdate(id, { time });
   const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
   const remove = (id) => DB.timetableRemove(id);
-  const [newTime, setNewTime] = useState('');
+  const [newTime, setNewTime] = useState('06:00');
   const [newLabel, setNewLabel] = useState('');
   const addBlock = () => {
     if (!newLabel.trim()) return;
     DB.timetableAdd(newTime, newLabel.trim());
-    setNewTime(''); setNewLabel('');
+    setNewTime('06:00'); setNewLabel('');
   };
+
   return (
     <>
       <div className="tt-list">
-        {all.map(b => (
+        {sorted.map(b => (
           <div key={b.id} className="tt-row" data-prayer={b.isPrayer ? 'true' : 'false'}>
-            <input className="tt-time" type="time" value={b.time || ''} placeholder="--:--" onChange={(e) => updateTime(b.id, e.target.value)} />
-            <input className="tt-label" type="text" value={b.label || ''} placeholder="What…" onChange={(e) => updateLabel(b.id, e.target.value)} readOnly={b.isPrayer} />
+            {b.isPrayer ? (
+              <span className="tt-prayer-badge">{b.label === "ʿAsr" ? "‎عصر‎" : b.label === "ʿIshāʾ" ? "‎عشاء‎" : b.label}</span>
+            ) : (
+              <input className="tt-time" type="time" value={b.time || ''} placeholder="--:--" onChange={(e) => updateTime(b.id, e.target.value)} />
+            )}
+            <input className="tt-label" type="text" value={b.label || ''} placeholder={b.isPrayer ? '' : 'What you\'ll do…'} onChange={(e) => updateLabel(b.id, e.target.value)} readOnly={b.isPrayer} />
             {!b.isPrayer && (
               <button className="tt-remove" onClick={() => remove(b.id)} aria-label="Remove">
                 <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -3532,15 +4841,15 @@ function TomorrowBody({ DB }) {
           </div>
         ))}
       </div>
-      <div className="sub-section-label">Add a block</div>
-      <div className="tt-row" style={{ background: 'transparent' }}>
-        <input className="tt-time" type="time" value={newTime} placeholder="--:--" onChange={(e) => setNewTime(e.target.value)} />
-        <input className="tt-label" type="text" value={newLabel} placeholder="What you’ll do…" onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') addBlock(); }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', flexWrap: 'wrap' }}>
+        <input className="tt-time" type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} style={{ width: 90 }} />
+        <input className="tt-label" type="text" value={newLabel} placeholder="What you’ll do…" onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') addBlock(); }} style={{ flex: 1, minWidth: 120 }} />
+        <button className="action" onClick={addBlock}>
+          <span className="action-text">Add</span>
+          <span className="action-line" />
+        </button>
       </div>
-      <button className="action" onClick={addBlock} style={{ alignSelf: 'center', marginTop: 4 }}>
-        <span className="action-text">Add</span>
-        <span className="action-line" />
-      </button>
+      <div className="res-meta">Plan each day the night before. Short, specific blocks.</div>
     </>
   );
 }
