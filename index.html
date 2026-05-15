@@ -273,21 +273,39 @@ input, textarea { font-family: inherit; }
   position: relative;
   width: 168px; height: 168px;
   border-radius: 50%;
-  border: 1.5px solid color-mix(in oklab, var(--accent) 65%, transparent);
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
   background:
-    radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--ink) 18%, var(--accent)) 0%, color-mix(in oklab, var(--accent) 30%, var(--bg-soft)) 30%, color-mix(in oklab, var(--bg) 60%, var(--accent)) 70%, color-mix(in oklab, var(--accent) 55%, var(--bg)) 100%);
+    radial-gradient(circle at 40% 30%, color-mix(in oklab, var(--bg-soft) 85%, var(--accent)) 0%, color-mix(in oklab, var(--bg) 70%, var(--bg-soft)) 50%, var(--bg) 100%);
   box-shadow:
-    0 0 40px color-mix(in oklab, var(--accent) 30%, transparent),
-    inset 0 0 30px color-mix(in oklab, var(--accent) 10%, transparent);
+    inset 0 2px 20px color-mix(in oklab, var(--accent) 6%, transparent),
+    inset 0 -4px 12px rgba(0,0,0,0.25),
+    0 1px 0 color-mix(in oklab, var(--accent) 14%, transparent);
   display: flex;
   align-items: center; justify-content: center;
-  color: var(--ink);
+  color: var(--ink-soft);
   cursor: pointer;
-  animation: v-center-pulse 3.6s ease-in-out infinite;
-  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease, opacity 500ms ease, box-shadow 500ms ease;
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease, box-shadow 400ms ease, color 300ms ease;
 }
-.center-button:hover { transform: scale(1.04); border-color: var(--accent); box-shadow: 0 0 60px color-mix(in oklab, var(--accent) 45%, transparent), inset 0 0 40px color-mix(in oklab, var(--accent) 16%, transparent); }
-.center-button:active { transform: scale(0.97); }
+.center-button:hover {
+  transform: scale(1.03);
+  border-color: color-mix(in oklab, var(--accent) 55%, transparent);
+  color: var(--ink);
+  box-shadow:
+    inset 0 2px 24px color-mix(in oklab, var(--accent) 10%, transparent),
+    inset 0 -4px 12px rgba(0,0,0,0.3),
+    0 1px 0 color-mix(in oklab, var(--accent) 22%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--accent) 10%, transparent);
+}
+.center-button:active { transform: scale(0.98); }
+.center-button[data-locked="true"] {
+  cursor: default;
+  border-color: color-mix(in oklab, var(--accent) 18%, transparent);
+  background:
+    radial-gradient(circle at 40% 30%, color-mix(in oklab, var(--bg-soft) 70%, var(--bg)) 0%, var(--bg) 70%);
+  box-shadow:
+    inset 0 -4px 12px rgba(0,0,0,0.2);
+}
+.center-button[data-locked="true"]:hover { transform: none; }
 .center-button-label {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
@@ -614,12 +632,19 @@ input, textarea { font-family: inherit; }
   letter-spacing: 0.005em;
 }
 .step-fs.playing .verse-fs-arabic {
-  animation:
-    v-heartbeat 1.2s ease-in-out infinite,
-    v-glow-pulse 2.4s ease-in-out infinite;
+  animation: v-glow-pulse 2.4s ease-in-out infinite;
 }
 .step-fs.playing .verse-fs-translation {
   animation: v-translation-pulse 2.4s ease-in-out infinite;
+}
+
+/* word highlighting during recitation */
+.verse-word {
+  transition: color 320ms ease, text-shadow 320ms ease;
+}
+.verse-word.active {
+  color: var(--accent) !important;
+  text-shadow: 0 0 18px color-mix(in oklab, var(--accent) 60%, transparent);
 }
 
 /* Verse position dots */
@@ -1496,22 +1521,23 @@ input, textarea { font-family: inherit; }
   flex-direction: column;
   align-items: center;
   padding:
-    calc(env(safe-area-inset-top) + 30px)
+    calc(env(safe-area-inset-top) + 16px)
     20px
     calc(env(safe-area-inset-bottom) + 130px);
   scrollbar-width: none;
+  min-height: 100dvh;
 }
 .home-scroll::-webkit-scrollbar { display: none; }
 .home-center {
   width: 100%;
+  flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  min-height: 72dvh;
+  min-height: 0;
   padding: 20px 0;
-  flex-shrink: 0;
 }
 
 /* Dashboard sections */
@@ -1960,8 +1986,6 @@ input, textarea { font-family: inherit; }
   .player-btn svg { width: 20px; height: 20px; }
   .home-scroll { padding-bottom: calc(env(safe-area-inset-bottom) + 120px); }
   .dash-section-title { font-size: 19px; }
-  .home-center { min-height: 58dvh; margin: 0; }
-  .center-button-countdown-time { font-size: 16px; }
 }
 @media (max-width: 380px) {
   .center-button { width: 124px; height: 124px; }
@@ -1979,7 +2003,6 @@ input, textarea { font-family: inherit; }
 @media (max-height: 720px) and (max-width: 480px) {
   .verse-fs-arabic-wrap { max-height: 38vh; }
   .verse-fs-translation-wrap { max-height: 18vh; }
-  .home-center { min-height: 55dvh; margin: 0; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
   .step-fs { padding-top: 12px; padding-bottom: 12px; }
@@ -2558,7 +2581,6 @@ input, textarea { font-family: inherit; }
   .dash-card-title { font-size: 18px; }
   .dash-locked-card { padding: 14px 16px; }
   .dash-locked-time { font-size: 18px; }
-  .home-center { min-height: 58dvh; }
   .center-aura { width: 220px; height: 220px; margin-top: -110px; margin-left: -110px; }
   .settings-btn { top: calc(env(safe-area-inset-top) + 12px); right: 10px; }
 }
@@ -3140,6 +3162,13 @@ function MiranRoot() {
       const first = parseKey(verseKeys[0]);
       let surahInfo = await fetchSurahInfo(first.surah);
       if (!surahInfo) surahInfo = { name: '', verses_count: 999 };
+      // Pre-fill old resolutions
+      const oldActions = DB.getActionsSorted().filter(a => a.sessionId === sitting.id);
+      const prefillActions = oldActions.length > 0
+        ? oldActions.map(a => a.text || '')
+        : [''];
+      // Pre-fill old title
+      const prefillTitle = sitting.title || '';
       DB.replaceCurrentSession({
         id: uuid(),
         startedAt: Date.now(),
@@ -3153,8 +3182,8 @@ function MiranRoot() {
         selectedEndIdx: verseKeys.length - 1,
         ponderIdx: 0,
         qIdx: 0,
-        writeActions: [''],
-        title: '',
+        writeActions: prefillActions,
+        title: prefillTitle,
         isReplay: true,
         replaySittingId: sitting.id,
       });
@@ -4088,7 +4117,7 @@ function HelpButton({ onClick }) {
 }
 
 /* ─────────── VERSE BODY (shared) ─────────── */
-function VerseBody({ verse, loading }) {
+function VerseBody({ verse, loading, currentWordIdx }) {
   const arabicRef = useRef(null);
   const transRef = useRef(null);
   useEffect(() => {
@@ -4107,11 +4136,25 @@ function VerseBody({ verse, loading }) {
     window.addEventListener('resize', onR);
     return () => { obs.forEach(o => o.disconnect()); window.removeEventListener('resize', onR); };
   }, [verse?.arabic, verse?.translation]);
+
+  const words = verse?.arabic ? verse.arabic.trim().split(/\s+/) : [];
+  const hasHighlight = typeof currentWordIdx === 'number' && currentWordIdx >= 0;
+
   return (
     <div className="step-fs-body">
       <div className="verse-fs-arabic-wrap" ref={arabicRef}>
         {verse?.arabic ? (
-          <div className="verse-fs-arabic arabic-font">{verse.arabic}</div>
+          <div className="verse-fs-arabic arabic-font">
+            {hasHighlight ? (
+              words.map((w, i) => (
+                <span key={i} className={`verse-word ${i === currentWordIdx ? 'active' : ''}`} style={{ whiteSpace: 'pre-wrap' }}>
+                  {w}{i < words.length - 1 ? ' ' : ''}
+                </span>
+              ))
+            ) : (
+              verse.arabic
+            )}
+          </div>
         ) : (
           <div className="verse-skeleton">···</div>
         )}
@@ -4149,14 +4192,23 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
 
   const verse = verses[idx];
   const audioRef = useRef(null);
-  const autoPlayNextRef = useRef(true); // auto-play the next verse when auto-advancing
+  const autoPlayNextRef = useRef(true);
   const [audioState, setAudioState] = useState({ playing: false, finished: false, current: 0, duration: 0 });
+  const [currentWordIdx, setCurrentWordIdx] = useState(-1);
+
+  // Compute word counts for current verse
+  const wordCountRef = useRef(0);
+  useEffect(() => {
+    wordCountRef.current = verse?.arabic ? verse.arabic.trim().split(/\s+/).length : 0;
+    setCurrentWordIdx(-1);
+  }, [verse?.arabic]);
 
   // Set up audio for current verse
   useEffect(() => {
     if (!verse?.audioUrl) {
       if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
       setAudioState({ playing: false, finished: false, current: 0, duration: 0 });
+      setCurrentWordIdx(-1);
       return;
     }
     const a = new Audio(verse.audioUrl);
@@ -4165,11 +4217,11 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
 
     const onPlay = () => setAudioState(s => ({ ...s, playing: true, finished: false }));
     const onPause = () => {
-      // If the audio didn't end naturally and no next audio was auto-created, user manually paused
       setAudioState(s => ({ ...s, playing: false }));
     };
     const onEnded = () => {
       setAudioState(s => ({ ...s, playing: false, finished: true }));
+      setCurrentWordIdx(wordCountRef.current - 1);
       if (idx < total - 1) {
         autoPlayNextRef.current = true;
         setIdx(i => i + 1);
@@ -4178,7 +4230,14 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
         setReachedIdx(total - 1);
       }
     };
-    const onTime = () => setAudioState(s => ({ ...s, current: a.currentTime, duration: a.duration || s.duration }));
+    const onTime = () => {
+      const dur = a.duration || 1;
+      setAudioState(s => ({ ...s, current: a.currentTime, duration: dur }));
+      const wc = wordCountRef.current;
+      if (wc > 0 && dur > 0) {
+        setCurrentWordIdx(Math.min(wc - 1, Math.floor((a.currentTime / dur) * wc)));
+      }
+    };
     const onMeta = () => setAudioState(s => ({ ...s, duration: a.duration || 0 }));
     a.addEventListener('play', onPlay);
     a.addEventListener('pause', onPause);
@@ -4256,7 +4315,7 @@ function ListenStep({ cs, DB, verses, versesLoading, onBack, onContinue, openTaf
         <VersePositionIndicator idx={idx} total={total} reachedIdx={reachedIdx} />
         <div className="step-fs-ref">{surahRef}</div>
       </div>
-      <VerseBody verse={verse} loading={versesLoading} />
+      <VerseBody verse={verse} loading={versesLoading} currentWordIdx={playing ? currentWordIdx : -1} />
       <div className="step-fs-bottom">
         <div className="verse-fs-audio">
           <div className="verse-nav">
@@ -4721,20 +4780,21 @@ function TomorrowBody({ DB }) {
   useEffect(() => { DB.timetableEnsurePrayers(); }, []);
   const all = DB.timetable.toArray();
 
-  // Sort: prayers first (Fajr→Isha), then custom by time ascending. Empty times go last.
+  // Sort purely by time ascending. Empty times go last.
   const sorted = useMemo(() => {
-    const PRAYER_ORDER = { 'Fajr': 0, 'Dhuhr': 1, "ʿAsr": 2, 'Maghrib': 3, "ʿIshāʾ": 4 };
     return [...all].sort((a, b) => {
-      if (a.isPrayer && !b.isPrayer) return -1;
-      if (!a.isPrayer && b.isPrayer) return 1;
-      if (a.isPrayer && b.isPrayer) return (PRAYER_ORDER[a.label] ?? 99) - (PRAYER_ORDER[b.label] ?? 99);
-      // both custom — sort by time
       if (a.time && b.time) return a.time.localeCompare(b.time);
       if (a.time && !b.time) return -1;
       if (!a.time && b.time) return 1;
       return 0;
     });
   }, [all]);
+
+  const idxMap = useMemo(() => {
+    const m = {};
+    sorted.forEach((b, i) => { m[b.id] = i; });
+    return m;
+  }, [sorted]);
 
   const updateTime = (id, time) => DB.timetableUpdate(id, { time });
   const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
@@ -4750,7 +4810,7 @@ function TomorrowBody({ DB }) {
   return (
     <>
       <div className="tt-list">
-        {sorted.map(b => (
+        {sorted.map((b, i) => (
           <div key={b.id} className="tt-row" data-prayer={b.isPrayer ? 'true' : 'false'}>
             {b.isPrayer ? (
               <span className="tt-prayer-badge">{b.label === "ʿAsr" ? "‎عصر‎" : b.label === "ʿIshāʾ" ? "‎عشاء‎" : b.label}</span>
@@ -4758,23 +4818,26 @@ function TomorrowBody({ DB }) {
               <input className="tt-time" type="time" value={b.time || ''} placeholder="--:--" onChange={(e) => updateTime(b.id, e.target.value)} />
             )}
             <input className="tt-label" type="text" value={b.label || ''} placeholder={b.isPrayer ? '' : 'What you\'ll do…'} onChange={(e) => updateLabel(b.id, e.target.value)} readOnly={b.isPrayer} />
-            {!b.isPrayer && (
-              <button className="tt-remove" onClick={() => remove(b.id)} aria-label="Remove">
-                <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-              </button>
-            )}
+            <div className="tt-controls">
+              {!b.isPrayer && (
+                <button className="tt-remove" style={{ display: 'inline-flex', opacity: 1, marginRight: 2 }} onClick={() => remove(b.id)} aria-label="Remove">
+                  <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', flexWrap: 'wrap' }}>
-        <input className="tt-time" type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} style={{ width: 90 }} />
-        <input className="tt-label" type="text" value={newLabel} placeholder="What you’ll do…" onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') addBlock(); }} style={{ flex: 1, minWidth: 120 }} />
-        <button className="action" onClick={addBlock}>
-          <span className="action-text">Add</span>
-          <span className="action-line" />
-        </button>
+      <div className="sub-section-label" style={{ marginTop: 12 }}>Add a block</div>
+      <div className="tt-row" style={{ background: 'transparent' }}>
+        <input className="tt-time" type="time" value={newTime} onChange={(e) => setNewTime(e.target.value)} />
+        <input className="tt-label" type="text" value={newLabel} placeholder="What you’ll do…" onChange={(e) => setNewLabel(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') addBlock(); }} />
       </div>
-      <div className="res-meta">Plan each day the night before. Short, specific blocks.</div>
+      <button className="action" onClick={addBlock} style={{ alignSelf: 'center', marginTop: 6 }}>
+        <span className="action-text">Add</span>
+        <span className="action-line" />
+      </button>
+      <div className="res-meta">Set prayer times, then fill the spaces between. Blocks sort by time automatically.</div>
     </>
   );
 }
