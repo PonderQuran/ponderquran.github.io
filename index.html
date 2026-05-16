@@ -1942,6 +1942,120 @@ input, textarea { font-family: inherit; }
   color: var(--ink-soft);
   font-size: 14px;
 }
+
+/* ── Sittings Timeline ── */
+.timeline-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+.timeline-surah {
+  position: relative;
+  padding-left: 16px;
+  border-left: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+  padding-bottom: 10px;
+}
+.timeline-surah:last-child { border-left-color: transparent; }
+.timeline-surah-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 0 12px;
+  margin-left: -16px;
+}
+.timeline-surah-num {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  opacity: 0.85;
+  min-width: 22px;
+}
+.timeline-surah-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: var(--ink);
+  font-weight: 400;
+}
+.timeline-surah-total {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--ink-faint);
+  opacity: 0.65;
+  margin-left: 4px;
+}
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 12px;
+  position: relative;
+}
+.timeline-point {
+  position: relative;
+  padding: 8px 0 8px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  transition: opacity 200ms;
+  min-height: 32px;
+  border-left: 1px solid color-mix(in oklab, var(--accent) 14%, transparent);
+  margin-left: -1px;
+}
+.timeline-point:hover { opacity: 0.85; }
+.timeline-point:last-child { border-left-color: transparent; }
+.timeline-dot {
+  position: absolute;
+  left: -5px;
+  top: 16px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.timeline-point.predicted .timeline-dot {
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  background: transparent;
+}
+.timeline-range {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+  min-width: 55px;
+}
+.timeline-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+  flex: 1;
+  min-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.timeline-date {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .timeline-point { flex-wrap: wrap; gap: 4px; }
+  .timeline-title { min-width: 80px; }
+}
 .sit-show-more {
   width: 100%;
   padding: 14px 0;
@@ -2211,6 +2325,15 @@ input, textarea { font-family: inherit; }
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
   color: var(--ink);
+}
+.dash-locked-verses {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.71;
+  margin-top: 1px;
 }
 
 /* ── Intro overlay ── */
@@ -2861,6 +2984,23 @@ function computeNextSessionStart(lastSurah, lastVerse) {
   let v = lastVerse + 1;
   return { surah: s, verse: v };
 }
+function computeFurthestPondered(DB) {
+  // Scan all sittings and return the furthest verse ever pondered
+  const sessions = DB.sessions.toArray();
+  if (!sessions.length) return { surah: 2, verse: 0 }; // start at 2:1
+  let maxSurah = 2, maxVerse = 0;
+  sessions.forEach(s => {
+    const keys = s.ponderedKeys || s.verseKeys || [];
+    keys.forEach(k => {
+      const { surah, verse } = parseKey(k);
+      if (surah > maxSurah || (surah === maxSurah && verse > maxVerse)) {
+        maxSurah = surah;
+        maxVerse = verse;
+      }
+    });
+  });
+  return { surah: maxSurah, verse: maxVerse };
+}
 
 /* ─────────── force-update on Y.Doc updates ─────────── */
 function useYjsTick() {
@@ -2968,6 +3108,12 @@ function buildDB(ydoc) {
   };
   DB.getActionsSorted = () => {
     return DB.actions.toArray().slice().sort((a, b) => (a.ranking ?? 0) - (b.ranking ?? 0));
+  };
+  DB.deleteAction = (id) => {
+    const arr = DB.actions.toArray();
+    const idx = arr.findIndex(a => a.id === id);
+    if (idx < 0) return;
+    DB.actions.delete(idx, 1);
   };
 
   DB.addSession = (sessionData) => {
@@ -3124,8 +3270,8 @@ function MiranRoot() {
   /* start a new session */
   const startNewSession = useCallback(async () => {
     if (sessionInProgress) return;
-    const { surah: lastS, verse: lastV } = DB.getLastPondered();
-    const start = computeNextSessionStart(lastS, lastV);
+    const furthest = computeFurthestPondered(DB);
+    const start = computeNextSessionStart(furthest.surah, furthest.verse);
     setVersesLoading(true);
     let surahInfo = await fetchSurahInfo(start.surah);
     if (!surahInfo) {
@@ -3165,6 +3311,104 @@ function MiranRoot() {
     setVersesLoading(false);
     setView('listen');
   }, [sessionInProgress, showToast]);
+
+  /* ─ helper: merge overlapping sittings ─ */
+  const mergeOverlappingSittings = useCallback((newSittingId, ponderedKeys, finalTitle) => {
+    const allSittings = DB.sessions.toArray();
+    const allActions = DB.actions.toArray();
+    const firstKey = ponderedKeys[0];
+    const lastKey = ponderedKeys[ponderedKeys.length - 1];
+    const fk = parseKey(firstKey), lk = parseKey(lastKey);
+    const surah = fk.surah, startV = fk.verse, endV = lk.verse;
+
+    const sessionsToDelete = [];
+    const sessionsToTrim = []; // { id, newKeys }
+    const actionsToReassign = []; // { id, newSessionId }
+    const actionsToCreate = []; // { text, sessionId }
+    let mergedActionIds = [];
+
+    allSittings.forEach(s => {
+      if (s.id === newSittingId) return;
+      if (!s.ponderedKeys || !s.ponderedKeys.length) return;
+      const sFirst = parseKey(s.ponderedKeys[0]);
+      const sLast = parseKey(s.ponderedKeys[s.ponderedKeys.length - 1]);
+      if (sFirst.surah !== surah) return;
+      const overlapStart = Math.max(startV, sFirst.verse);
+      const overlapEnd = Math.min(endV, sLast.verse);
+      if (overlapStart > overlapEnd) return;
+
+      const fullyContained = sFirst.verse >= startV && sLast.verse <= endV;
+      const linked = allActions.filter(a => a.sessionId === s.id);
+
+      if (fullyContained) {
+        linked.forEach(a => actionsToReassign.push({ id: a.id, newSessionId: newSittingId }));
+        mergedActionIds.push(...linked.map(a => a.id));
+        sessionsToDelete.push(s.id);
+      } else {
+        linked.forEach(a => actionsToCreate.push({ text: a.text, sessionId: newSittingId }));
+        const newKeys = [];
+        s.ponderedKeys.forEach(k => {
+          const { verse } = parseKey(k);
+          if (verse < startV || verse > endV) newKeys.push(k);
+        });
+        if (newKeys.length > 0) {
+          sessionsToTrim.push({ id: s.id, newKeys });
+        } else {
+          sessionsToDelete.push(s.id);
+        }
+      }
+    });
+
+    // Execute all in a single transact (no nested transacts)
+    window.YDOC.transact(() => {
+      // Create duplicated actions
+      actionsToCreate.forEach(a => {
+        const maxRank = allActions.length
+          ? Math.max(...allActions.map(x => (typeof x.ranking === 'number' ? x.ranking : 0)))
+          : -1;
+        const newAction = {
+          id: uuid(),
+          text: a.text.trim(),
+          ranking: maxRank + 1,
+          sessionId: a.sessionId,
+          createdAt: Date.now(),
+        };
+        DB.actions.push([newAction]);
+        mergedActionIds.push(newAction.id);
+      });
+
+      // Reassign actions to new sitting
+      const arrA = DB.actions.toArray();
+      actionsToReassign.forEach(ra => {
+        const ai = arrA.findIndex(x => x.id === ra.id);
+        if (ai >= 0) {
+          DB.actions.delete(ai, 1);
+          DB.actions.insert(ai, [{ ...arrA[ai], sessionId: ra.newSessionId }]);
+        }
+      });
+
+      // Trim sessions
+      sessionsToTrim.forEach(t => {
+        const arrS = DB.sessions.toArray();
+        const idx = arrS.findIndex(x => x.id === t.id);
+        if (idx >= 0) {
+          const old = arrS[idx];
+          DB.sessions.delete(idx, 1);
+          DB.sessions.insert(idx, [{ ...old, ponderedKeys: t.newKeys }]);
+        }
+      });
+
+      // Delete sessions (sorted descending)
+      const arrS = DB.sessions.toArray();
+      const deleteIndices = sessionsToDelete
+        .map(sid => arrS.findIndex(x => x.id === sid))
+        .filter(i => i >= 0)
+        .sort((a, b) => b - a);
+      deleteIndices.forEach(i => DB.sessions.delete(i, 1));
+    });
+
+    return mergedActionIds;
+  }, []);
 
   /* replay a past sitting */
   const replaySitting = useCallback(async (sitting) => {
@@ -3249,27 +3493,41 @@ function MiranRoot() {
     const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
 
     if (cs.isReplay && cs.replaySittingId) {
-      // Update the existing sitting
-      const actionIds = [];
+      // Add new actions for this sitting
+      const newActionIds = [];
       (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
-        actionIds.push(DB.addAction(txt, cs.replaySittingId));
+        newActionIds.push(DB.addAction(txt, cs.replaySittingId));
       });
       DB.updateSessionTitle(cs.replaySittingId, finalTitle);
-      // Also update ponderedKeys and actionIds on the session
-      // We update the session's data through Yjs transact
+
+      // Merge overlapping sittings — this also handles the replay's own sitting
+      const mergedActionIds = mergeOverlappingSittings(cs.replaySittingId, ponderedKeys, finalTitle);
+
+      // Save the merged sitting
       const arr = DB.sessions.toArray();
-      const idx = arr.findIndex(s => s.id === cs.replaySittingId);
-      if (idx >= 0) {
+      const sIdx = arr.findIndex(s => s.id === cs.replaySittingId);
+      // Also gather actions currently linked to this sitting
+      const existing = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
+      const existingIds = existing.map(a => a.id);
+      const finalActionIds = [...new Set([...existingIds, ...mergedActionIds, ...newActionIds])];
+      if (sIdx >= 0) {
         window.YDOC.transact(() => {
-          DB.sessions.delete(idx, 1);
-          DB.sessions.insert(idx, [{
-            ...arr[idx],
+          DB.sessions.delete(sIdx, 1);
+          DB.sessions.insert(sIdx, [{
+            id: cs.replaySittingId,
             title: finalTitle,
+            date: today,
+            verseKeys: cs.verseKeys,
             ponderedKeys,
-            actionIds: actionIds,
+            actionIds: finalActionIds,
           }]);
         });
       }
+
+      // Update furthest pondered after merge
+      const furthest = computeFurthestPondered(DB);
+      DB.setLastPondered(furthest.surah, furthest.verse);
+      DB.setLastSessionDate(today);
       DB.clearCurrentSession();
       setView('home');
       return;
@@ -3295,7 +3553,7 @@ function MiranRoot() {
     DB.timetableEnsurePrayers();
     DB.clearCurrentSession();
     setView('home');
-  }, [cs]);
+  }, [cs, mergeOverlappingSittings]);
 
   /* back from a step to home */
   const goHome = useCallback(() => setView('home'), []);
@@ -3388,7 +3646,7 @@ function MiranRoot() {
           onBack={goHome}
           onComplete={() => completeStep(3)}
           openTafsir={openTafsir}
-          setConfirm={setConfirm}
+          showToast={showToast}
         />
       )}
 
@@ -3618,6 +3876,15 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
       const i = setInterval(() => setT(countdownToMidnight()), 1000);
       return () => clearInterval(i);
     }, []);
+
+    // Compute next session verse range
+    const nextRange = useMemo(() => {
+      const furthest = computeFurthestPondered(DB);
+      const start = computeNextSessionStart(furthest.surah, furthest.verse);
+      const endVerse = start.verse + window.SESSION_VERSES_TARGET - 1;
+      return { surah: start.surah, startVerse: start.verse, endVerse };
+    }, [sessions]);
+
     const handleClick = () => {
       if (ready) startNewSession();
       else openHelp('nextSession');
@@ -3634,6 +3901,7 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
         <div className="dash-locked-info">
           <div className="dash-locked-label">{ready ? 'Your sitting is ready' : 'Next sitting opens in'}</div>
           <div className="dash-locked-time">{ready ? 'Begin' : `${pad2(t.h)}:${pad2(t.m)}:${pad2(t.s)}`}</div>
+          <div className="dash-locked-verses">{nextRange.surah}:{nextRange.startVerse} – {nextRange.surah}:{nextRange.endVerse}</div>
         </div>
       </div>
     );
@@ -4444,61 +4712,44 @@ function PonderStep({ cs, DB, verses, onBack, onContinue, openTafsir, showToast 
   );
 }
 
-/* ─────────── QUESTIONS STEP ─────────── */
-function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, setConfirm }) {
+/* ─────────── QUESTIONS STEP (like Ponder) ─────────── */
+function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToast }) {
   const total = window.QUESTIONS.length;
-  const [qIdx, setQIdx] = useState(cs.qIdx ?? 0);
+  const [qIdx, setQIdx] = useState(Math.min(cs.qIdx ?? 0, total - 1));
   useEffect(() => { DB.setCurrentSessionField('qIdx', qIdx); }, [qIdx]);
 
-  const [remaining, setRemaining] = useState(window.QUESTION_SECONDS);
+  const totalSeconds = Math.max(150, (total / 2) * 60);
+  const startedAtRef = useRef(Date.now() - (cs.qsElapsedMs || 0));
+  const [remaining, setRemaining] = useState(() => {
+    const elapsed = (Date.now() - startedAtRef.current) / 1000;
+    return Math.max(0, totalSeconds - elapsed);
+  });
   useEffect(() => {
-    setRemaining(window.QUESTION_SECONDS);
-    let start = Date.now();
-    const i = setInterval(() => {
-      const elapsed = (Date.now() - start) / 1000;
-      const rem = Math.max(0, window.QUESTION_SECONDS - elapsed);
+    const t = setInterval(() => {
+      const elapsed = (Date.now() - startedAtRef.current) / 1000;
+      const rem = Math.max(0, totalSeconds - elapsed);
       setRemaining(rem);
-      if (rem <= 0) clearInterval(i);
-    }, 250);
-    return () => clearInterval(i);
-  }, [qIdx]);
+      DB.setCurrentSessionField('qsElapsedMs', Math.floor(elapsed * 1000));
+      if (rem <= 0) clearInterval(t);
+    }, 500);
+    return () => clearInterval(t);
+  }, [totalSeconds]);
 
+  const ready = remaining <= 0;
   const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const selectedVerses = verses.slice(0, selectedCount);
 
-  const advance = () => {
-    const next = qIdx + 1;
-    if (next >= total) onComplete();
-    else setQIdx(next);
+  const tryContinue = () => {
+    if (!ready) { showToast('Sit a little longer', formatTime(remaining)); return; }
+    onComplete();
   };
-  const tryAdvance = () => {
-    if (remaining > 0) {
-      setConfirm({
-        eyebrow: 'A moment',
-        message: 'Are you sure? Sitting with this question may serve you.',
-        time: formatTime(remaining),
-        onConfirm: () => { setConfirm(null); advance(); },
-        onCancel: () => setConfirm(null),
-      });
-    } else {
-      advance();
-    }
-  };
-  const isLast = qIdx === total - 1;
 
   return (
-    <div className="step-fs" key={qIdx}>
+    <div className="step-fs">
       <BackButton onClick={onBack} />
       <div className="step-fs-top">
         <div className="step-fs-eyebrow">Questions</div>
-        <div className="q-pill">
-          <span>{qIdx + 1} of {total}</span>
-          <div className="q-pill-dots">
-            {Array.from({ length: total }).map((_, i) => (
-              <div key={i} className={`q-pill-dot ${i === qIdx ? 'active' : i < qIdx ? 'done' : ''}`} />
-            ))}
-          </div>
-        </div>
+        <VersePositionIndicator idx={qIdx} total={total} reachedIdx={total - 1} />
       </div>
       <div className="step-fs-body">
         <div className="question-body fade-in">
@@ -4508,13 +4759,24 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, setConf
             <div className="o-line" />
           </div>
           <div className="question-text">{window.QUESTIONS[qIdx]}</div>
-          <div className="question-hint">Close your eyes. Sit with this for one minute.</div>
+          <div className="question-hint">Close your eyes. Sit with the question.</div>
           <VersesPanel verses={selectedVerses} openTafsir={openTafsir} />
         </div>
       </div>
       <div className="step-fs-bottom">
-        <button className="action" data-blocked={remaining > 0} onClick={tryAdvance}>
-          <span className="action-text">{isLast ? 'Complete' : 'Next question'}</span>
+        <div className="verse-nav">
+          <button className="verse-nav-arrow" onClick={() => setQIdx(i => Math.max(0, i - 1))} disabled={qIdx <= 0} aria-label="Previous question">
+            <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>
+          <button className="verse-nav-arrow" onClick={() => setQIdx(i => Math.min(total - 1, i + 1))} disabled={qIdx >= total - 1} aria-label="Next question">
+            <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div className="ponder-instruction">
+          Sit with {total} questions. Let them move through you. {Math.ceil(total / 2)} minutes — no less.
+        </div>
+        <button className="action" data-blocked={!ready} onClick={tryContinue}>
+          <span className="action-text">Continue</span>
           <span className="action-line" />
         </button>
       </div>
@@ -4671,31 +4933,109 @@ function SubsectionRouter({ subView, DB, onClose, openHelp, onReplaySitting }) {
   );
 }
 
-/* ── Sittings ── */
+/* ── Sittings Timeline ── */
 function SittingsBody({ DB, onReplaySitting, onClose }) {
-  const sessions = DB.sessions.toArray().slice().reverse();
-  const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? sessions : sessions.slice(0, 3);
+  const sessions = DB.sessions.toArray();
+  // Group sessions by surah
+  const grouped = useMemo(() => {
+    const m = {};
+    sessions.forEach(s => {
+      const keys = s.ponderedKeys || [];
+      if (!keys.length) return;
+      const sNum = parseKey(keys[0]).surah;
+      if (!m[sNum]) m[sNum] = [];
+      m[sNum].push(s);
+    });
+    return m;
+  }, [sessions]);
+
+  // Get chapters info from existing session data + API
+  const [surahData, setSurahData] = useState({});
+  useEffect(() => {
+    const nums = Object.keys(grouped).map(Number);
+    if (!nums.length) return;
+    Promise.all(nums.map(n => fetchSurahInfo(n).catch(() => null))).then(infos => {
+      const map = {};
+      infos.forEach((info, i) => {
+        map[nums[i]] = info || { name: `Surah ${nums[i]}`, verses_count: '—' };
+      });
+      setSurahData(map);
+    });
+  }, [grouped]);
+
+  // Next session prediction
+  const nextSessionInfo = useMemo(() => {
+    const furthest = computeFurthestPondered(DB);
+    const start = computeNextSessionStart(furthest.surah, furthest.verse);
+    return {
+      surah: start.surah,
+      startVerse: start.verse,
+      endVerse: start.verse + window.SESSION_VERSES_TARGET - 1,
+    };
+  }, [sessions]);
+
   if (!sessions.length) return <div className="sit-empty">No sittings yet. Complete your first cycle.</div>;
+
+  const surahNumbers = Object.keys(grouped).map(Number).sort((a, b) => a - b);
+
   return (
-    <>
-      {visible.map(s => {
-        const first = s.verseKeys?.[0] || '—';
-        const last = s.ponderedKeys?.[s.ponderedKeys.length - 1] || s.verseKeys?.[s.verseKeys.length - 1] || '—';
+    <div className="timeline-wrap">
+      {surahNumbers.map(sNum => {
+        const sittings = grouped[sNum].sort((a, b) => {
+          const fa = parseKey((a.ponderedKeys || [])[0] || '1:0');
+          const fb = parseKey((b.ponderedKeys || [])[0] || '1:0');
+          return fa.verse - fb.verse;
+        });
+        const name = surahData[sNum]?.name || `Surah ${sNum}`;
+        const totalV = surahData[sNum]?.verses_count || '—';
+        const isPredicted = nextSessionInfo.surah === sNum;
+
         return (
-           <div key={s.id} className="sit-row" onClick={() => { if (onClose) onClose(); if (onReplaySitting) onReplaySitting(s); }}>
-            <div className="sit-row-title">{s.title || 'A sitting'}</div>
-            <div className="sit-row-meta">
-              <span className="sit-row-range">{first} → {last}</span>
-              <span>{s.date}</span>
+          <div key={sNum} className="timeline-surah">
+            <div className="timeline-surah-head">
+              <span className="timeline-surah-num">{sNum}</span>
+              <span className="timeline-surah-name">{name}</span>
+              {totalV !== '—' && <span className="timeline-surah-total">· {totalV} verses</span>}
+            </div>
+            <div className="timeline-line">
+              {sittings.map(s => {
+                const keys = s.ponderedKeys || [];
+                const fk = parseKey(keys[0] || `${sNum}:1`);
+                const lk = parseKey(keys[keys.length - 1] || `${sNum}:1`);
+                return (
+                  <div key={s.id} className="timeline-point" onClick={() => { if (onClose) onClose(); if (onReplaySitting) onReplaySitting(s); }}>
+                    <span className="timeline-dot" />
+                    <span className="timeline-range">{fk.verse} → {lk.verse}</span>
+                    <span className="timeline-title">{s.title || 'A sitting'}</span>
+                    <span className="timeline-date">{s.date}</span>
+                  </div>
+                );
+              })}
+              {isPredicted && (
+                <div className="timeline-point predicted">
+                  <span className="timeline-dot" style={{ borderStyle: 'dashed', opacity: 0.5 }} />
+                  <span className="timeline-range">{nextSessionInfo.startVerse} → {Math.min(nextSessionInfo.endVerse, totalV === '—' ? 999 : totalV)}</span>
+                  <span className="timeline-title" style={{ opacity: 0.5, fontStyle: 'italic' }}>Next sitting</span>
+                  <CountdownTimer />
+                </div>
+              )}
             </div>
           </div>
         );
       })}
-      {!showAll && sessions.length > 3 && (
-        <button className="sit-show-more" onClick={() => setShowAll(true)}>Show all {sessions.length}</button>
-      )}
-    </>
+    </div>
+  );
+}
+
+function CountdownTimer() {
+  const [t, setT] = useState(countdownToMidnight);
+  useEffect(() => {
+    const i = setInterval(() => setT(countdownToMidnight()), 1000);
+    return () => clearInterval(i);
+  }, []);
+  const ready = t.h === 0 && t.m === 0 && t.s === 0;
+  return (
+    <span className="timeline-date">{ready ? 'Ready' : `${pad2(t.h)}:${pad2(t.m)}:${pad2(t.s)}`}</span>
   );
 }
 
@@ -4720,8 +5060,9 @@ function AbodesBody({ DB }) {
 function ResolutionsBody({ DB }) {
   const all = DB.getActionsSorted();
   const [showAll, setShowAll] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const visible = showAll ? all : all.slice(0, 3);
-  if (!all.length) return <div className="sit-empty">No resolutions yet. They’re added each time you complete a sitting.</div>;
+  if (!all.length) return <div className="sit-empty">No resolutions yet. They're added each time you complete a sitting.</div>;
   const moveUp = (idx) => {
     if (idx <= 0) return;
     DB.swapActionRanking(all[idx].id, all[idx - 1].id);
@@ -4730,13 +5071,36 @@ function ResolutionsBody({ DB }) {
     if (idx >= all.length - 1) return;
     DB.swapActionRanking(all[idx].id, all[idx + 1].id);
   };
+  const deleteAction = (id) => DB.deleteAction(id);
+  const saveEdit = (id, text) => {
+    DB.updateAction(id, { text: text || '' });
+    setEditingId(null);
+  };
   return (
     <>
       {visible.map((a, i) => (
         <div key={a.id} className="res-row">
           <div className="res-row-rank">{i + 1}</div>
-          <div className="res-row-text">{a.text}</div>
+          {editingId === a.id ? (
+            <input
+              className="res-row-edit"
+              type="text"
+              defaultValue={a.text}
+              autoFocus
+              onBlur={(e) => saveEdit(a.id, e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') saveEdit(a.id, e.target.value);
+                if (e.key === 'Escape') setEditingId(null);
+              }}
+              style={{ flex: 1, border: 'none', borderBottom: '1px solid var(--accent)', background: 'transparent', color: 'var(--ink)', fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 15, padding: '4px 0', outline: 'none' }}
+            />
+          ) : (
+            <div className="res-row-text" onClick={() => setEditingId(a.id)}>{a.text}</div>
+          )}
           <div className="res-row-controls">
+            <button className="res-delete" onClick={() => deleteAction(a.id)} aria-label="Delete" title="Delete">
+              <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
             <button className="res-arrow" onClick={() => moveUp(i)} disabled={i === 0} aria-label="Move up">
               <svg viewBox="0 0 24 24"><path d="M6 14l6-6 6 6"/></svg>
             </button>
@@ -4749,7 +5113,7 @@ function ResolutionsBody({ DB }) {
       {!showAll && all.length > 3 && (
         <button className="sit-show-more" onClick={() => setShowAll(true)}>Show all {all.length}</button>
       )}
-      <div className="res-meta">Focus on the top three. Reorder as your priorities change.</div>
+      <div className="res-meta">Click to edit, delete with ×, reorder with arrows.</div>
     </>
   );
 }
