@@ -2592,10 +2592,20 @@ input, textarea { font-family: inherit; }
 <div id="orbit-mount"></div>
 
 <!-- Yjs + IndexedDB persistence (ES module) -->
+<script type="importmap">
+{
+  "imports": {
+    "yjs": "https://esm.sh/yjs@13.6.20",
+    "y-indexeddb": "https://esm.sh/y-indexeddb@9.0.12"
+  }
+}
+</script>
 <script type="module">
   try {
-    const Y = await import('https://esm.sh/yjs@13.6.20');
-    const { IndexeddbPersistence } = await import('https://esm.sh/y-indexeddb@9.0.12');
+    const [Y, { IndexeddbPersistence }] = await Promise.all([
+      import('yjs'),
+      import('y-indexeddb')
+    ]);
     window.Y = Y;
     window.IndexeddbPersistence = IndexeddbPersistence;
     window.dispatchEvent(new Event('yjs-ready'));
@@ -4179,7 +4189,6 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
   }, [totalSeconds]);
 
   const ready = remaining <= 0;
-  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const selectedVerses = verses.slice(0, selectedCount);
 
   const tryContinue = () => {
