@@ -2563,6 +2563,146 @@ input, textarea { font-family: inherit; }
   transform: scale(1.12);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 0 0 2px var(--ink), 0 0 16px var(--accent);
 }
+.sett-sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+.sett-sync-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sett-sync-dot.connected { background: #5ec27a; box-shadow: 0 0 8px #5ec27a; }
+.sett-sync-dot.connecting { background: #e5a850; box-shadow: 0 0 8px #e5a850; animation: v-twinkle 1s ease-in-out infinite; }
+.sett-sync-dot.disconnected { background: #8a6e7a; }
+
+/* ── Sync modal ── */
+.sync-backdrop {
+  position: fixed; inset: 0;
+  z-index: 85;
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  animation: v-fade-in 300ms ease;
+}
+.sync-panel {
+  width: min(500px, 100%);
+  background: color-mix(in oklab, var(--bg) 92%, var(--bg-soft));
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  padding: 32px 24px;
+  animation: v-step-in 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sync-title {
+  font-family: 'Fraunces', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  text-align: center;
+}
+.sync-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sync-step-label {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+}
+.sync-step-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  line-height: 1.5;
+}
+.sync-code-area {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+  background: color-mix(in oklab, var(--bg) 40%, transparent);
+  color: var(--ink);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  word-break: break-all;
+  line-height: 1.55;
+  min-height: 48px;
+  user-select: all;
+  -webkit-user-select: all;
+  transition: border-color 200ms;
+}
+.sync-code-area:focus { border-color: var(--accent); outline: none; }
+.sync-copy-btn {
+  align-self: flex-end;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 200ms;
+  padding: 4px 8px;
+}
+.sync-copy-btn:hover { color: var(--accent); }
+.sync-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+/* ── Review mode layout ── */
+.review-banner {
+  width: 100%;
+  max-width: 640px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.review-banner-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.review-banner-close {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 200ms;
+}
+.review-banner-close:hover { color: var(--accent); }
 
 /* ── Responsive additions ── */
 @media (max-width: 768px) {
@@ -2592,20 +2732,10 @@ input, textarea { font-family: inherit; }
 <div id="orbit-mount"></div>
 
 <!-- Yjs + IndexedDB persistence (ES module) -->
-<script type="importmap">
-{
-  "imports": {
-    "yjs": "https://esm.sh/yjs@13.6.20",
-    "y-indexeddb": "https://esm.sh/y-indexeddb@9.0.12"
-  }
-}
-</script>
 <script type="module">
   try {
-    const [Y, { IndexeddbPersistence }] = await Promise.all([
-      import('yjs'),
-      import('y-indexeddb')
-    ]);
+    const Y = await import('https://esm.sh/yjs@13.6.20');
+    const { IndexeddbPersistence } = await import('https://esm.sh/y-indexeddb@9.0.12');
     window.Y = Y;
     window.IndexeddbPersistence = IndexeddbPersistence;
     window.dispatchEvent(new Event('yjs-ready'));
@@ -2781,6 +2911,96 @@ function countdownToMidnight() {
   return { h, m, s, ms };
 }
 function pad2(n) { return String(n).padStart(2, '0'); }
+
+// ── simple compression helpers for sync codes ──
+function compressForSync(str) {
+  try {
+    // compress via deflate-like approach: repeat chars
+    return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  } catch(e) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+}
+function decompressForSync(s) {
+  try {
+    return decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
+  } catch(e) { return atob(s.replace(/-/g,'+').replace(/_/g,'/')); }
+}
+
+async function fetchSurahInfo(n) {
+  try {
+    const r = await fetch(`${window.API_BASE}/chapters/${n}`);
+    if (!r.ok) return null;
+    const ch = (await r.json()).chapter;
+    if (!ch) return null;
+    return { name: ch.name_simple || "", verses_count: ch.verses_count || 0 };
+  } catch (e) { return null; }
+}
+async function fetchVerseDetails(vk) {
+  const data = { key: vk, arabic: "", translation: "", audioUrl: "" };
+  const translationId = (window.DB && window.DB.getTranslationId) ? window.DB.getTranslationId() : window.TRANSLATION_ID;
+  const recitationId = (window.DB && window.DB.getRecitationId) ? window.DB.getRecitationId() : window.RECITATION_ID;
+  try {
+    const r = await fetch(`${window.API_BASE}/verses/by_key/${vk}?fields=text_uthmani`);
+    if (r.ok) data.arabic = (await r.json()).verse?.text_uthmani || "";
+  } catch (e) {}
+  try {
+    const r = await fetch(`${window.API_BASE}/quran/translations/${translationId}?verse_key=${vk}`);
+    if (r.ok) data.translation = stripHtml((await r.json()).translations?.[0]?.text || "");
+  } catch (e) {}
+  try {
+    const r = await fetch(`${window.API_BASE}/recitations/${recitationId}/by_ayah/${vk}`);
+    if (r.ok) {
+      const url = (await r.json()).audio_files?.[0]?.url || "";
+      data.audioUrl = url.startsWith("http") ? url : window.AUDIO_BASE + url;
+    }
+  } catch (e) {}
+  return data;
+}
+async function fetchTafsir(vk) {
+  const tafsirId = (window.DB && window.DB.getTafsirId) ? window.DB.getTafsirId() : window.TAFSIR_ID;
+  try {
+    const r = await fetch(`${window.API_BASE}/tafsirs/${tafsirId}/by_ayah/${vk}`);
+    if (!r.ok) return "";
+    return cleanTafsirHtml((await r.json()).tafsir?.text || "");
+  } catch (e) { return ""; }
+}
+async function fetchVersesForSession(surah, startVerse, maxInSurah) {
+  const target = window.SESSION_VERSES_TARGET;
+  const remainingInSurah = Math.max(0, maxInSurah - startVerse + 1);
+  const count = Math.min(target, remainingInSurah);
+  if (count <= 0) return [];
+  const promises = [];
+  for (let i = 0; i < count; i++) {
+    const v = startVerse + i;
+    promises.push(fetchVerseDetails(verseKey(surah, v)).then(d => ({
+      ...d, surah, verse: v, key: verseKey(surah, v),
+    })));
+  }
+  return Promise.all(promises);
+}
+function computeNextSessionStart(lastSurah, lastVerse) {
+  // Given the LAST pondered verse, return the NEXT session's start.
+  // Default: lastSurah=1, lastVerse=7 → start at 2:1.
+  let s = lastSurah;
+  let v = lastVerse + 1;
+  return { surah: s, verse: v };
+}
+function computeFurthestPondered(DB) {
+  // Scan all sittings and return the furthest verse ever pondered
+  const sessions = DB.sessions.toArray();
+  if (!sessions.length) return { surah: 2, verse: 0 }; // start at 2:1
+  let maxSurah = 2, maxVerse = 0;
+  sessions.forEach(s => {
+    const keys = s.ponderedKeys || s.verseKeys || [];
+    keys.forEach(k => {
+      const { surah, verse } = parseKey(k);
+      if (surah > maxSurah || (surah === maxSurah && verse > maxVerse)) {
+        maxSurah = surah;
+        maxVerse = verse;
+      }
+    });
+  });
+  return { surah: maxSurah, verse: maxVerse };
+}
 
 /* ─────────── force-update on Y.Doc updates ─────────── */
 function useYjsTick() {
@@ -3007,7 +3227,7 @@ function MiranRoot() {
   const [helpKey, setHelpKey] = useState(null);
   const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
   const [showSettings, setShowSettings] = useState(false);
-  const [returnTo, setReturnTo] = useState(null); // 'sittings' | null
+  const [showSync, setShowSync] = useState(false);
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -3336,13 +3556,7 @@ function MiranRoot() {
   }, [cs, mergeOverlappingSittings]);
 
   /* back from a step to home */
-  const goHome = useCallback(() => {
-    setView('home');
-    if (returnTo === 'sittings') {
-      setSubView('sittings');
-      setReturnTo(null);
-    }
-  }, [returnTo]);
+  const goHome = useCallback(() => setView('home'), []);
 
   /* abandon current session — not exposed in UI by default */
 
@@ -3370,7 +3584,7 @@ function MiranRoot() {
       <OrbitBackdrop />
 
       {/* Settings button — only on home */}
-      {view === 'home' && !subView && !showIntro && !showSettings && (
+      {view === 'home' && !subView && !showIntro && !showSettings && !showSync && (
         <SettingsButton onClick={() => setShowSettings(true)} />
       )}
 
@@ -3458,7 +3672,7 @@ function MiranRoot() {
           DB={DB}
           onClose={() => setSubView(null)}
           openHelp={(key) => setHelpKey(key)}
-          onReplaySitting={(s) => { setSubView(null); setReturnTo('sittings'); replaySitting(s); }}
+          onReplaySitting={replaySitting}
         />
       )}
 
@@ -3475,6 +3689,15 @@ function MiranRoot() {
         <SettingsModal
           DB={DB}
           onClose={() => setShowSettings(false)}
+          onOpenSync={() => { setShowSettings(false); setShowSync(true); }}
+        />
+      )}
+
+      {/* Sync panel */}
+      {showSync && (
+        <SyncPanel
+          DB={DB}
+          onClose={() => setShowSync(false)}
         />
       )}
 
@@ -3551,21 +3774,10 @@ function OrbitBackdrop() {
 
 /* ─────────── HOME ─────────── */
 function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme }) {
-  return (
-    <div className="home-scroll">
-      {!cs && !dailyDoneToday && (
-        <div className="home-center">
-          <div className="center-hub-button-wrap">
-            <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
-              <span className="center-button-label">Listen</span>
-            </button>
-          </div>
-          <div className="center-pills" style={{ minHeight: 28, marginTop: 8 }}>
-            <span style={{ fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--ink-faint)', opacity: 0.5, fontFamily: "'Inter Tight', sans-serif" }}>Begin your sitting</span>
-          </div>
-        </div>
-      )}
-      {cs && (
+  // During a session: only the center button + pills, no dashboard
+  if (cs) {
+    return (
+      <div className="home-scroll">
         <div className="home-center">
           <InSessionCenter
             cs={cs}
@@ -3575,7 +3787,13 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
             revisitStep={revisitStep}
           />
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // No session in progress → show dashboard with the banner
+  return (
+    <div className="home-scroll">
       <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
     </div>
   );
@@ -3692,6 +3910,18 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
   return (
     <>
       {dailyDoneToday && <DashLockedBanner />}
+      {!dailyDoneToday && (
+        <div className="home-center">
+          <div className="center-hub-button-wrap">
+            <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
+              <span className="center-button-label">Listen</span>
+            </button>
+          </div>
+          <div className="center-pills" style={{ minHeight: 28, marginTop: 8 }}>
+            <span style={{ fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--ink-faint)', opacity: 0.5, fontFamily: "'Inter Tight', sans-serif" }}>Begin your sitting</span>
+          </div>
+        </div>
+      )}
       <div className="dash-daily-label">{dailyDoneToday ? 'While you wait' : 'Your dashboard'}</div>
       <div className="dash-grid">
         {cards.map(c => (
@@ -3766,7 +3996,7 @@ function IntroOverlay({ DB, onDismiss }) {
 }
 
 /* ─────────── SETTINGS MODAL ─────────── */
-function SettingsModal({ DB, onClose }) {
+function SettingsModal({ DB, onClose, onOpenSync }) {
   useYjsTick();
   const langCode = DB.getLangCode();
   const translationId = DB.getTranslationId();
@@ -3826,12 +4056,330 @@ function SettingsModal({ DB, onClose }) {
           </div>
         </div>
 
+        <div className="sett-section">
+          <div className="sett-section-label">Sync</div>
+          <p className="sync-step-hint" style={{ marginBottom: 12 }}>Keep your sittings, resolutions, and writings in sync between your phone and computer.</p>
+          <button className="action" onClick={onOpenSync}>
+            <span className="action-text">Open sync</span>
+            <span className="action-line" />
+          </button>
+        </div>
+
         <div className="sett-section" style={{ borderBottom: 'none', paddingBottom: 28 }}>
           <div className="sett-section-label">About</div>
           <button className="action-soft" onClick={() => { DB.setHideIntro(false); onClose(); window.location.reload(); }}>
             Show introduction again
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────── SYNC PANEL (WebRTC + Yjs) ─────────── */
+function SyncPanel({ DB, onClose }) {
+  useYjsTick();
+  const [mode, setMode] = useState(null); // null | 'host' | 'guest'
+  const [step, setStep] = useState(0); // 0 = offer/exchange, 1 = answer/exchange
+  const [hostCode, setHostCode] = useState('');
+  const [guestCode, setGuestCode] = useState('');
+  const [pasteInput, setPasteInput] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [copied, setCopied] = useState({ host: false, guest: false });
+
+  const iceServers = useMemo(() => [{ urls: 'stun:stun.l.google.com:19302' }], []);
+
+  // Shared: set up Yjs sync over a given data channel
+  const attachDataChannel = useCallback((dc) => {
+    const sendUpdate = (update, origin) => {
+      if (origin === 'remote') return;
+      if (dc.readyState === 'open') {
+        dc.send(JSON.stringify({ type: 'sync-update', data: Array.from(update) }));
+      }
+    };
+    window.YDOC.on('update', sendUpdate);
+
+    dc.onopen = () => {
+      setStatus('connected');
+      setStatusMessage('Connected — syncing your data.');
+      const state = window.Y.encodeStateAsUpdate(window.YDOC);
+      dc.send(JSON.stringify({ type: 'sync-init', state: Array.from(state) }));
+      dc.send(JSON.stringify({ type: 'sync-ready' }));
+    };
+    dc.onmessage = (evt) => {
+      try {
+        const msg = JSON.parse(evt.data);
+        if (msg.type === 'sync-init') {
+          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.state), 'remote');
+        } else if (msg.type === 'sync-update') {
+          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.data), 'remote');
+        } else if (msg.type === 'sync-ready') {
+          setStatus('connected');
+          setStatusMessage('Connected — syncing your data.');
+        }
+      } catch(e) {}
+    };
+    dc.onerror = () => {
+      setStatus('error');
+      setStatusMessage('Data channel error.');
+    };
+
+    return () => { window.YDOC.off('update', sendUpdate); };
+  }, []);
+
+  // Host: create offer
+  const startHost = useCallback(async () => {
+    setMode('host');
+    setStep(0);
+    setStatus('generating');
+    setStatusMessage('Preparing connection…');
+    try {
+      const pc = new RTCPeerConnection({ iceServers });
+      window.__miranSyncPC = pc;
+      const dc = pc.createDataChannel('miran-sync', { ordered: true });
+
+      attachDataChannel(dc);
+
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'connected') {
+          setStep(1);
+        } else if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+          setStatus('error');
+          setStatusMessage('Peer disconnected or unreachable.');
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await new Promise(resolve => {
+        if (pc.iceGatheringState === 'complete') resolve();
+        else pc.addEventListener('icegatheringstatechange', () => {
+          if (pc.iceGatheringState === 'complete') resolve();
+        });
+      });
+
+      const code = compressForSync(JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp }));
+      setHostCode(code);
+      setStatus('waiting');
+      setStatusMessage('Copy your code and send it to the other device.');
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Failed: ' + String(e).slice(0, 60));
+    }
+  }, [iceServers, attachDataChannel]);
+
+  // Guest: apply offer and create answer
+  const applyOffer = useCallback(async () => {
+    if (!pasteInput.trim()) return;
+    try {
+      const data = JSON.parse(decompressForSync(pasteInput.trim()));
+      if (data.type !== 'offer') { setStatus('error'); setStatusMessage('Not a valid host code.'); return; }
+
+      setStatus('connecting');
+      setStatusMessage('Creating connection…');
+
+      const pc = new RTCPeerConnection({ iceServers });
+
+      pc.ondatachannel = (evt) => {
+        attachDataChannel(evt.channel);
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        if (pc.iceConnectionState === 'connected') {
+          setStep(1);
+        }
+      };
+
+      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: data.sdp }));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      await new Promise(resolve => {
+        if (pc.iceGatheringState === 'complete') resolve();
+        else pc.addEventListener('icegatheringstatechange', () => {
+          if (pc.iceGatheringState === 'complete') resolve();
+        });
+      });
+
+      const code = compressForSync(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp }));
+      setGuestCode(code);
+      setStep(1);
+      setStatus('waiting');
+      setStatusMessage('Send this answer code back to the host device.');
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Failed: ' + String(e).slice(0, 60));
+    }
+  }, [pasteInput, iceServers, attachDataChannel]);
+
+  // Host: apply answer from guest
+  const applyAnswer = useCallback(async () => {
+    if (!pasteInput.trim()) return;
+    setStatus('connecting');
+    setStatusMessage('Establishing connection…');
+    try {
+      const data = JSON.parse(decompressForSync(pasteInput.trim()));
+      if (data.type === 'answer') {
+        // We need the stored pc — store it on window temporarily
+        if (window.__miranSyncPC) {
+          await window.__miranSyncPC.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
+          setStep(1);
+        } else {
+          setStatus('error');
+          setStatusMessage('Connection lost. Please restart sync.');
+        }
+      }
+    } catch(e) {
+      setStatus('error');
+      setStatusMessage('Invalid answer code.');
+    }
+  }, [pasteInput]);
+
+  const copyToClipboard = (text, key) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopied(prev => ({ ...prev, [key]: true }));
+    setTimeout(() => setCopied(prev => ({ ...prev, [key]: false })), 2000);
+  };
+
+  const startGuest = useCallback(() => {
+    setMode('guest');
+    setStep(0);
+    setStatus('idle');
+    setStatusMessage('Paste the host code below…');
+  }, []);
+
+  const reset = () => {
+    if (window.__miranSyncPC) { window.__miranSyncPC.close(); delete window.__miranSyncPC; }
+    setMode(null); setStep(0);
+    setHostCode(''); setGuestCode(''); setPasteInput('');
+    setStatus('idle'); setStatusMessage('');
+    setCopied({ host: false, guest: false });
+  };
+
+  const statusDotClass = status === 'connected' ? 'connected' : (status === 'connecting' || status === 'generating' || status === 'waiting' ? 'connecting' : 'disconnected');
+
+  if (!mode) {
+    return (
+      <div className="sync-backdrop" onClick={onClose}>
+        <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="sync-title">Sync devices</div>
+          <p className="sync-step-hint" style={{ textAlign: 'center' }}>
+            Connect your phone and computer so your sittings, resolutions, and writings stay in sync — no account needed.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', marginTop: 8 }}>
+            <button className="action" onClick={startHost}>
+              <span className="action-text">Start sync → get a code</span>
+              <span className="action-line" />
+            </button>
+            <span style={{ fontSize: 12, color: 'var(--ink-faint)', fontStyle: 'italic' }}>or</span>
+            <button className="action-soft" onClick={startGuest}>I have a code → join</button>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+            <button className="action-soft" onClick={onClose}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="sync-backdrop" onClick={onClose}>
+      <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="sync-title">{mode === 'host' ? 'Hosting sync' : 'Joining sync'}</div>
+
+        <div className="sett-sync-status">
+          <span className={`sett-sync-dot ${statusDotClass}`} />
+          <span>{statusMessage || status}</span>
+        </div>
+
+        {mode === 'host' && step === 0 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">1. Your code</div>
+              <div className="sync-step-hint">Copy this code. Send it to the other device — paste it in Messages, AirDrop, or any messenger.</div>
+              {hostCode ? (
+                <>
+                  <div className="sync-code-area" onClick={() => copyToClipboard(hostCode, 'host')}>{hostCode}</div>
+                  <button className="sync-copy-btn" onClick={() => copyToClipboard(hostCode, 'host')}>
+                    {copied.host ? 'Copied' : 'Copy'}
+                  </button>
+                </>
+              ) : (
+                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
+              )}
+            </div>
+            <div className="sync-step">
+              <div className="sync-step-label">2. Paste their answer</div>
+              <div className="sync-step-hint">Once you get a code back from the other device, paste it here.</div>
+              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the answer code…" onChange={(e) => setPasteInput(e.target.value)} />
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+              <button className="action" onClick={applyAnswer} disabled={!pasteInput.trim()}>
+                <span className="action-text">Connect</span>
+                <span className="action-line" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'guest' && step === 0 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">1. Paste the host code</div>
+              <div className="sync-step-hint">Copy the code from the host device and paste it below.</div>
+              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the host code…" onChange={(e) => setPasteInput(e.target.value)} />
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+              <button className="action" onClick={applyOffer} disabled={!pasteInput.trim()}>
+                <span className="action-text">Connect</span>
+                <span className="action-line" />
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'guest' && step === 1 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">2. Send this code back</div>
+              <div className="sync-step-hint">Copy this answer code and send it back to the host. The host will paste it on their device.</div>
+              {guestCode ? (
+                <>
+                  <div className="sync-code-area" onClick={() => copyToClipboard(guestCode, 'guest')}>{guestCode}</div>
+                  <button className="sync-copy-btn" onClick={() => copyToClipboard(guestCode, 'guest')}>
+                    {copied.guest ? 'Copied' : 'Copy'}
+                  </button>
+                </>
+              ) : (
+                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
+              )}
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Cancel</button>
+            </div>
+          </>
+        )}
+
+        {mode === 'host' && step === 1 && (
+          <>
+            <div className="sync-step">
+              <div className="sync-step-label">Connected</div>
+              <div className="sync-step-hint">Your devices are syncing. Data will merge automatically.</div>
+            </div>
+            <div className="sync-actions">
+              <button className="action-soft" onClick={reset}>Disconnect</button>
+            </div>
+          </>
+        )}
+
+        {status === 'error' && (
+          <div className="sync-actions">
+            <button className="action-soft" onClick={reset}>Try again</button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -4167,11 +4715,10 @@ function PonderStep({ cs, DB, verses, onBack, onContinue, openTafsir, showToast 
 /* ─────────── QUESTIONS STEP (like Ponder) ─────────── */
 function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToast }) {
   const total = window.QUESTIONS.length;
-  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const [qIdx, setQIdx] = useState(Math.min(cs.qIdx ?? 0, total - 1));
   useEffect(() => { DB.setCurrentSessionField('qIdx', qIdx); }, [qIdx]);
 
-  const totalSeconds = Math.max(30, (selectedCount / 2) * 60);
+  const totalSeconds = Math.max(150, (total / 2) * 60);
   const startedAtRef = useRef(Date.now() - (cs.qsElapsedMs || 0));
   const [remaining, setRemaining] = useState(() => {
     const elapsed = (Date.now() - startedAtRef.current) / 1000;
@@ -4189,6 +4736,7 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
   }, [totalSeconds]);
 
   const ready = remaining <= 0;
+  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const selectedVerses = verses.slice(0, selectedCount);
 
   const tryContinue = () => {
@@ -4225,7 +4773,7 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
           </button>
         </div>
         <div className="ponder-instruction">
-          Sit with {selectedCount === 1 ? 'this verse' : `these ${selectedCount} verses`}. {Math.ceil(selectedCount / 2)} minute{selectedCount > 2 ? 's' : ''} — no less.
+          Sit with {total} questions. Let them move through you. {Math.ceil(total / 2)} minutes — no less.
         </div>
         <button className="action" data-blocked={!ready} onClick={tryContinue}>
           <span className="action-text">Continue</span>
