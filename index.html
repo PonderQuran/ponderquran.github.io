@@ -3803,7 +3803,7 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
   return (
     <div className="home-scroll">
       <BackButton onClick={() => setShowDash(d => !d)} />
-      <div className="home-center" style={{ flex: '0 0 auto', minHeight: 'auto' }}>
+      <div className="home-center">
         <InSessionCenter
           cs={cs}
           versesLoading={versesLoading}
