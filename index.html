@@ -3224,6 +3224,7 @@ function MiranRoot() {
   const [helpKey, setHelpKey] = useState(null);
   const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
   const [showSettings, setShowSettings] = useState(false);
+  const [forceDashboard, setForceDashboard] = useState(false);
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -3789,25 +3790,31 @@ function OrbitBackdrop() {
 
 /* ─────────── HOME ─────────── */
 function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme }) {
-  if (cs) {
+  const [showDash, setShowDash] = useState(!cs);
+
+  if (!cs) {
     return (
       <div className="home-scroll">
-        <div className="home-center">
-          <InSessionCenter
-            cs={cs}
-            versesLoading={versesLoading}
-            startNewSession={startNewSession}
-            enterCurrentStep={enterCurrentStep}
-            revisitStep={revisitStep}
-          />
-        </div>
+        <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
       </div>
     );
   }
 
   return (
     <div className="home-scroll">
-      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
+      <BackButton onClick={() => setShowDash(d => !d)} />
+      <div className="home-center" style={{ flex: '0 0 auto', minHeight: 'auto' }}>
+        <InSessionCenter
+          cs={cs}
+          versesLoading={versesLoading}
+          startNewSession={startNewSession}
+          enterCurrentStep={enterCurrentStep}
+          revisitStep={revisitStep}
+        />
+      </div>
+      {showDash && (
+        <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={true} startNewSession={startNewSession} />
+      )}
     </div>
   );
 }
