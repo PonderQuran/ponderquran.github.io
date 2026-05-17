@@ -3754,9 +3754,9 @@
             };
 
             window.QUESTIONS = [
-                "What do these verses really mean — what message is Allah sending you, what do they teach you?",
+                "What do these verses really mean, what message is Allah sending you, what do they teach you?",
                 "What are the deep truths, implications and conclusions to be drawn from these verses?",
-                "Visualize deeply these verses. Imagine them. Make them vivid. Close your eyes and live them — see what they look like.",
+                "Visualize deeply these verses. Imagine them. Make them vivid. Close your eyes and live them, see what they look like.",
                 "How do these verses change the way you see the world? What do they show you?",
                 "What would the best version of yourself be after reading these verses? Close your eyes and imagine the best version of yourself.",
             ];
@@ -3797,31 +3797,31 @@
             window.HELP_TEXTS = {
                 sittings: {
                     title: "Sittings",
-                    body: "Each cycle you complete is preserved here as a “sitting.” Tap one to revisit its verses — its actions and date are kept; you can refine them, add new commitments, or simply re-read.",
+                    body: "The Sahaba did not rush through the Quran. They took it ten verses at a time, learning the knowledge and the action together before moving on. Each cycle you complete here is preserved as a 'sitting.' Return to them not just to re-read, but to hold yourself accountable to the actions you committed to.",
                 },
                 abodes: {
                     title: "Paradise & Fire",
-                    body: "Two writings. In one, picture Paradise vividly — a scene, a moment, what it would be to be there. In the other, picture Hellfire with the same vividness. Read them every day. Refine the picture until it shapes how you move.",
+                    body: "Jannah has what no eye has ever seen, and Hellfire is what every believer flees. These two writings anchor you. By vividly picturing your ultimate destination and what you wish to be saved from, you shape how you move through this world. Refine them constantly.",
                 },
                 resolutions: {
                     title: "Resolutions",
-                    body: "These are the practical commitments you wrote at the end of each sitting. The top three are what your life is being shaped toward right now. Reorder them as your priorities change.",
+                    body: "The Sahaba said: 'We learned sacred knowledge and action together.' Knowledge without action is a burden. These resolutions are the practical commitments you extracted from your sittings. Reorder them. Focus on the top three. Let the Quran physically change how you live.",
                 },
                 tomorrow: {
                     title: "Tomorrow",
-                    body: "Plan tomorrow tonight. Your five prayers are placed for you — set their times, then fill the spaces between with what matters. Short, specific blocks.",
+                    body: "Time is a precious gift from Allah, slipping away. Plan tomorrow tonight. Your five prayers are your anchors—they are already placed for you. Fill the spaces between them with what matters. Aim true, keep the blocks specific, and do not waste the life you have been given.",
                 },
                 provision: {
                     title: "Provision",
-                    body: "One short text you read every day. Dense, refined, distilled. Capped at 1500 words on purpose: the limit forces you to keep cutting. Treat it as the bread you carry on the journey.",
+                    body: "By pondering the Quran, the Sunnah, and the reality of this world, you discover dense, undeniable truths. Write them here. Distill them. The 1500-word limit forces you to keep only what is essential. Read this daily. It is the spiritual provision you carry on your journey.",
                 },
                 horizons: {
                     title: "Horizons",
-                    body: "From your life’s purpose down to tomorrow. Aim short. Aim true. The top horizon — Al-Firdaws — is fixed; it is the one you cannot edit, because the rest only make sense beneath it.",
+                    body: "From the ultimate goal of Al-Firdaws down to what you will do tomorrow. If your daily actions are not aligned with your ultimate purpose, you are drifting. The highest horizon cannot be edited, because everything else beneath it must serve that single, eternal aim.",
                 },
                 nextSession: {
                     title: "The next sitting",
-                    body: "One cycle per day, by design. Sittings are short visits with the Qurʾān, not a race through it. While you wait, refine your Resolutions, your Provision, or your plan for tomorrow.",
+                    body: "The Prophet (ﷺ) and his companions absorbed the Quran slowly. It was a weighty revelation meant to transform, not just to be recited quickly. Mirān limits you to one sitting a day by design. While you wait, act on your resolutions, refine your Provision, or prepare for your next prayer.",
                 },
             };
 
@@ -5477,7 +5477,7 @@
                           (hellfire
                               ? " · " + wordCount(hellfire) + " words on Fire"
                               : "")
-                        : "Picture both abodes";
+                        : "Imagine vividly both abodes";
                 const resolutionsPreview = actions.length
                     ? (actions[0]?.text?.slice(0, 70) || "—") +
                       (actions.length > 1 ? ` +${actions.length - 1} more` : "")
@@ -5488,7 +5488,7 @@
                 const provisionPreview = provision
                     ? provision.slice(0, 80) +
                       (provision.length > 80 ? "…" : "")
-                    : "Write what you carry daily";
+                    : "Wisdom you read daily and keep refining";
                 const goalsAny = window.GOAL_FIELDS.some((g) =>
                     (DB.getGoal(g.key) || "").trim(),
                 );
@@ -5536,7 +5536,7 @@
                     {
                         key: "provision",
                         icon: "📖",
-                        title: "Provision",
+                        title: "Deep Truths to read daily",
                         eyebrow: `${provisionWords} / ${window.PROVISION_WORD_LIMIT} words`,
                         preview: provisionPreview,
                         empty: !provision,
@@ -5758,21 +5758,34 @@
                             <div className="intro-star">✦ ✦ ✦</div>
                             <div className="intro-title">Mirān</div>
                             <div className="intro-subtitle">
-                                A daily visit with the Qurʾān
+                                A return to the way of the Sahaba
                             </div>
                             <div className="intro-body">
                                 <p>
-                                    <strong>Mirān</strong> is a quiet place for
-                                    one sitting each day. You read a short
-                                    passage, listen to its recitation, then sit
-                                    with it in silence. You ask yourself what it
-                                    means for your life — and you write down
-                                    what you will do about it.
+                                    The companions of the Prophet (ﷺ) did not
+                                    rush through the Quran. They learned it ten
+                                    verses at a time, refusing to move forward
+                                    until they had fully grasped both the
+                                    meaning and the practical actions within
+                                    them. They said:{" "}
+                                    <strong>
+                                        "We learned sacred knowledge and action
+                                        together."
+                                    </strong>
                                 </p>
                                 <p>
-                                    The goal is not speed. It is to let the
-                                    words move through you. One cycle. One day.
-                                    A small, honest visit.
+                                    <strong>Mirān</strong> is built on that very
+                                    legacy. It is a quiet, deliberate space for
+                                    one sitting each day. You will not read to
+                                    simply finish pages. You will read a short
+                                    passage, listen, and sit in silence. You
+                                    will ask yourself what Allah is demanding of
+                                    you right now—and you will write down the
+                                    exact, practical actions you will take.
+                                </p>
+                                <p>
+                                    The goal is transformation. One cycle. One
+                                    day. A small, honest visit.
                                 </p>
                             </div>
                             <div className="intro-steps">
@@ -6664,8 +6677,9 @@
                                     {count} of {total}
                                 </div>
                                 <div className="select-summary-hint">
-                                    Less is more. Choose the smallest range you
-                                    can sit with deeply.
+                                    Less is more. The Sahaba would take just ten
+                                    verses at a time. Choose the smallest range
+                                    you can sit with deeply and act upon.
                                 </div>
                             </div>
                             <button className="action" onClick={onContinue}>
@@ -6778,7 +6792,8 @@
                                 {selectedCount === 1
                                     ? "Sit with this verse."
                                     : `Sit with these ${selectedCount} verses.`}{" "}
-                                Let them move through you.{" "}
+                                Disconnect from the world. Let the words settle
+                                in your heart and expose your reality.{" "}
                                 {Math.ceil(selectedCount / 2)} minute
                                 {selectedCount > 2 ? "s" : ""} — no less.
                             </div>
@@ -6881,7 +6896,9 @@
                                     {questions[qIdx]}
                                 </div>
                                 <div className="question-hint">
-                                    Close your eyes. Sit with the question.
+                                    Close your eyes. Do not just read the
+                                    question, live it. Let the reality of the
+                                    verses answer it.
                                 </div>
                                 <VersesPanel
                                     verses={selectedVerses}
@@ -6919,9 +6936,9 @@
                                 </button>
                             </div>
                             <div className="ponder-instruction">
-                                Sit with {total} questions. Let them move
-                                through you. {Math.ceil(selectedCount / 2)}{" "}
-                                minute{selectedCount > 2 ? "s" : ""} — no less.
+                                Sit with these questions. Be honest with
+                                yourself. {Math.ceil(selectedCount / 2)} minute
+                                {selectedCount > 2 ? "s" : ""} — no less.
                             </div>
                             <button
                                 className="action"
@@ -7426,14 +7443,14 @@
                         <textarea
                             className="sub-textarea"
                             value={paradise}
-                            placeholder="Picture a scene in Al-Firdaws. Where are you? What is around you? What does the light feel like…"
+                            placeholder="Jannah (paradise) has what no eye has ever seen, and no ear has ever heard, and no human heart has ever perceived. We can't imagine it, but try to write here the best atmosphere/sensation/scene/place you can picture. Keep refining it over time and read it in times of hardships, to motivate you for this greater purpose…"
                             onChange={handleParadise}
                         />
                         <div className="sub-section-label">Hellfire</div>
                         <textarea
                             className="sub-textarea"
                             value={hellfire}
-                            placeholder="Picture, soberly and with restraint, what you wish to be saved from. Write it so vividly that fleeing it becomes natural…"
+                            placeholder="Picture it, soberly and with restraint, what you wish to be saved from. Write it so vividly that fleeing it becomes natural, inchaalah reading this will help you avoid sins and reaffirm you, write it in detail and keep refining it over time, concretise it in writing"
                             onChange={handleHellfire}
                         />
                     </>
@@ -7826,7 +7843,7 @@
                             ref={ref}
                             className="sub-textarea"
                             style={{ minHeight: 320 }}
-                            placeholder="The dense, refined text you read every day. Distill. Cut. Refine again…"
+                            placeholder="By pondering the Quran, the sunnah, the life of the Prophet peace be upon him and the Sahaba R.A, from your daily life, and from everything that happens around us, you will learn a lot. Write here the deep, dense truths you realise as you read the Quran and go through life, keep it short, but dense, read it everyday, and keep refining it as life goes by..."
                             onChange={handleChange}
                             onBlur={handleBlur}
                         />
