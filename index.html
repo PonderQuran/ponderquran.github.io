@@ -2336,29 +2336,6 @@ input, textarea { font-family: inherit; }
   margin-top: 1px;
 }
 
-/* Return-to-sitting banner */
-.return-banner {
-  width: 100%;
-  max-width: 760px;
-  padding: 14px 18px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in oklab, var(--accent) 32%, transparent);
-  background: color-mix(in oklab, var(--accent) 10%, var(--bg-soft));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
-  flex-shrink: 0;
-}
-.return-banner-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 14px;
-  color: var(--ink-soft);
-  opacity: 0.85;
-}
-
 /* ── Intro overlay ── */
 .intro-backdrop {
   position: fixed; inset: 0;
@@ -3151,11 +3128,6 @@ function buildDB(ydoc) {
       DB.sessions.insert(idx, [{ ...arr[idx], title }]);
     });
   };
-  DB.deleteSession = (id) => {
-    const arr = DB.sessions.toArray();
-    const idx = arr.findIndex(s => s.id === id);
-    if (idx >= 0) DB.sessions.delete(idx, 1);
-  };
 
   DB.getText = (key) => DB.texts.get(key) ?? '';
   DB.setText = (key, val) => DB.texts.set(key, val);
@@ -3256,7 +3228,6 @@ function MiranRoot() {
   const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
   const [showSettings, setShowSettings] = useState(false);
   const [showSync, setShowSync] = useState(false);
-  const [showDashboardFromSession, setShowDashboardFromSession] = useState(false);
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -3441,6 +3412,7 @@ function MiranRoot() {
 
   /* replay a past sitting */
   const replaySitting = useCallback(async (sitting) => {
+    if (sessionInProgress) return;
     const verseKeys = sitting.verseKeys || [];
     if (!verseKeys.length) { showToast('Nothing to replay', ''); return; }
     setVersesLoading(true);
@@ -3521,36 +3493,43 @@ function MiranRoot() {
     const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
 
     if (cs.isReplay && cs.replaySittingId) {
-      // Delete old actions for this sitting, then add new ones
-      const oldActions = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
-      oldActions.forEach(a => DB.deleteAction(a.id));
-      const actionIds = [];
+      // Add new actions for this sitting
+      const newActionIds = [];
       (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
-        actionIds.push(DB.addAction(txt, cs.replaySittingId));
+        newActionIds.push(DB.addAction(txt, cs.replaySittingId));
       });
-      // Overwrite the sitting
+      DB.updateSessionTitle(cs.replaySittingId, finalTitle);
+
+      // Merge overlapping sittings — this also handles the replay's own sitting
+      const mergedActionIds = mergeOverlappingSittings(cs.replaySittingId, ponderedKeys, finalTitle);
+
+      // Save the merged sitting
       const arr = DB.sessions.toArray();
-      const idx = arr.findIndex(s => s.id === cs.replaySittingId);
-      if (idx >= 0) {
+      const sIdx = arr.findIndex(s => s.id === cs.replaySittingId);
+      // Also gather actions currently linked to this sitting
+      const existing = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
+      const existingIds = existing.map(a => a.id);
+      const finalActionIds = [...new Set([...existingIds, ...mergedActionIds, ...newActionIds])];
+      if (sIdx >= 0) {
         window.YDOC.transact(() => {
-          DB.sessions.delete(idx, 1);
-          DB.sessions.insert(idx, [{
+          DB.sessions.delete(sIdx, 1);
+          DB.sessions.insert(sIdx, [{
             id: cs.replaySittingId,
             title: finalTitle,
             date: today,
             verseKeys: cs.verseKeys,
             ponderedKeys,
-            actionIds,
+            actionIds: finalActionIds,
           }]);
         });
       }
+
+      // Update furthest pondered after merge
       const furthest = computeFurthestPondered(DB);
       DB.setLastPondered(furthest.surah, furthest.verse);
       DB.setLastSessionDate(today);
       DB.clearCurrentSession();
-      setShowDashboardFromSession(false);
       setView('home');
-      setTimeout(() => setSubView('sittings'), 50);
       return;
     }
 
@@ -3574,18 +3553,10 @@ function MiranRoot() {
     DB.timetableEnsurePrayers();
     DB.clearCurrentSession();
     setView('home');
-  }, [cs]);
+  }, [cs, mergeOverlappingSittings]);
 
   /* back from a step to home */
-  const goHome = useCallback(() => {
-    if (cs && cs.replaySittingId) {
-      setSubView('sittings');
-      setShowDashboardFromSession(true);
-    } else if (cs) {
-      setShowDashboardFromSession(true);
-    }
-    setView('home');
-  }, [cs]);
+  const goHome = useCallback(() => setView('home'), []);
 
   /* abandon current session — not exposed in UI by default */
 
@@ -3630,7 +3601,6 @@ function MiranRoot() {
           openHelp={(key) => setHelpKey(key)}
           themeIdx={themeIdx}
           setTheme={setTheme}
-          showDashboardFromSession={showDashboardFromSession}
         />
       )}
 
@@ -3803,9 +3773,9 @@ function OrbitBackdrop() {
 }
 
 /* ─────────── HOME ─────────── */
-function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme, showDashboardFromSession }) {
-  // During a session: only the center button + pills, unless user hit back
-  if (cs && !showDashboardFromSession) {
+function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme }) {
+  // During a session: only the center button + pills, no dashboard
+  if (cs) {
     return (
       <div className="home-scroll">
         <div className="home-center">
@@ -3821,16 +3791,10 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
     );
   }
 
-  // No session in progress, or user is session but chose to see dashboard
+  // No session in progress → show dashboard with the banner
   return (
     <div className="home-scroll">
-      {cs && showDashboardFromSession && (
-        <div className="return-banner">
-          <span className="return-banner-text">You are in a sitting — {STEPS[cs.completedSteps]?.label || 'Listen'}</span>
-          <button className="action-soft" onClick={enterCurrentStep}>Return to sitting</button>
-        </div>
-      )}
-      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={cs ? false : dailyDoneToday} startNewSession={cs ? null : startNewSession} inSession={!!cs} />
+      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
     </div>
   );
 }
@@ -3868,7 +3832,7 @@ function InSessionCenter({ cs, versesLoading, startNewSession, enterCurrentStep,
 }
 
 /* ─────────── DASHBOARD (card grid) ─────────── */
-function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession, inSession }) {
+function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession }) {
   useYjsTick();
   const sessions = DB.sessions.toArray();
   const actions = DB.getActionsSorted();
@@ -3945,8 +3909,8 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession,
 
   return (
     <>
-      {!inSession && dailyDoneToday && <DashLockedBanner />}
-      {!inSession && !dailyDoneToday && (
+      {dailyDoneToday && <DashLockedBanner />}
+      {!dailyDoneToday && (
         <div className="home-center">
           <div className="center-hub-button-wrap">
             <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
@@ -4754,8 +4718,7 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
   const [qIdx, setQIdx] = useState(Math.min(cs.qIdx ?? 0, total - 1));
   useEffect(() => { DB.setCurrentSessionField('qIdx', qIdx); }, [qIdx]);
 
-  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
-  const totalSeconds = Math.max(30, (selectedCount / 2) * 60);
+  const totalSeconds = Math.max(150, (total / 2) * 60);
   const startedAtRef = useRef(Date.now() - (cs.qsElapsedMs || 0));
   const [remaining, setRemaining] = useState(() => {
     const elapsed = (Date.now() - startedAtRef.current) / 1000;
