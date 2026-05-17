@@ -3151,6 +3151,11 @@ function buildDB(ydoc) {
       DB.sessions.insert(idx, [{ ...arr[idx], title }]);
     });
   };
+  DB.deleteSession = (id) => {
+    const arr = DB.sessions.toArray();
+    const idx = arr.findIndex(s => s.id === id);
+    if (idx >= 0) DB.sessions.delete(idx, 1);
+  };
 
   DB.getText = (key) => DB.texts.get(key) ?? '';
   DB.setText = (key, val) => DB.texts.set(key, val);
@@ -3436,7 +3441,6 @@ function MiranRoot() {
 
   /* replay a past sitting */
   const replaySitting = useCallback(async (sitting) => {
-    if (sessionInProgress) return;
     const verseKeys = sitting.verseKeys || [];
     if (!verseKeys.length) { showToast('Nothing to replay', ''); return; }
     setVersesLoading(true);
@@ -3517,43 +3521,36 @@ function MiranRoot() {
     const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
 
     if (cs.isReplay && cs.replaySittingId) {
-      // Add new actions for this sitting
-      const newActionIds = [];
+      // Delete old actions for this sitting, then add new ones
+      const oldActions = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
+      oldActions.forEach(a => DB.deleteAction(a.id));
+      const actionIds = [];
       (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
-        newActionIds.push(DB.addAction(txt, cs.replaySittingId));
+        actionIds.push(DB.addAction(txt, cs.replaySittingId));
       });
-      DB.updateSessionTitle(cs.replaySittingId, finalTitle);
-
-      // Merge overlapping sittings — this also handles the replay's own sitting
-      const mergedActionIds = mergeOverlappingSittings(cs.replaySittingId, ponderedKeys, finalTitle);
-
-      // Save the merged sitting
+      // Overwrite the sitting
       const arr = DB.sessions.toArray();
-      const sIdx = arr.findIndex(s => s.id === cs.replaySittingId);
-      // Also gather actions currently linked to this sitting
-      const existing = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
-      const existingIds = existing.map(a => a.id);
-      const finalActionIds = [...new Set([...existingIds, ...mergedActionIds, ...newActionIds])];
-      if (sIdx >= 0) {
+      const idx = arr.findIndex(s => s.id === cs.replaySittingId);
+      if (idx >= 0) {
         window.YDOC.transact(() => {
-          DB.sessions.delete(sIdx, 1);
-          DB.sessions.insert(sIdx, [{
+          DB.sessions.delete(idx, 1);
+          DB.sessions.insert(idx, [{
             id: cs.replaySittingId,
             title: finalTitle,
             date: today,
             verseKeys: cs.verseKeys,
             ponderedKeys,
-            actionIds: finalActionIds,
+            actionIds,
           }]);
         });
       }
-
-      // Update furthest pondered after merge
       const furthest = computeFurthestPondered(DB);
       DB.setLastPondered(furthest.surah, furthest.verse);
       DB.setLastSessionDate(today);
       DB.clearCurrentSession();
+      setShowDashboardFromSession(false);
       setView('home');
+      setTimeout(() => setSubView('sittings'), 50);
       return;
     }
 
@@ -3577,15 +3574,14 @@ function MiranRoot() {
     DB.timetableEnsurePrayers();
     DB.clearCurrentSession();
     setView('home');
-  }, [cs, mergeOverlappingSittings]);
+  }, [cs]);
 
   /* back from a step to home */
   const goHome = useCallback(() => {
     if (cs && cs.replaySittingId) {
-      // User came from replaying a sitting — land in sittings
       setSubView('sittings');
+      setShowDashboardFromSession(true);
     } else if (cs) {
-      // Active session — show dashboard with return pill
       setShowDashboardFromSession(true);
     }
     setView('home');
