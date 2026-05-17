@@ -4489,6 +4489,7 @@
 
                 /* view: which screen is showing */
                 const [view, setView] = useState("home"); // 'home' | 'listen' | 'select' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
+                const [homeTab, setHomeTab] = useState("sitting");
                 const [subView, setSubView] = useState(null); // dashboard subsection key
                 const [returnSubView, setReturnSubView] = useState(null); // where to go back after replay
                 const [helpKey, setHelpKey] = useState(null);
@@ -4540,6 +4541,7 @@
                 /* start a new session */
                 const startNewSession = useCallback(async () => {
                     if (sessionInProgress) return;
+                    setHomeTab("sitting");
                     const furthest = computeFurthestPondered(DB);
                     const start = computeNextSessionStart(
                         furthest.surah,
@@ -5067,6 +5069,8 @@
                                 openHelp={(key) => setHelpKey(key)}
                                 themeIdx={themeIdx}
                                 setTheme={setTheme}
+                                homeTab={homeTab}
+                                setHomeTab={setHomeTab}
                             />
                         )}
 
@@ -5253,12 +5257,30 @@
                 openHelp,
                 themeIdx,
                 setTheme,
+                homeTab,
+                setHomeTab,
             }) {
-                const [showDash, setShowDash] = useState(!cs);
-
-                if (!cs) {
+                if (homeTab === "dashboard") {
                     return (
                         <div className="home-scroll">
+                            <button
+                                className="settings-btn"
+                                style={{ right: "auto", left: "16px" }}
+                                onClick={() => setHomeTab("sitting")}
+                                aria-label="Go to sitting"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="12" cy="12" r="4" />
+                                    <circle cx="12" cy="12" r="10" />
+                                </svg>
+                            </button>
                             <Dashboard
                                 DB={DB}
                                 openSection={openSection}
@@ -5272,36 +5294,76 @@
 
                 return (
                     <div className="home-scroll">
-                        <BackButton onClick={() => setShowDash((d) => !d)} />
+                        <button
+                            className="settings-btn"
+                            style={{ right: "auto", left: "16px" }}
+                            onClick={() => setHomeTab("dashboard")}
+                            aria-label="Go to dashboard"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <rect x="3" y="3" width="7" height="7" rx="1" />
+                                <rect
+                                    x="14"
+                                    y="3"
+                                    width="7"
+                                    height="7"
+                                    rx="1"
+                                />
+                                <rect
+                                    x="14"
+                                    y="14"
+                                    width="7"
+                                    height="7"
+                                    rx="1"
+                                />
+                                <rect
+                                    x="3"
+                                    y="14"
+                                    width="7"
+                                    height="7"
+                                    rx="1"
+                                />
+                            </svg>
+                        </button>
                         <div className="home-center">
                             <InSessionCenter
                                 cs={cs}
+                                dailyDoneToday={dailyDoneToday}
                                 versesLoading={versesLoading}
                                 startNewSession={startNewSession}
                                 enterCurrentStep={enterCurrentStep}
                                 revisitStep={revisitStep}
                             />
                         </div>
-                        {showDash && (
-                            <Dashboard
-                                DB={DB}
-                                openSection={openSection}
-                                openHelp={openHelp}
-                                dailyDoneToday={true}
-                                startNewSession={startNewSession}
-                            />
-                        )}
                     </div>
                 );
             }
 
             function InSessionCenter({
                 cs,
+                dailyDoneToday,
                 versesLoading,
                 startNewSession,
                 enterCurrentStep,
                 revisitStep,
             }) {
+                const [t, setT] = useState(countdownToMidnight);
+                useEffect(() => {
+                    if (!dailyDoneToday) return;
+                    const i = setInterval(
+                        () => setT(countdownToMidnight()),
+                        1000,
+                    );
+                    return () => clearInterval(i);
+                }, [dailyDoneToday]);
+
                 const completedCount = cs?.completedSteps ?? 0;
                 const completedSteps = STEPS.slice(0, completedCount);
                 const isStarting = !cs;
@@ -5311,11 +5373,51 @@
                     : nextStep
                       ? nextStep.label
                       : "Listen";
+                const ready = t.h === 0 && t.m === 0 && t.s === 0;
+
                 const onClick = () => {
                     if (versesLoading) return;
-                    if (isStarting) startNewSession();
-                    else enterCurrentStep();
+                    if (isStarting) {
+                        if (dailyDoneToday && !ready) return;
+                        startNewSession();
+                    } else {
+                        enterCurrentStep();
+                    }
                 };
+
+                if (isStarting && dailyDoneToday && !ready) {
+                    return (
+                        <div className="center-hub-button-wrap">
+                            <button
+                                className="center-button"
+                                data-locked="true"
+                                onClick={onClick}
+                            >
+                                <div className="center-button-lock">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect
+                                            x="5"
+                                            y="11"
+                                            width="14"
+                                            height="9"
+                                            rx="2"
+                                        />
+                                        <path d="M8 11V8a4 4 0 018 0v3" />
+                                    </svg>
+                                </div>
+                                <div className="center-button-countdown">
+                                    <div className="center-button-countdown-time">
+                                        {pad2(t.h)}:{pad2(t.m)}:{pad2(t.s)}
+                                    </div>
+                                    <div className="center-button-countdown-label">
+                                        Next sitting
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    );
+                }
+
                 return (
                     <>
                         <div className="center-pills">
@@ -5496,47 +5598,53 @@
                         else openHelp("nextSession");
                     };
                     return (
-                        <div className="dash-locked-card" onClick={handleClick}>
-                            <div className="dash-locked-icon">
-                                {ready ? (
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        style={{ stroke: "var(--accent)" }}
-                                    >
-                                        <path
-                                            d="M8 5v14l11-7z"
-                                            fill="currentColor"
-                                            stroke="none"
-                                        />
-                                    </svg>
-                                ) : (
-                                    <svg viewBox="0 0 24 24">
-                                        <rect
-                                            x="5"
-                                            y="11"
-                                            width="14"
-                                            height="9"
-                                            rx="2"
-                                        />
-                                        <path d="M8 11V8a4 4 0 018 0v3" />
-                                    </svg>
-                                )}
+                        <div
+                            style={{
+                                width: "100%",
+                                maxWidth: "760px",
+                                marginTop: "44px",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                            }}
+                        >
+                            {dailyDoneToday && <DashLockedBanner />}
+                            <div className="dash-daily-label">
+                                Your dashboard
                             </div>
-                            <div className="dash-locked-info">
-                                <div className="dash-locked-label">
-                                    {ready
-                                        ? "Your sitting is ready"
-                                        : "Next sitting opens in"}
-                                </div>
-                                <div className="dash-locked-time">
-                                    {ready
-                                        ? "Begin"
-                                        : `${pad2(t.h)}:${pad2(t.m)}:${pad2(t.s)}`}
-                                </div>
-                                <div className="dash-locked-verses">
-                                    {nextRange.surah}:{nextRange.startVerse} –{" "}
-                                    {nextRange.surah}:{nextRange.endVerse}
-                                </div>
+                            <div className="dash-grid">
+                                {cards.map((c) => (
+                                    <div
+                                        key={c.key}
+                                        className="dash-card"
+                                        onClick={() => openSection(c.key)}
+                                    >
+                                        <button
+                                            className="dash-card-help"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openHelp(c.helpKey);
+                                            }}
+                                            aria-label="What is this"
+                                        >
+                                            ?
+                                        </button>
+                                        <div className="dash-card-icon">
+                                            {c.icon}
+                                        </div>
+                                        <div className="dash-card-title">
+                                            {c.title}
+                                        </div>
+                                        <div className="dash-card-eyebrow">
+                                            {c.eyebrow}
+                                        </div>
+                                        <div
+                                            className={`dash-card-preview ${c.empty ? "empty" : ""}`}
+                                        >
+                                            {c.preview}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     );
