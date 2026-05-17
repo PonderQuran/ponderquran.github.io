@@ -3949,8 +3949,8 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession,
 
   return (
     <>
-      {dailyDoneToday && <DashLockedBanner />}
-      {!dailyDoneToday && (
+      {!inSession && dailyDoneToday && <DashLockedBanner />}
+      {!inSession && !dailyDoneToday && (
         <div className="home-center">
           <div className="center-hub-button-wrap">
             <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
