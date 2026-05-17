@@ -1881,6 +1881,18 @@ input, textarea { font-family: inherit; }
   color: var(--ink);
   line-height: 1.5;
 }
+.res-row-edit {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid var(--accent);
+  background: transparent;
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 15px;
+  padding: 4px 0;
+  outline: none;
+}
 .res-row-controls {
   display: flex;
   gap: 4px;
@@ -1896,6 +1908,17 @@ input, textarea { font-family: inherit; }
 .res-arrow:hover:not(:disabled) { color: var(--accent); }
 .res-arrow:disabled { opacity: 0.2; cursor: not-allowed; }
 .res-arrow svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+.res-delete {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  color: var(--ink-faint);
+  display: flex;
+  align-items: center; justify-content: center;
+  transition: color 200ms;
+  opacity: 0.5;
+}
+.res-delete:hover { color: #e07070; opacity: 1; }
+.res-delete svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
 .res-meta {
   font-family: 'Inter Tight', sans-serif;
   font-size: 9px;
@@ -2563,116 +2586,45 @@ input, textarea { font-family: inherit; }
   transform: scale(1.12);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 0 0 2px var(--ink), 0 0 16px var(--accent);
 }
-.sett-sync-status {
+.sett-file-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
 }
-.sett-sync-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.sett-sync-dot.connected { background: #5ec27a; box-shadow: 0 0 8px #5ec27a; }
-.sett-sync-dot.connecting { background: #e5a850; box-shadow: 0 0 8px #e5a850; animation: v-twinkle 1s ease-in-out infinite; }
-.sett-sync-dot.disconnected { background: #8a6e7a; }
-
-/* ── Sync modal ── */
-.sync-backdrop {
-  position: fixed; inset: 0;
-  z-index: 85;
-  background: color-mix(in oklab, var(--bg) 70%, transparent);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  display: flex;
-  align-items: center; justify-content: center;
-  padding: 24px;
-  animation: v-fade-in 300ms ease;
-}
-.sync-panel {
-  width: min(500px, 100%);
-  background: color-mix(in oklab, var(--bg) 92%, var(--bg-soft));
-  border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  padding: 32px 24px;
-  animation: v-step-in 400ms cubic-bezier(0.22, 1, 0.36, 1);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.sync-title {
-  font-family: 'Fraunces', 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 24px;
-  font-weight: 300;
-  color: var(--ink);
-  text-align: center;
-}
-.sync-step {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.sync-step-label {
-  font-family: 'Inter Tight', sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--accent);
-  opacity: 0.8;
-}
-.sync-step-hint {
+.sett-file-row:last-child { margin-bottom: 0; }
+.sett-file-label {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ink-soft);
-  opacity: 0.8;
+  flex: 1;
+}
+.sett-file-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-faint);
+  opacity: 0.7;
   line-height: 1.5;
+  margin-bottom: 14px;
 }
-.sync-code-area {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
-  background: color-mix(in oklab, var(--bg) 40%, transparent);
-  color: var(--ink);
-  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  word-break: break-all;
-  line-height: 1.55;
-  min-height: 48px;
-  user-select: all;
-  -webkit-user-select: all;
-  transition: border-color 200ms;
-}
-.sync-code-area:focus { border-color: var(--accent); outline: none; }
-.sync-copy-btn {
-  align-self: flex-end;
+.sett-file-btn {
   font-family: 'Inter Tight', sans-serif;
   font-size: 10px;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  transition: color 200ms;
-  padding: 4px 8px;
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  border-radius: 10px;
+  padding: 8px 16px;
+  transition: all 250ms;
+  white-space: nowrap;
 }
-.sync-copy-btn:hover { color: var(--accent); }
-.sync-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  margin-top: 8px;
-}
+.sett-file-btn:hover { color: var(--accent); border-color: var(--accent); }
+.sett-file-btn.danger:hover { color: #e07070; border-color: #e07070; }
+.sett-file-input { display: none; }
 
 /* ── Review mode layout ── */
 .review-banner {
@@ -2912,17 +2864,61 @@ function countdownToMidnight() {
 }
 function pad2(n) { return String(n).padStart(2, '0'); }
 
-// ── simple compression helpers for sync codes ──
-function compressForSync(str) {
-  try {
-    // compress via deflate-like approach: repeat chars
-    return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-  } catch(e) { return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+// ── file export helper ──
+function exportDbJSON() {
+  const data = {
+    meta: {},
+    currentSession: {},
+    sessions: window.DB.sessions.toArray(),
+    actions: window.DB.actions.toArray(),
+    texts: {},
+    goals: {},
+    timetable: window.DB.timetable.toArray(),
+  };
+  try { window.DB.meta.forEach((v, k) => { data.meta[k] = v; }); } catch(e) {}
+  try { window.DB.currentSession.forEach((v, k) => { data.currentSession[k] = v; }); } catch(e) {}
+  try { window.DB.texts.forEach((v, k) => { data.texts[k] = v; }); } catch(e) {}
+  try { window.DB.goals.forEach((v, k) => { data.goals[k] = v; }); } catch(e) {}
+  return JSON.stringify(data, null, 2);
 }
-function decompressForSync(s) {
-  try {
-    return decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
-  } catch(e) { return atob(s.replace(/-/g,'+').replace(/_/g,'/')); }
+function importDbJSON(jsonStr, DB) {
+  const data = JSON.parse(jsonStr);
+  window.YDOC.transact(() => {
+    if (data.meta) {
+      Object.entries(data.meta).forEach(([k, v]) => DB.meta.set(k, v));
+    }
+    if (data.sessions && Array.isArray(data.sessions)) {
+      DB.sessions.delete(0, DB.sessions.length);
+      data.sessions.forEach(s => DB.sessions.push([s]));
+    }
+    if (data.actions && Array.isArray(data.actions)) {
+      DB.actions.delete(0, DB.actions.length);
+      data.actions.forEach(a => DB.actions.push([a]));
+    }
+    if (data.texts) {
+      DB.texts.forEach((_, k) => DB.texts.delete(k));
+      Object.entries(data.texts).forEach(([k, v]) => DB.texts.set(k, v));
+    }
+    if (data.goals) {
+      DB.goals.forEach((_, k) => DB.goals.delete(k));
+      Object.entries(data.goals).forEach(([k, v]) => DB.goals.set(k, v));
+    }
+    if (data.timetable && Array.isArray(data.timetable)) {
+      DB.timetable.delete(0, DB.timetable.length);
+      data.timetable.forEach(b => DB.timetable.push([b]));
+    }
+  });
+}
+function deleteAllData(DB) {
+  window.YDOC.transact(() => {
+    DB.sessions.delete(0, DB.sessions.length);
+    DB.actions.delete(0, DB.actions.length);
+    DB.timetable.delete(0, DB.timetable.length);
+    DB.meta.forEach((_, k) => DB.meta.delete(k));
+    DB.texts.forEach((_, k) => DB.texts.delete(k));
+    DB.goals.forEach((_, k) => DB.goals.delete(k));
+    DB.currentSession.forEach((_, k) => DB.currentSession.delete(k));
+  });
 }
 
 async function fetchSurahInfo(n) {
@@ -3224,10 +3220,10 @@ function MiranRoot() {
   /* view: which screen is showing */
   const [view, setView] = useState('home'); // 'home' | 'listen' | 'select' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
   const [subView, setSubView] = useState(null); // dashboard subsection key
+  const [returnSubView, setReturnSubView] = useState(null); // where to go back after replay
   const [helpKey, setHelpKey] = useState(null);
   const [showIntro, setShowIntro] = useState(!DB.getHideIntro());
   const [showSettings, setShowSettings] = useState(false);
-  const [showSync, setShowSync] = useState(false);
 
   /* toast & confirm */
   const [toast, setToast] = useState(null);
@@ -3411,10 +3407,11 @@ function MiranRoot() {
   }, []);
 
   /* replay a past sitting */
-  const replaySitting = useCallback(async (sitting) => {
+  const replaySitting = useCallback(async (sitting, fromSubView) => {
     if (sessionInProgress) return;
     const verseKeys = sitting.verseKeys || [];
     if (!verseKeys.length) { showToast('Nothing to replay', ''); return; }
+    setReturnSubView(fromSubView || null);
     setVersesLoading(true);
     try {
       const verses = await Promise.all(verseKeys.map(k => fetchVerseDetails(k)));
@@ -3475,8 +3472,34 @@ function MiranRoot() {
     if (!cs) return;
     const next = Math.max(cs.completedSteps, stepIdx + 1);
     DB.setCurrentSessionField('completedSteps', next);
+
+    if (stepIdx === 1 && cs.isReplay && cs.replaySittingId) {
+      const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
+      const mergedActionIds = mergeOverlappingSittings(cs.replaySittingId, ponderedKeys, cs.title || '');
+      const existing = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
+      const existingIds = existing.map(a => a.id);
+      const allActionIds = [...new Set([...existingIds, ...mergedActionIds])];
+      const allActions = DB.getActionsSorted().filter(a => allActionIds.includes(a.id));
+      const writeActions = allActions.length > 0
+        ? allActions.map(a => a.text || '')
+        : [''];
+      DB.setCurrentSessionField('writeActions', writeActions);
+    }
+
+    if (stepIdx === 1 && !cs.isReplay) {
+      const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
+      const mergedActionIds = mergeOverlappingSittings(cs.id, ponderedKeys, cs.title || '');
+      if (mergedActionIds.length > 0) {
+        const allActions = DB.getActionsSorted().filter(a => mergedActionIds.includes(a.id));
+        const writeActions = allActions.length > 0
+          ? allActions.map(a => a.text || '')
+          : [''];
+        DB.setCurrentSessionField('writeActions', writeActions);
+      }
+    }
+
     setView('home');
-  }, [cs]);
+  }, [cs, mergeOverlappingSittings]);
 
   /* save Write step → save actions → ask for title */
   const submitWrite = useCallback((writeActions) => {
@@ -3493,23 +3516,17 @@ function MiranRoot() {
     const ponderedKeys = cs.verseKeys.slice(0, (cs.selectedEndIdx ?? 0) + 1);
 
     if (cs.isReplay && cs.replaySittingId) {
-      // Add new actions for this sitting
       const newActionIds = [];
       (cs.writeActions || []).map(s => s.trim()).filter(Boolean).forEach(txt => {
         newActionIds.push(DB.addAction(txt, cs.replaySittingId));
       });
       DB.updateSessionTitle(cs.replaySittingId, finalTitle);
 
-      // Merge overlapping sittings — this also handles the replay's own sitting
-      const mergedActionIds = mergeOverlappingSittings(cs.replaySittingId, ponderedKeys, finalTitle);
-
-      // Save the merged sitting
       const arr = DB.sessions.toArray();
       const sIdx = arr.findIndex(s => s.id === cs.replaySittingId);
-      // Also gather actions currently linked to this sitting
       const existing = DB.getActionsSorted().filter(a => a.sessionId === cs.replaySittingId);
       const existingIds = existing.map(a => a.id);
-      const finalActionIds = [...new Set([...existingIds, ...mergedActionIds, ...newActionIds])];
+      const finalActionIds = [...new Set([...existingIds, ...newActionIds])];
       if (sIdx >= 0) {
         window.YDOC.transact(() => {
           DB.sessions.delete(sIdx, 1);
@@ -3553,10 +3570,17 @@ function MiranRoot() {
     DB.timetableEnsurePrayers();
     DB.clearCurrentSession();
     setView('home');
-  }, [cs, mergeOverlappingSittings]);
+  }, [cs]);
 
-  /* back from a step to home */
-  const goHome = useCallback(() => setView('home'), []);
+  /* back from a step to home (or to subView if came from subscreen) */
+  const goHome = useCallback(() => {
+    if (returnSubView) {
+      setSubView(returnSubView);
+      setReturnSubView(null);
+    } else {
+      setView('home');
+    }
+  }, [returnSubView]);
 
   /* abandon current session — not exposed in UI by default */
 
@@ -3584,7 +3608,7 @@ function MiranRoot() {
       <OrbitBackdrop />
 
       {/* Settings button — only on home */}
-      {view === 'home' && !subView && !showIntro && !showSettings && !showSync && (
+      {view === 'home' && !subView && !showIntro && !showSettings && (
         <SettingsButton onClick={() => setShowSettings(true)} />
       )}
 
@@ -3689,15 +3713,6 @@ function MiranRoot() {
         <SettingsModal
           DB={DB}
           onClose={() => setShowSettings(false)}
-          onOpenSync={() => { setShowSettings(false); setShowSync(true); }}
-        />
-      )}
-
-      {/* Sync panel */}
-      {showSync && (
-        <SyncPanel
-          DB={DB}
-          onClose={() => setShowSync(false)}
         />
       )}
 
@@ -3774,11 +3789,10 @@ function OrbitBackdrop() {
 
 /* ─────────── HOME ─────────── */
 function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, enterCurrentStep, revisitStep, openSection, openHelp, themeIdx, setTheme }) {
-  // During a session: only the center button + pills, no dashboard
-  if (cs) {
-    return (
-      <div className="home-scroll">
-        <div className="home-center">
+  return (
+    <div className="home-scroll">
+      {cs && (
+        <div className="home-center" style={{ flex: '0 0 auto', minHeight: 'auto', padding: '18px 0 10px' }}>
           <InSessionCenter
             cs={cs}
             versesLoading={versesLoading}
@@ -3787,14 +3801,8 @@ function HomeView({ DB, cs, dailyDoneToday, versesLoading, startNewSession, ente
             revisitStep={revisitStep}
           />
         </div>
-      </div>
-    );
-  }
-
-  // No session in progress → show dashboard with the banner
-  return (
-    <div className="home-scroll">
-      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday} startNewSession={startNewSession} />
+      )}
+      <Dashboard DB={DB} openSection={openSection} openHelp={openHelp} dailyDoneToday={dailyDoneToday || !!cs} startNewSession={startNewSession} cs={cs} enterCurrentStep={enterCurrentStep} />
     </div>
   );
 }
@@ -3832,7 +3840,7 @@ function InSessionCenter({ cs, versesLoading, startNewSession, enterCurrentStep,
 }
 
 /* ─────────── DASHBOARD (card grid) ─────────── */
-function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession }) {
+function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession, cs, enterCurrentStep }) {
   useYjsTick();
   const sessions = DB.sessions.toArray();
   const actions = DB.getActionsSorted();
@@ -3909,8 +3917,28 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
 
   return (
     <>
-      {dailyDoneToday && <DashLockedBanner />}
-      {!dailyDoneToday && (
+      {cs ? (
+        <div className="home-center" style={{ flex: '0 0 auto', minHeight: 'auto', padding: '0 0 20px' }}>
+          <div className="center-hub-button-wrap">
+            <button className="center-button" onClick={() => { if (enterCurrentStep) enterCurrentStep(); }} aria-label="Continue session">
+              <span className="center-button-label">
+                {STEPS[cs.completedSteps]?.label || 'Continue'}
+              </span>
+            </button>
+          </div>
+          <div className="center-pills" style={{ minHeight: 28, marginTop: 8 }}>
+            {STEPS.slice(0, cs.completedSteps).map((s, i) => (
+              <span key={s.id} className="center-pill" style={{ cursor: 'default', opacity: 0.55 }}>
+                <span className="center-pill-dot" />
+                <span>{s.label}</span>
+              </span>
+            ))}
+            <span style={{ fontSize: 9, letterSpacing: '0.4em', textTransform: 'uppercase', color: 'var(--ink-faint)', opacity: 0.5, fontFamily: "'Inter Tight', sans-serif" }}>
+              Sitting in progress
+            </span>
+          </div>
+        </div>
+      ) : dailyDoneToday ? <DashLockedBanner /> : (
         <div className="home-center">
           <div className="center-hub-button-wrap">
             <button className="center-button" onClick={startNewSession} aria-label="Begin Listen">
@@ -3922,7 +3950,7 @@ function Dashboard({ DB, openSection, openHelp, dailyDoneToday, startNewSession 
           </div>
         </div>
       )}
-      <div className="dash-daily-label">{dailyDoneToday ? 'While you wait' : 'Your dashboard'}</div>
+      <div className="dash-daily-label">{dailyDoneToday || cs ? 'While you wait' : 'Your dashboard'}</div>
       <div className="dash-grid">
         {cards.map(c => (
           <div key={c.key} className="dash-card" onClick={() => openSection(c.key)}>
@@ -3996,12 +4024,14 @@ function IntroOverlay({ DB, onDismiss }) {
 }
 
 /* ─────────── SETTINGS MODAL ─────────── */
-function SettingsModal({ DB, onClose, onOpenSync }) {
+function SettingsModal({ DB, onClose }) {
   useYjsTick();
   const langCode = DB.getLangCode();
   const translationId = DB.getTranslationId();
   const tafsirId = DB.getTafsirId();
   const recitationId = DB.getRecitationId();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [fileMessage, setFileMessage] = useState(null);
 
   const handleLangChange = (code) => {
     const l = window.LANGUAGES.find(x => x.code === code);
@@ -4010,6 +4040,56 @@ function SettingsModal({ DB, onClose, onOpenSync }) {
     DB.setTranslationId(l.translationId);
     DB.setTafsirId(l.tafsirId);
     DB.setRecitationId(l.recitationId);
+  };
+
+  const handleExport = () => {
+    try {
+      const json = exportDbJSON();
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `miran-backup-${todayStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setFileMessage({ type: 'ok', text: 'Database exported.' });
+      setTimeout(() => setFileMessage(null), 2400);
+    } catch (e) {
+      setFileMessage({ type: 'err', text: 'Export failed.' });
+      setTimeout(() => setFileMessage(null), 2400);
+    }
+  };
+
+  const handleImportClick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          importDbJSON(reader.result, DB);
+          setFileMessage({ type: 'ok', text: 'Database imported.' });
+          setTimeout(() => setFileMessage(null), 2400);
+        } catch (err) {
+          setFileMessage({ type: 'err', text: 'Invalid file.' });
+          setTimeout(() => setFileMessage(null), 2400);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const handleDeleteAll = () => {
+    deleteAllData(DB);
+    setShowDeleteConfirm(false);
+    setFileMessage({ type: 'ok', text: 'All data deleted.' });
+    setTimeout(() => setFileMessage(null), 2400);
   };
 
   return (
@@ -4057,13 +4137,37 @@ function SettingsModal({ DB, onClose, onOpenSync }) {
         </div>
 
         <div className="sett-section">
-          <div className="sett-section-label">Sync</div>
-          <p className="sync-step-hint" style={{ marginBottom: 12 }}>Keep your sittings, resolutions, and writings in sync between your phone and computer.</p>
-          <button className="action" onClick={onOpenSync}>
-            <span className="action-text">Open sync</span>
-            <span className="action-line" />
-          </button>
+          <div className="sett-section-label">Data</div>
+          <p className="sett-file-hint">Export your database as a file, or import one from another device.</p>
+          <div className="sett-file-row">
+            <span className="sett-file-label">Export backup</span>
+            <button className="sett-file-btn" onClick={handleExport}>Download</button>
+          </div>
+          <div className="sett-file-row">
+            <span className="sett-file-label">Import backup</span>
+            <button className="sett-file-btn" onClick={handleImportClick}>Choose file</button>
+          </div>
+          <div className="sett-file-row" style={{ marginTop: 10 }}>
+            <span className="sett-file-label" style={{ color: '#e07070', opacity: 0.85 }}>Delete all data</span>
+            <button className="sett-file-btn danger" onClick={() => setShowDeleteConfirm(true)}>Delete</button>
+          </div>
+          {fileMessage && (
+            <div style={{
+              marginTop: 10, textAlign: 'center',
+              fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: 13,
+              color: fileMessage.type === 'ok' ? 'var(--accent)' : '#e07070'
+            }}>{fileMessage.text}</div>
+          )}
         </div>
+
+        {showDeleteConfirm && (
+          <ConfirmModal
+            eyebrow="Delete everything"
+            message="This will permanently delete all sittings, resolutions, writings, and settings. Are you sure?"
+            onConfirm={handleDeleteAll}
+            onCancel={() => setShowDeleteConfirm(false)}
+          />
+        )}
 
         <div className="sett-section" style={{ borderBottom: 'none', paddingBottom: 28 }}>
           <div className="sett-section-label">About</div>
@@ -4071,315 +4175,6 @@ function SettingsModal({ DB, onClose, onOpenSync }) {
             Show introduction again
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────── SYNC PANEL (WebRTC + Yjs) ─────────── */
-function SyncPanel({ DB, onClose }) {
-  useYjsTick();
-  const [mode, setMode] = useState(null); // null | 'host' | 'guest'
-  const [step, setStep] = useState(0); // 0 = offer/exchange, 1 = answer/exchange
-  const [hostCode, setHostCode] = useState('');
-  const [guestCode, setGuestCode] = useState('');
-  const [pasteInput, setPasteInput] = useState('');
-  const [status, setStatus] = useState('idle');
-  const [statusMessage, setStatusMessage] = useState('');
-  const [copied, setCopied] = useState({ host: false, guest: false });
-
-  const iceServers = useMemo(() => [{ urls: 'stun:stun.l.google.com:19302' }], []);
-
-  // Shared: set up Yjs sync over a given data channel
-  const attachDataChannel = useCallback((dc) => {
-    const sendUpdate = (update, origin) => {
-      if (origin === 'remote') return;
-      if (dc.readyState === 'open') {
-        dc.send(JSON.stringify({ type: 'sync-update', data: Array.from(update) }));
-      }
-    };
-    window.YDOC.on('update', sendUpdate);
-
-    dc.onopen = () => {
-      setStatus('connected');
-      setStatusMessage('Connected — syncing your data.');
-      const state = window.Y.encodeStateAsUpdate(window.YDOC);
-      dc.send(JSON.stringify({ type: 'sync-init', state: Array.from(state) }));
-      dc.send(JSON.stringify({ type: 'sync-ready' }));
-    };
-    dc.onmessage = (evt) => {
-      try {
-        const msg = JSON.parse(evt.data);
-        if (msg.type === 'sync-init') {
-          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.state), 'remote');
-        } else if (msg.type === 'sync-update') {
-          window.Y.applyUpdate(window.YDOC, new Uint8Array(msg.data), 'remote');
-        } else if (msg.type === 'sync-ready') {
-          setStatus('connected');
-          setStatusMessage('Connected — syncing your data.');
-        }
-      } catch(e) {}
-    };
-    dc.onerror = () => {
-      setStatus('error');
-      setStatusMessage('Data channel error.');
-    };
-
-    return () => { window.YDOC.off('update', sendUpdate); };
-  }, []);
-
-  // Host: create offer
-  const startHost = useCallback(async () => {
-    setMode('host');
-    setStep(0);
-    setStatus('generating');
-    setStatusMessage('Preparing connection…');
-    try {
-      const pc = new RTCPeerConnection({ iceServers });
-      window.__miranSyncPC = pc;
-      const dc = pc.createDataChannel('miran-sync', { ordered: true });
-
-      attachDataChannel(dc);
-
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'connected') {
-          setStep(1);
-        } else if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
-          setStatus('error');
-          setStatusMessage('Peer disconnected or unreachable.');
-        }
-      };
-
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      await new Promise(resolve => {
-        if (pc.iceGatheringState === 'complete') resolve();
-        else pc.addEventListener('icegatheringstatechange', () => {
-          if (pc.iceGatheringState === 'complete') resolve();
-        });
-      });
-
-      const code = compressForSync(JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp }));
-      setHostCode(code);
-      setStatus('waiting');
-      setStatusMessage('Copy your code and send it to the other device.');
-    } catch(e) {
-      setStatus('error');
-      setStatusMessage('Failed: ' + String(e).slice(0, 60));
-    }
-  }, [iceServers, attachDataChannel]);
-
-  // Guest: apply offer and create answer
-  const applyOffer = useCallback(async () => {
-    if (!pasteInput.trim()) return;
-    try {
-      const data = JSON.parse(decompressForSync(pasteInput.trim()));
-      if (data.type !== 'offer') { setStatus('error'); setStatusMessage('Not a valid host code.'); return; }
-
-      setStatus('connecting');
-      setStatusMessage('Creating connection…');
-
-      const pc = new RTCPeerConnection({ iceServers });
-
-      pc.ondatachannel = (evt) => {
-        attachDataChannel(evt.channel);
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'connected') {
-          setStep(1);
-        }
-      };
-
-      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: data.sdp }));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-
-      await new Promise(resolve => {
-        if (pc.iceGatheringState === 'complete') resolve();
-        else pc.addEventListener('icegatheringstatechange', () => {
-          if (pc.iceGatheringState === 'complete') resolve();
-        });
-      });
-
-      const code = compressForSync(JSON.stringify({ type: 'answer', sdp: pc.localDescription.sdp }));
-      setGuestCode(code);
-      setStep(1);
-      setStatus('waiting');
-      setStatusMessage('Send this answer code back to the host device.');
-    } catch(e) {
-      setStatus('error');
-      setStatusMessage('Failed: ' + String(e).slice(0, 60));
-    }
-  }, [pasteInput, iceServers, attachDataChannel]);
-
-  // Host: apply answer from guest
-  const applyAnswer = useCallback(async () => {
-    if (!pasteInput.trim()) return;
-    setStatus('connecting');
-    setStatusMessage('Establishing connection…');
-    try {
-      const data = JSON.parse(decompressForSync(pasteInput.trim()));
-      if (data.type === 'answer') {
-        // We need the stored pc — store it on window temporarily
-        if (window.__miranSyncPC) {
-          await window.__miranSyncPC.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
-          setStep(1);
-        } else {
-          setStatus('error');
-          setStatusMessage('Connection lost. Please restart sync.');
-        }
-      }
-    } catch(e) {
-      setStatus('error');
-      setStatusMessage('Invalid answer code.');
-    }
-  }, [pasteInput]);
-
-  const copyToClipboard = (text, key) => {
-    navigator.clipboard.writeText(text).catch(() => {});
-    setCopied(prev => ({ ...prev, [key]: true }));
-    setTimeout(() => setCopied(prev => ({ ...prev, [key]: false })), 2000);
-  };
-
-  const startGuest = useCallback(() => {
-    setMode('guest');
-    setStep(0);
-    setStatus('idle');
-    setStatusMessage('Paste the host code below…');
-  }, []);
-
-  const reset = () => {
-    if (window.__miranSyncPC) { window.__miranSyncPC.close(); delete window.__miranSyncPC; }
-    setMode(null); setStep(0);
-    setHostCode(''); setGuestCode(''); setPasteInput('');
-    setStatus('idle'); setStatusMessage('');
-    setCopied({ host: false, guest: false });
-  };
-
-  const statusDotClass = status === 'connected' ? 'connected' : (status === 'connecting' || status === 'generating' || status === 'waiting' ? 'connecting' : 'disconnected');
-
-  if (!mode) {
-    return (
-      <div className="sync-backdrop" onClick={onClose}>
-        <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
-          <div className="sync-title">Sync devices</div>
-          <p className="sync-step-hint" style={{ textAlign: 'center' }}>
-            Connect your phone and computer so your sittings, resolutions, and writings stay in sync — no account needed.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center', marginTop: 8 }}>
-            <button className="action" onClick={startHost}>
-              <span className="action-text">Start sync → get a code</span>
-              <span className="action-line" />
-            </button>
-            <span style={{ fontSize: 12, color: 'var(--ink-faint)', fontStyle: 'italic' }}>or</span>
-            <button className="action-soft" onClick={startGuest}>I have a code → join</button>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-            <button className="action-soft" onClick={onClose}>Close</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="sync-backdrop" onClick={onClose}>
-      <div className="sync-panel" onClick={(e) => e.stopPropagation()}>
-        <div className="sync-title">{mode === 'host' ? 'Hosting sync' : 'Joining sync'}</div>
-
-        <div className="sett-sync-status">
-          <span className={`sett-sync-dot ${statusDotClass}`} />
-          <span>{statusMessage || status}</span>
-        </div>
-
-        {mode === 'host' && step === 0 && (
-          <>
-            <div className="sync-step">
-              <div className="sync-step-label">1. Your code</div>
-              <div className="sync-step-hint">Copy this code. Send it to the other device — paste it in Messages, AirDrop, or any messenger.</div>
-              {hostCode ? (
-                <>
-                  <div className="sync-code-area" onClick={() => copyToClipboard(hostCode, 'host')}>{hostCode}</div>
-                  <button className="sync-copy-btn" onClick={() => copyToClipboard(hostCode, 'host')}>
-                    {copied.host ? 'Copied' : 'Copy'}
-                  </button>
-                </>
-              ) : (
-                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
-              )}
-            </div>
-            <div className="sync-step">
-              <div className="sync-step-label">2. Paste their answer</div>
-              <div className="sync-step-hint">Once you get a code back from the other device, paste it here.</div>
-              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the answer code…" onChange={(e) => setPasteInput(e.target.value)} />
-            </div>
-            <div className="sync-actions">
-              <button className="action-soft" onClick={reset}>Cancel</button>
-              <button className="action" onClick={applyAnswer} disabled={!pasteInput.trim()}>
-                <span className="action-text">Connect</span>
-                <span className="action-line" />
-              </button>
-            </div>
-          </>
-        )}
-
-        {mode === 'guest' && step === 0 && (
-          <>
-            <div className="sync-step">
-              <div className="sync-step-label">1. Paste the host code</div>
-              <div className="sync-step-hint">Copy the code from the host device and paste it below.</div>
-              <input className="sync-code-area" type="text" value={pasteInput} placeholder="Paste the host code…" onChange={(e) => setPasteInput(e.target.value)} />
-            </div>
-            <div className="sync-actions">
-              <button className="action-soft" onClick={reset}>Cancel</button>
-              <button className="action" onClick={applyOffer} disabled={!pasteInput.trim()}>
-                <span className="action-text">Connect</span>
-                <span className="action-line" />
-              </button>
-            </div>
-          </>
-        )}
-
-        {mode === 'guest' && step === 1 && (
-          <>
-            <div className="sync-step">
-              <div className="sync-step-label">2. Send this code back</div>
-              <div className="sync-step-hint">Copy this answer code and send it back to the host. The host will paste it on their device.</div>
-              {guestCode ? (
-                <>
-                  <div className="sync-code-area" onClick={() => copyToClipboard(guestCode, 'guest')}>{guestCode}</div>
-                  <button className="sync-copy-btn" onClick={() => copyToClipboard(guestCode, 'guest')}>
-                    {copied.guest ? 'Copied' : 'Copy'}
-                  </button>
-                </>
-              ) : (
-                <div className="sync-code-area" style={{ opacity: 0.4 }}>Generating…</div>
-              )}
-            </div>
-            <div className="sync-actions">
-              <button className="action-soft" onClick={reset}>Cancel</button>
-            </div>
-          </>
-        )}
-
-        {mode === 'host' && step === 1 && (
-          <>
-            <div className="sync-step">
-              <div className="sync-step-label">Connected</div>
-              <div className="sync-step-hint">Your devices are syncing. Data will merge automatically.</div>
-            </div>
-            <div className="sync-actions">
-              <button className="action-soft" onClick={reset}>Disconnect</button>
-            </div>
-          </>
-        )}
-
-        {status === 'error' && (
-          <div className="sync-actions">
-            <button className="action-soft" onClick={reset}>Try again</button>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -4714,11 +4509,12 @@ function PonderStep({ cs, DB, verses, onBack, onContinue, openTafsir, showToast 
 
 /* ─────────── QUESTIONS STEP (like Ponder) ─────────── */
 function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToast }) {
+  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const total = window.QUESTIONS.length;
   const [qIdx, setQIdx] = useState(Math.min(cs.qIdx ?? 0, total - 1));
   useEffect(() => { DB.setCurrentSessionField('qIdx', qIdx); }, [qIdx]);
 
-  const totalSeconds = Math.max(150, (total / 2) * 60);
+  const totalSeconds = Math.max(30, (selectedCount / 2) * 60);
   const startedAtRef = useRef(Date.now() - (cs.qsElapsedMs || 0));
   const [remaining, setRemaining] = useState(() => {
     const elapsed = (Date.now() - startedAtRef.current) / 1000;
@@ -4736,7 +4532,6 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
   }, [totalSeconds]);
 
   const ready = remaining <= 0;
-  const selectedCount = (cs.selectedEndIdx ?? 0) + 1;
   const selectedVerses = verses.slice(0, selectedCount);
 
   const tryContinue = () => {
@@ -4773,7 +4568,7 @@ function QuestionsStep({ cs, DB, verses, onBack, onComplete, openTafsir, showToa
           </button>
         </div>
         <div className="ponder-instruction">
-          Sit with {total} questions. Let them move through you. {Math.ceil(total / 2)} minutes — no less.
+          Sit with {total} questions. Let them move through you. {Math.ceil(selectedCount / 2)} minute{selectedCount > 2 ? 's' : ''} — no less.
         </div>
         <button className="action" data-blocked={!ready} onClick={tryContinue}>
           <span className="action-text">Continue</span>
@@ -4860,10 +4655,17 @@ function WriteStep({ cs, DB, onBack, onSave }) {
 
 /* ─────────── TITLE STEP ─────────── */
 function TitleStep({ cs, onSubmit }) {
-  const [title, setTitle] = useState(cs.title || '');
-  const inputRef = useRef(null);
-  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 400); }, []);
-  const submit = () => onSubmit(title);
+  const ref = useRef(null);
+  const submittedRef = useRef(false);
+  useEffect(() => {
+    if (ref.current) ref.current.value = cs.title || '';
+    setTimeout(() => ref.current?.focus(), 400);
+  }, []);
+  const submit = useCallback(() => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    onSubmit(ref.current?.value || '');
+  }, [onSubmit]);
   return (
     <div className="step-fs">
       <div className="step-fs-top">
@@ -4873,21 +4675,19 @@ function TitleStep({ cs, onSubmit }) {
       <div className="step-fs-body">
         <div className="title-step">
           <div className="title-step-prompt">Give this sitting a name.</div>
-          <div className="title-step-hint">Something you’ll recognize when you return to it. A theme. A reminder. A phrase from the verses.</div>
+          <div className="title-step-hint">Something you'll recognize when you return to it. A theme. A reminder. A phrase from the verses.</div>
           <input
-            ref={inputRef}
+            ref={ref}
             className="title-step-input"
             type="text"
-            value={title}
             placeholder="A sitting…"
-            onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
             maxLength={80}
           />
         </div>
       </div>
       <div className="step-fs-bottom">
-        <button className="action" onClick={submit}>
+        <button className="action" onClick={submit} type="button">
           <span className="action-text">Complete</span>
           <span className="action-line" />
         </button>
@@ -4906,15 +4706,6 @@ function SubsectionRouter({ subView, DB, onClose, openHelp, onReplaySitting }) {
     provision: 'Provision',
     horizons: 'Horizons',
   };
-  const Body = () => {
-    if (subView === 'sittings')    return <SittingsBody DB={DB} onReplaySitting={onReplaySitting} onClose={onClose} />;
-    if (subView === 'abodes')      return <AbodesBody DB={DB} />;
-    if (subView === 'resolutions') return <ResolutionsBody DB={DB} />;
-    if (subView === 'tomorrow')    return <TomorrowBody DB={DB} />;
-    if (subView === 'provision')   return <ProvisionBody DB={DB} />;
-    if (subView === 'horizons')    return <HorizonsBody DB={DB} />;
-    return null;
-  };
   return (
     <div className="sub-fs">
       <div className="sub-fs-top">
@@ -4926,7 +4717,12 @@ function SubsectionRouter({ subView, DB, onClose, openHelp, onReplaySitting }) {
       </div>
       <div className="sub-fs-body">
         <div className="sub-fs-inner">
-          <Body />
+          {subView === 'sittings'    && <SittingsBody  key="sittings"    DB={DB} onReplaySitting={(s) => onReplaySitting(s, subView)} onClose={onClose} />}
+          {subView === 'abodes'      && <AbodesBody    key="abodes"      DB={DB} />}
+          {subView === 'resolutions' && <ResolutionsBody key="resolutions" DB={DB} />}
+          {subView === 'tomorrow'    && <TomorrowBody  key="tomorrow"    DB={DB} />}
+          {subView === 'provision'   && <ProvisionBody key="provision"   DB={DB} />}
+          {subView === 'horizons'    && <HorizonsBody  key="horizons"    DB={DB} />}
         </div>
       </div>
     </div>
@@ -5043,22 +4839,30 @@ function CountdownTimer() {
 function AbodesBody({ DB }) {
   const [paradise, setParadise] = useState(DB.getText('paradise'));
   const [hellfire, setHellfire] = useState(DB.getText('hellfire'));
-  // debounced write
-  useEffect(() => { const t = setTimeout(() => DB.setText('paradise', paradise), 300); return () => clearTimeout(t); }, [paradise]);
-  useEffect(() => { const t = setTimeout(() => DB.setText('hellfire', hellfire), 300); return () => clearTimeout(t); }, [hellfire]);
+  const handleParadise = useCallback((e) => { setParadise(e.target.value); DB.setText('paradise', e.target.value); }, []);
+  const handleHellfire = useCallback((e) => { setHellfire(e.target.value); DB.setText('hellfire', e.target.value); }, []);
   return (
     <>
       <div className="sub-section-label">Paradise</div>
-      <textarea className="sub-textarea" value={paradise} placeholder="Picture a scene in Al-Firdaws. Where are you? What is around you? What does the light feel like…" onChange={(e) => setParadise(e.target.value)} />
+      <textarea className="sub-textarea" value={paradise} placeholder="Picture a scene in Al-Firdaws. Where are you? What is around you? What does the light feel like…" onChange={handleParadise} />
       <div className="sub-section-label">Hellfire</div>
-      <textarea className="sub-textarea" value={hellfire} placeholder="Picture, soberly and with restraint, what you wish to be saved from. Write it so vividly that fleeing it becomes natural…" onChange={(e) => setHellfire(e.target.value)} />
+      <textarea className="sub-textarea" value={hellfire} placeholder="Picture, soberly and with restraint, what you wish to be saved from. Write it so vividly that fleeing it becomes natural…" onChange={handleHellfire} />
     </>
   );
 }
 
 /* ── Resolutions ── */
 function ResolutionsBody({ DB }) {
-  const all = DB.getActionsSorted();
+  const rawAll = DB.getActionsSorted();
+  const all = useMemo(() => {
+    const seen = new Set();
+    return rawAll.filter(a => {
+      const t = (a.text || '').trim().toLowerCase();
+      if (!t || seen.has(t)) return false;
+      seen.add(t);
+      return true;
+    });
+  }, [rawAll]);
   const [showAll, setShowAll] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const visible = showAll ? all : all.slice(0, 3);
@@ -5219,18 +5023,31 @@ function TomorrowBody({ DB }) {
 
 /* ── Provision ── */
 function ProvisionBody({ DB }) {
-  const [text, setText] = useState(DB.getText('provision'));
-  useEffect(() => { const t = setTimeout(() => DB.setText('provision', text), 300); return () => clearTimeout(t); }, [text]);
-  const words = wordCount(text);
+  const ref = useRef(null);
+  const [words, setWords] = useState(0);
+  useEffect(() => {
+    if (ref.current) ref.current.value = DB.getText('provision');
+    setWords(wordCount(DB.getText('provision')));
+  }, []);
+  const handleChange = () => {
+    setWords(wordCount(ref.current.value));
+  };
+  const handleBlur = () => {
+    DB.setText('provision', ref.current.value);
+  };
+  useEffect(() => {
+    return () => { if (ref.current) DB.setText('provision', ref.current.value); };
+  }, []);
   const over = words > window.PROVISION_WORD_LIMIT;
   return (
     <>
       <textarea
+        ref={ref}
         className="sub-textarea"
         style={{ minHeight: 320 }}
-        value={text}
         placeholder="The dense, refined text you read every day. Distill. Cut. Refine again…"
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
+        onBlur={handleBlur}
       />
       <div className={`sub-counter ${over ? 'over' : ''}`}>{words} / {window.PROVISION_WORD_LIMIT} words</div>
     </>
@@ -5252,12 +5069,20 @@ function HorizonsBody({ DB }) {
   );
 }
 function HorizonsField({ DB, field }) {
-  const [val, setVal] = useState(DB.getGoal(field.key));
-  useEffect(() => { const t = setTimeout(() => DB.setGoal(field.key, val), 300); return () => clearTimeout(t); }, [val]);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) ref.current.value = DB.getGoal(field.key);
+  }, []);
+  const handleBlur = () => {
+    DB.setGoal(field.key, ref.current.value);
+  };
+  useEffect(() => {
+    return () => { if (ref.current) DB.setGoal(field.key, ref.current.value); };
+  }, []);
   return (
     <div className="goal-field">
       <div className="goal-field-label">{field.label}</div>
-      <input className="sub-textfield" type="text" value={val} placeholder={field.hint} onChange={(e) => setVal(e.target.value)} />
+      <input ref={ref} className="sub-textfield" type="text" placeholder={field.hint} onBlur={handleBlur} />
     </div>
   );
 }
