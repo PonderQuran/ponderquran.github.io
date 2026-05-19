@@ -2174,54 +2174,97 @@
             .tt-list {
                 display: flex;
                 flex-direction: column;
-                gap: 6px;
+                gap: 4px;
+                width: 100%;
             }
             .tt-row {
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                padding: 12px 14px;
+                gap: 10px;
+                padding: 10px 12px;
                 border-radius: 12px;
-                background: color-mix(in oklab, var(--bg-soft) 40%, var(--bg));
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 24%, transparent);
-                transition: border-color 200ms;
+                background: color-mix(in oklab, var(--bg-soft) 45%, var(--bg));
+                border: 1px solid color-mix(in oklab, var(--accent) 18%, transparent);
+                transition: all 220ms ease;
+                min-height: 48px;
             }
-            .tt-row:focus-within {
+            .tt-row[data-done="true"] {
+                opacity: 0.4;
+                border-color: color-mix(in oklab, var(--accent) 8%, transparent);
+            }
+            .tt-row[data-done="true"] .tt-label {
+                text-decoration: line-through;
+                text-decoration-color: color-mix(in oklab, var(--accent) 40%, transparent);
+                text-decoration-thickness: 1px;
+            }
+            .tt-row[data-type="prayer"] {
+                background: color-mix(in oklab, var(--accent) 10%, var(--bg-soft));
+                border-color: color-mix(in oklab, var(--accent) 28%, transparent);
+            }
+            .tt-row[data-type="learning"] {
+                background: color-mix(in oklab, var(--accent) 6%, var(--bg-soft));
+                border-left: 2px solid var(--accent);
+            }
+            .tt-check {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 1.5px solid color-mix(in oklab, var(--accent) 35%, transparent);
+                background: transparent;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 180ms;
+                padding: 0;
+            }
+            .tt-check svg {
+                width: 11px;
+                height: 11px;
+                stroke: var(--accent);
+                stroke-width: 2.5;
+                fill: none;
+            }
+            .tt-check[data-checked="true"] {
+                background: var(--accent);
                 border-color: var(--accent);
-                box-shadow: 0 0 12px
-                    color-mix(in oklab, var(--accent) 12%, transparent);
             }
-            .tt-row[data-prayer="true"] {
-                background: color-mix(
-                    in oklab,
-                    var(--accent) 14%,
-                    var(--bg-soft)
-                );
-                border-color: color-mix(
-                    in oklab,
-                    var(--accent) 38%,
-                    transparent
-                );
+            .tt-check[data-checked="true"] svg {
+                stroke: var(--bg);
+            }
+            .tt-check:disabled {
+                opacity: 0.2;
+                cursor: default;
+            }
+            .tt-content {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
             }
             .tt-time {
-                width: 90px; /* Increased from 70px to show full AM/PM */
+                width: 76px;
                 border: none;
                 background: transparent;
-                color: var(--ink);
+                color: var(--accent);
                 font-family: "Inter Tight", sans-serif;
                 font-variant-numeric: tabular-nums;
-                font-size: 14px;
-                letter-spacing: 0.04em;
+                font-size: 13px;
+                letter-spacing: 0.02em;
                 outline: none;
                 flex-shrink: 0;
-            }
-            .tt-time::placeholder {
-                color: var(--ink-faint);
-                opacity: 0.5;
+                opacity: 0.85;
+                padding: 0;
             }
             .tt-time::-webkit-calendar-picker-indicator {
-                filter: invert(0.7) opacity(0.4);
+                filter: invert(0.7) opacity(0.35);
+                cursor: pointer;
+            }
+            .tt-time-placeholder {
+                width: 76px;
+                flex-shrink: 0;
             }
             .tt-label {
                 flex: 1;
@@ -2232,54 +2275,61 @@
                 font-style: italic;
                 font-size: 15px;
                 outline: none;
-                padding: 4px 0;
+                padding: 0;
+                min-width: 0;
             }
-            .tt-label::placeholder {
-                color: var(--ink-faint);
-                opacity: 0.55;
-                font-style: italic;
-            }
-            .tt-row[data-prayer="true"] .tt-label {
+            .tt-row[data-type="prayer"] .tt-label {
                 font-style: normal;
                 font-family: "Inter Tight", sans-serif;
                 font-size: 11px;
-                letter-spacing: 0.3em;
+                letter-spacing: 0.25em;
                 text-transform: uppercase;
                 color: var(--accent);
                 font-weight: 500;
             }
-            .tt-remove {
-                width: 22px;
-                height: 22px;
-                color: var(--ink-faint);
-                opacity: 0;
-                transition:
-                    opacity 250ms,
-                    color 250ms;
+            .tt-row[data-type="learning"] .tt-label {
+                font-style: normal;
+                font-weight: 500;
+            }
+            .tt-controls {
+                display: flex;
+                align-items: center;
+                gap: 2px;
                 flex-shrink: 0;
             }
+            .tt-remove {
+                width: 26px;
+                height: 26px;
+                color: var(--ink-faint);
+                opacity: 0;
+                transition: all 200ms;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+            }
             .tt-row:hover .tt-remove {
-                opacity: 0.6;
+                opacity: 0.5;
             }
             .tt-remove:hover {
                 color: var(--accent);
                 opacity: 1;
+                background: color-mix(in oklab, var(--accent) 8%, transparent);
             }
             .tt-remove svg {
-                width: 12px;
-                height: 12px;
+                width: 13px;
+                height: 13px;
                 stroke: currentColor;
                 stroke-width: 1.5;
                 fill: none;
             }
             .tt-arrow {
-                width: 22px;
-                height: 22px;
+                width: 26px;
+                height: 26px;
                 color: var(--ink-faint);
-                opacity: 0.5;
-                transition:
-                    opacity 200ms,
-                    color 200ms;
+                opacity: 0;
+                transition: all 200ms;
                 flex-shrink: 0;
                 padding: 0;
                 background: none;
@@ -2288,81 +2338,153 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+                border-radius: 6px;
+            }
+            .tt-row:hover .tt-arrow {
+                opacity: 0.45;
             }
             .tt-arrow:hover {
                 color: var(--accent);
                 opacity: 1;
+                background: color-mix(in oklab, var(--accent) 8%, transparent);
             }
             .tt-arrow svg {
-                width: 12px;
-                height: 12px;
+                width: 13px;
+                height: 13px;
                 stroke: currentColor;
                 stroke-width: 1.5;
                 fill: none;
             }
-            .tt-prayer-badge {
-                width: 90px;
+            .tt-group-divider {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 4px;
+                margin-top: 2px;
+            }
+            .tt-group-divider::before {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: color-mix(in oklab, var(--accent) 12%, transparent);
+            }
+            .tt-group-label {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 9px;
+                letter-spacing: 0.35em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+                opacity: 0.55;
                 flex-shrink: 0;
+            }
+            .tt-group-divider::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: color-mix(in oklab, var(--accent) 12%, transparent);
+            }
+            .tt-summary {
+                display: flex;
+                align-items: baseline;
+                justify-content: center;
+                gap: 4px;
+                padding: 8px 0 16px;
+            }
+            .tt-summary-count {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: 28px;
+                color: var(--ink);
+                line-height: 1;
+            }
+            .tt-summary-sep {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 14px;
+                color: var(--ink-faint);
+                opacity: 0.5;
+                padding: 0 2px;
+            }
+            .tt-summary-label {
                 font-family: "Inter Tight", sans-serif;
                 font-size: 10px;
-                letter-spacing: 0.3em;
+                letter-spacing: 0.25em;
                 text-transform: uppercase;
-                color: var(--accent);
-                font-weight: 500;
-                opacity: 0.9;
+                color: var(--ink-faint);
+                opacity: 0.6;
+                margin-left: 4px;
+            }
+            .tt-empty {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                padding: 32px 16px;
+                opacity: 0.55;
+            }
+            .tt-empty-text {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: 16px;
+                color: var(--ink);
+            }
+            .tt-empty-hint {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 10px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
                 text-align: center;
             }
-            .tt-check {
-                width: 22px;
-                height: 22px;
+            .tt-add-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                background: color-mix(in oklab, var(--bg-soft) 30%, var(--bg));
+                border: 1px dashed color-mix(in oklab, var(--accent) 20%, transparent);
+                margin-top: 12px;
+                transition: all 200ms;
+            }
+            .tt-add-row:focus-within {
+                border-style: solid;
+                border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+            }
+            .tt-add-inputs {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+            }
+            .tt-add-btn {
+                width: 28px;
+                height: 28px;
                 border-radius: 50%;
-                border: 1.5px solid color-mix(in oklab, var(--accent) 40%, transparent);
-                background: transparent;
-                flex-shrink: 0;
+                border: none;
+                background: var(--accent);
+                color: var(--bg);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
+                flex-shrink: 0;
                 transition: all 200ms;
                 padding: 0;
+                opacity: 1;
             }
-            .tt-check svg {
-                width: 12px;
-                height: 12px;
-                stroke: var(--accent);
+            .tt-add-btn:disabled {
+                opacity: 0.25;
+                cursor: default;
+            }
+            .tt-add-btn svg {
+                width: 14px;
+                height: 14px;
+                stroke: currentColor;
                 stroke-width: 2;
                 fill: none;
             }
-            .tt-check[data-checked="true"] {
-                background: var(--accent);
-                border-color: var(--accent);
-            }
-            .tt-check[data-checked="true"] svg {
-                stroke: var(--bg);
-            }
-            .tt-row[data-done="true"] {
-                opacity: 0.45;
-            }
-            .tt-row[data-done="true"] .tt-label {
-                text-decoration: line-through;
-                text-decoration-color: color-mix(in oklab, var(--accent) 50%, transparent);
-                text-decoration-thickness: 1px;
-            }
-            .tt-section-title {
-                font-family: "Inter Tight", sans-serif;
-                font-size: 10px;
-                letter-spacing: 0.35em;
-                text-transform: uppercase;
-                color: var(--ink-faint);
-                opacity: 0.6;
-                padding: 8px 4px 4px;
-            }
-            .tt-section-divider {
-                height: 1px;
-                background: color-mix(in oklab, var(--accent) 15%, transparent);
-                margin: 16px 0 8px;
-                width: 100%;
-            }
+
 
             /* Resolutions */
             .res-row {
@@ -5320,8 +5442,10 @@
                     ? (actions[0]?.text?.slice(0, 70) || "—") +
                       (actions.length > 1 ? ` +${actions.length - 1} more` : "")
                     : "No commitments yet";
-                const tomorrowPreview = tomorrow.length
-                    ? `${tomorrow.length} blocks for the day`
+                const tomorrowArr = DB.timetableArr();
+                const doneCount = tomorrowArr.filter((b) => b.done).length;
+                const tomorrowPreview = tomorrowArr.length
+                    ? `${doneCount}/${tomorrowArr.length} done`
                     : "Plan tomorrow tonight";
                 const provisionPreview = provision
                     ? provision.slice(0, 80) +
@@ -7560,11 +7684,101 @@
             }
 
             /* ── Tomorrow (timetable) ── */
+            function BlockRow({ b, i, list, isTimed, toggleDone, updateTime, updateLabel, remove, moveUp, moveDown }) {
+                const done = !!b.done;
+                const type = b.type || "custom";
+                const isPrayer = type === "prayer";
+                const isLearning = type === "learning";
+                const canReorder = type === "custom" && !isTimed;
+                return (
+                    <div
+                        key={b.id}
+                        className="tt-row"
+                        data-done={done ? "true" : "false"}
+                        data-type={type}
+                    >
+                        <button
+                            className="tt-check"
+                            data-checked={done ? "true" : "false"}
+                            onClick={() => toggleDone(b.id)}
+                            aria-label={done ? "Mark undone" : "Mark done"}
+                        >
+                            {done && (
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 12l5 5L20 7" />
+                                </svg>
+                            )}
+                        </button>
+
+                        <div className="tt-content">
+                            {isTimed && (
+                                <input
+                                    className="tt-time"
+                                    type="time"
+                                    value={b.time || ""}
+                                    onChange={(e) => updateTime(b.id, e.target.value)}
+                                />
+                            )}
+                            {!isTimed && <div className="tt-time-placeholder" />}
+                            <input
+                                className="tt-label"
+                                type="text"
+                                value={b.label || ""}
+                                placeholder={isPrayer ? "" : "What you’ll do…"}
+                                onChange={(e) => updateLabel(b.id, e.target.value)}
+                                readOnly={isPrayer || isLearning}
+                            />
+                        </div>
+
+                        <div className="tt-controls">
+                            {canReorder && (
+                                <>
+                                    {i > 0 && list[i - 1].type === "custom" && (
+                                        <button
+                                            className="tt-arrow"
+                                            onClick={() => moveUp(i)}
+                                            aria-label="Move up"
+                                        >
+                                            <svg viewBox="0 0 24 24">
+                                                <path d="M6 14l6-6 6 6" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                    {i < list.length - 1 && list[i + 1].type === "custom" && (
+                                        <button
+                                            className="tt-arrow"
+                                            onClick={() => moveDown(i)}
+                                            aria-label="Move down"
+                                        >
+                                            <svg viewBox="0 0 24 24">
+                                                <path d="M6 10l6 6 6-6" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                            {(type === "custom" || type === "learning") && (
+                                <button
+                                    className="tt-remove"
+                                    onClick={() => remove(b.id)}
+                                    aria-label="Remove"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M6 6l12 12M18 6L6 18" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+
             function TomorrowBody({ DB }) {
+                useYjsTick();
                 useEffect(() => {
                     DB.timetableEnsurePrayers();
                 }, []);
-                const all = DB.timetable.toArray();
+                const all = DB.timetableArr();
 
                 const timed = useMemo(() => {
                     const list = all.filter((b) => b.time && b.time.trim());
@@ -7574,168 +7788,139 @@
 
                 const untimed = useMemo(() => {
                     const list = all.filter((b) => !b.time || !b.time.trim());
-                    list.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+                    // Prayers first (fixed order), then learning, then custom by position
+                    const prayerOrder = { Fajr: 0, Dhuhr: 1, "ʿAsr": 2, Maghrib: 3, "ʿIshāʾ": 4 };
+                    list.sort((a, b) => {
+                        if (a.type === "prayer" && b.type === "prayer") {
+                            return (prayerOrder[a.label] || 0) - (prayerOrder[b.label] || 0);
+                        }
+                        if (a.type === "prayer") return -1;
+                        if (b.type === "prayer") return 1;
+                        if (a.type === "learning" && b.type === "learning") return 0;
+                        if (a.type === "learning") return -1;
+                        if (b.type === "learning") return 1;
+                        return (a.position ?? 0) - (b.position ?? 0);
+                    });
                     return list;
                 }, [all]);
+
+                const total = timed.length + untimed.length;
+                const doneCount = all.filter((b) => b.done).length;
 
                 const updateTime = (id, time) => DB.timetableUpdate(id, { time });
                 const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
                 const toggleDone = (id) => DB.timetableToggleDone(id);
                 const remove = (id) => DB.timetableRemove(id);
-                const swapAdjacent = (i) => {
-                    const list = untimed;
-                    const idxA = all.findIndex((b) => b.id === list[i].id);
-                    const idxB = all.findIndex((b) => b.id === list[i + 1].id);
-                    if (idxA < 0 || idxB < 0) return;
-                    DB.timetableSwapPositions(idxA, idxB);
+                const moveUp = (i) => {
+                    const idxA = all.findIndex((b) => b.id === untimed[i].id);
+                    const idxB = all.findIndex((b) => b.id === untimed[i - 1].id);
+                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
                 };
-                const moveUp = (i) => { if (i > 0) swapAdjacent(i - 1); };
-                const moveDown = (i) => swapAdjacent(i);
+                const moveDown = (i) => {
+                    const idxA = all.findIndex((b) => b.id === untimed[i].id);
+                    const idxB = all.findIndex((b) => b.id === untimed[i + 1].id);
+                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
+                };
 
-                const [newTime, setNewTime] = useState("06:00");
+                const [newTime, setNewTime] = useState("");
                 const [newLabel, setNewLabel] = useState("");
                 const addBlock = () => {
                     if (!newLabel.trim()) return;
-                    DB.timetableAdd(newTime, newLabel.trim());
-                    setNewTime("06:00");
+                    const hasTime = newTime && newTime.trim();
+                    if (hasTime) {
+                        DB.timetableAdd(newTime, newLabel.trim());
+                    } else {
+                        DB.timetableAdd("", newLabel.trim());
+                    }
+                    setNewTime("");
                     setNewLabel("");
-                };
-
-                const BlockRow = ({ b, i, list, isTimed }) => {
-                    const done = !!b.done;
-                    const isPrayer = b.type === "prayer";
-                    const isLearning = b.type === "learning";
-                    const isCustom = b.type === "custom";
-                    const canReorder = isCustom && !isTimed;
-                    return (
-                        <div
-                            key={b.id}
-                            className="tt-row"
-                            data-done={done ? "true" : "false"}
-                            data-prayer={isPrayer ? "true" : "false"}
-                            data-learning={isLearning ? "true" : "false"}
-                        >
-                            <button
-                                className="tt-check"
-                                data-checked={done ? "true" : "false"}
-                                onClick={() => toggleDone(b.id)}
-                                aria-label={done ? "Mark undone" : "Mark done"}
-                            >
-                                {done && (
-                                    <svg viewBox="0 0 24 24">
-                                        <path d="M5 12l5 5L20 7" />
-                                    </svg>
-                                )}
-                            </button>
-                            {isTimed && (
-                                <input
-                                    className="tt-time"
-                                    type="time"
-                                    value={b.time || ""}
-                                    placeholder="--:--"
-                                    onChange={(e) => updateTime(b.id, e.target.value)}
-                                />
-                            )}
-                            <input
-                                className="tt-label"
-                                type="text"
-                                value={b.label || ""}
-                                placeholder={isPrayer ? "" : "What you'll do…"}
-                                onChange={(e) => updateLabel(b.id, e.target.value)}
-                                readOnly={isPrayer || isLearning}
-                            />
-                            <div className="tt-controls">
-                                {canReorder && (
-                                    <>
-                                        {i > 0 && list[i - 1].type === "custom" && (
-                                            <button
-                                                className="tt-arrow"
-                                                onClick={() => moveUp(i)}
-                                                aria-label="Move up"
-                                            >
-                                                <svg viewBox="0 0 24 24">
-                                                    <path d="M6 14l6-6 6 6" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                        {i < list.length - 1 && list[i + 1].type === "custom" && (
-                                            <button
-                                                className="tt-arrow"
-                                                onClick={() => moveDown(i)}
-                                                aria-label="Move down"
-                                            >
-                                                <svg viewBox="0 0 24 24">
-                                                    <path d="M6 10l6 6 6-6" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                    </>
-                                )}
-                                {(isCustom || isLearning) && (
-                                    <button
-                                        className="tt-remove"
-                                        onClick={() => remove(b.id)}
-                                        aria-label="Remove"
-                                    >
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M6 6l12 12M18 6L6 18" />
-                                        </svg>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    );
                 };
 
                 return (
                     <>
-                        <div className="tt-section-title">Timed blocks</div>
+                        <div className="tt-summary">
+                            <span className="tt-summary-count">{doneCount}</span>
+                            <span className="tt-summary-sep">/</span>
+                            <span className="tt-summary-count">{total}</span>
+                            <span className="tt-summary-label">{doneCount === total && total > 0 ? "All done" : "tasks"}</span>
+                        </div>
+
                         <div className="tt-list">
                             {timed.map((b, i) => (
-                                <BlockRow key={b.id} b={b} i={i} list={timed} isTimed={true} />
+                                <BlockRow
+                                    key={b.id}
+                                    b={b}
+                                    i={i}
+                                    list={timed}
+                                    isTimed={true}
+                                    toggleDone={toggleDone}
+                                    updateTime={updateTime}
+                                    updateLabel={updateLabel}
+                                    remove={remove}
+                                    moveUp={moveUp}
+                                    moveDown={moveDown}
+                                />
+                            ))}
+                            {timed.length > 0 && untimed.length > 0 && (
+                                <div className="tt-group-divider">
+                                    <span className="tt-group-label">To do</span>
+                                </div>
+                            )}
+                            {untimed.map((b, i) => (
+                                <BlockRow
+                                    key={b.id}
+                                    b={b}
+                                    i={i}
+                                    list={untimed}
+                                    isTimed={false}
+                                    toggleDone={toggleDone}
+                                    updateTime={updateTime}
+                                    updateLabel={updateLabel}
+                                    remove={remove}
+                                    moveUp={moveUp}
+                                    moveDown={moveDown}
+                                />
                             ))}
                         </div>
-                        {untimed.length > 0 && (
-                            <>
-                                <div className="tt-section-divider" />
-                                <div className="tt-section-title">Checklist</div>
-                                <div className="tt-list">
-                                    {untimed.map((b, i) => (
-                                        <BlockRow key={b.id} b={b} i={i} list={untimed} isTimed={false} />
-                                    ))}
-                                </div>
-                            </>
+
+                        {total === 0 && (
+                            <div className="tt-empty">
+                                <div className="tt-empty-text">Nothing planned yet.</div>
+                                <div className="tt-empty-hint">Add your prayers, tasks, or anything you want to accomplish.</div>
+                            </div>
                         )}
-                        <div className="sub-section-label" style={{ marginTop: 16 }}>
-                            Add a block
+
+                        <div className="tt-add-row">
+                            <button className="tt-check" data-checked="false" disabled style={{ opacity: 0.3 }}></button>
+                            <div className="tt-add-inputs">
+                                <input
+                                    className="tt-time"
+                                    type="time"
+                                    value={newTime}
+                                    onChange={(e) => setNewTime(e.target.value)}
+                                    style={{ opacity: newTime ? 1 : 0.5 }}
+                                />
+                                <input
+                                    className="tt-label"
+                                    type="text"
+                                    value={newLabel}
+                                    placeholder="What you’ll do…"
+                                    onChange={(e) => setNewLabel(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === "Enter") addBlock(); }}
+                                />
+                            </div>
+                            <button
+                                className="tt-add-btn"
+                                onClick={addBlock}
+                                disabled={!newLabel.trim()}
+                            >
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 5v14M5 12h14" />
+                                </svg>
+                            </button>
                         </div>
-                        <div className="tt-row" style={{ background: "transparent" }}>
-                            <div style={{ width: 44, flexShrink: 0 }} />
-                            <input
-                                className="tt-time"
-                                type="time"
-                                value={newTime}
-                                onChange={(e) => setNewTime(e.target.value)}
-                            />
-                            <input
-                                className="tt-label"
-                                type="text"
-                                value={newLabel}
-                                placeholder="What you'll do…"
-                                onChange={(e) => setNewLabel(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") addBlock(); }}
-                            />
-                        </div>
-                        <button
-                            className="action"
-                            onClick={addBlock}
-                            style={{ alignSelf: "center", marginTop: 6 }}
-                        >
-                            <span className="action-text">Add</span>
-                            <span className="action-line" />
-                        </button>
-                        <div className="res-meta">
-                            Set times to order blocks chronologically. Untimed blocks appear in the checklist. Check them off as you complete them.
+                        <div className="res-meta" style={{ marginTop: 8 }}>
+                            Set a time to schedule; leave it blank for a checklist task.
                         </div>
                     </>
                 );
