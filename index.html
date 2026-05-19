@@ -2312,6 +2312,57 @@
                 opacity: 0.9;
                 text-align: center;
             }
+            .tt-check {
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                border: 1.5px solid color-mix(in oklab, var(--accent) 40%, transparent);
+                background: transparent;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 200ms;
+                padding: 0;
+            }
+            .tt-check svg {
+                width: 12px;
+                height: 12px;
+                stroke: var(--accent);
+                stroke-width: 2;
+                fill: none;
+            }
+            .tt-check[data-checked="true"] {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+            .tt-check[data-checked="true"] svg {
+                stroke: var(--bg);
+            }
+            .tt-row[data-done="true"] {
+                opacity: 0.45;
+            }
+            .tt-row[data-done="true"] .tt-label {
+                text-decoration: line-through;
+                text-decoration-color: color-mix(in oklab, var(--accent) 50%, transparent);
+                text-decoration-thickness: 1px;
+            }
+            .tt-section-title {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 10px;
+                letter-spacing: 0.35em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+                opacity: 0.6;
+                padding: 8px 4px 4px;
+            }
+            .tt-section-divider {
+                height: 1px;
+                background: color-mix(in oklab, var(--accent) 15%, transparent);
+                margin: 16px 0 8px;
+                width: 100%;
+            }
 
             /* Resolutions */
             .res-row {
@@ -2920,6 +2971,45 @@
             .dash-card-help:hover {
                 color: var(--accent);
                 border-color: var(--accent);
+            }
+            .dash-card-memorize {
+                grid-column: 1 / -1;
+                border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+                cursor: default;
+            }
+            .dash-card-memorize:hover {
+                transform: none;
+                border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+            }
+            .mem-card-verse {
+                margin-top: 10px;
+                padding: 14px 16px;
+                border-radius: 14px;
+                background: color-mix(in oklab, var(--bg) 70%, transparent);
+                border: 1px solid color-mix(in oklab, var(--accent) 20%, transparent);
+                cursor: pointer;
+                transition: all 200ms;
+            }
+            .mem-card-verse:hover {
+                border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+            }
+            .mem-card-arabic {
+                font-family: "Amiri Quran", serif;
+                direction: rtl;
+                font-size: 16px;
+                line-height: 1.7;
+                color: var(--ink);
+                text-align: right;
+                opacity: 0.92;
+                margin-bottom: 6px;
+            }
+            .mem-card-translation {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: 13px;
+                line-height: 1.5;
+                color: var(--ink-soft);
+                opacity: 0.85;
             }
 
             /* Dashboard section divider */
@@ -4193,7 +4283,7 @@
                 DB.timetableEnsurePrayers = () => {
                     const existing = DB.timetable.toArray();
                     const hasPrayer = (name) =>
-                        existing.some((b) => b.isPrayer && b.label === name);
+                        existing.some((b) => b.type === "prayer" && b.label === name);
                     const missing = window.PRAYER_BLOCKS.filter(
                         (n) => !hasPrayer(n),
                     );
@@ -4205,7 +4295,8 @@
                                     id: uuid(),
                                     label: n,
                                     time: "",
-                                    isPrayer: true,
+                                    done: false,
+                                    type: "prayer",
                                 },
                             ]),
                         );
@@ -4227,7 +4318,8 @@
                             id: uuid(),
                             label,
                             time,
-                            isPrayer: false,
+                            done: false,
+                            type: "custom",
                             position: maxPos + 1,
                         },
                     ]);
@@ -4256,6 +4348,81 @@
                     DB.timetableUpdate(arr[j].id, { position: posI });
                 };
 
+                DB.timetableEnsureLearningBlock = () => {
+                    const existing = DB.timetable.toArray();
+                    const learnIdx = existing.findIndex(
+                        (b) => b.type === "learning",
+                    );
+                    ydoc.transact(() => {
+                        if (learnIdx >= 0) {
+                            DB.timetable.delete(learnIdx, 1);
+                        }
+                        const maxPos = existing.length
+                            ? Math.max(
+                                  ...existing.map((b) =>
+                                      typeof b.position === "number"
+                                          ? b.position
+                                          : 0,
+                                  ),
+                              )
+                            : -1;
+                        DB.timetable.push([
+                            {
+                                id: uuid(),
+                                label: "Learning my 5 verses",
+                                time: "",
+                                done: false,
+                                type: "learning",
+                                position: maxPos + 1,
+                            },
+                        ]);
+                    });
+                };
+
+                DB.timetableToggleDone = (id) => {
+                    const arr = DB.timetable.toArray();
+                    const idx = arr.findIndex((b) => b.id === id);
+                    if (idx < 0) return;
+                    DB.timetableUpdate(id, { done: !arr[idx].done });
+                };
+
+                DB.setLearningSitting = (id) => DB.meta.set("learningSittingId", id);
+                DB.getLearningSittingId = () => DB.meta.get("learningSittingId") || null;
+                DB.setLearnedVerseKeys = (keys) => {
+                    const arr = DB.learnedVerseKeys || ydoc.getArray("learnedVerseKeys");
+                    if (!DB.learnedVerseKeys) DB.learnedVerseKeys = arr;
+                    arr.delete(0, arr.length);
+                    keys.forEach((k) => arr.push([k]));
+                };
+                DB.getLearnedVerseKeys = () => {
+                    if (!DB.learnedVerseKeys) {
+                        DB.learnedVerseKeys = ydoc.getArray("learnedVerseKeys");
+                    }
+                    return DB.learnedVerseKeys.toArray();
+                };
+                DB.markVerseLearned = (key) => {
+                    const arr = DB.getLearnedVerseKeys();
+                    if (!arr.includes(key)) {
+                        if (!DB.learnedVerseKeys) {
+                            DB.learnedVerseKeys = ydoc.getArray("learnedVerseKeys");
+                        }
+                        DB.learnedVerseKeys.push([key]);
+                    }
+                };
+                DB.unmarkVerseLearned = (key) => {
+                    const arr = DB.getLearnedVerseKeys();
+                    const idx = arr.indexOf(key);
+                    if (idx >= 0 && DB.learnedVerseKeys) {
+                        DB.learnedVerseKeys.delete(idx, 1);
+                    }
+                };
+                DB.hasLearnedAllVerses = () => {
+                    const sittingId = DB.getLearningSittingId();
+                    if (!sittingId) return true;
+                    const arr = DB.getLearnedVerseKeys();
+                    return arr.length >= 5;
+                };
+
                 return DB;
             }
 
@@ -4278,7 +4445,7 @@
                 const lastSessionDate = DB.getLastSessionDate();
                 const sessionInProgress = !!cs;
                 const dailyDoneToday =
-                    !sessionInProgress && lastSessionDate === todayStr();
+                    (!sessionInProgress || (cs && cs.isReplay)) && lastSessionDate === todayStr();
 
                 /* in-memory verse cache (re-fetched on session start; ephemeral) */
                 const verseCacheRef = useRef({}); // { 'S:V': details }
@@ -4326,8 +4493,17 @@
                 }, [cs?.id, cs?.verseKeys?.join(",")]);
 
                 /* view: which screen is showing */
-                const [view, setView] = useState("home"); // 'home' | 'listen' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
-                const [homeTab, setHomeTab] = useState("sitting");
+                const [view, setView] = useState("home");
+
+                /* on mount: jump straight to memorize if verses pending */
+                useEffect(() => {
+                    const lsid = DB.getLearningSittingId();
+                    const learned = DB.getLearnedVerseKeys();
+                    if (lsid && learned.length < 5) {
+                        setView("memorize");
+                    }
+                }, []); // 'home' | 'listen' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
+                const [homeTab, setHomeTab] = useState("dashboard");
                 const [subView, setSubView] = useState(null); // dashboard subsection key
                 const [returnSubView, setReturnSubView] = useState(null); // where to go back after replay
                 const [helpKey, setHelpKey] = useState(null);
@@ -4377,8 +4553,7 @@
                 const setTheme = useCallback((i) => DB.setTheme(i), []);
 
                 /* start a new session */
-                const startNewSession = useCallback(async () => {
-                    if (sessionInProgress) return;
+                const doStartNewSession = useCallback(async () => {
                     setHomeTab("sitting");
                     const furthest = computeFurthestPondered(DB);
                     const start = computeNextSessionStart(
@@ -4441,6 +4616,27 @@
                     setVersesLoading(false);
                     setView("listen");
                 }, [sessionInProgress, showToast]);
+
+                const startNewSession = useCallback(() => {
+                    if (sessionInProgress) return;
+                    const hasUnlearned =
+                        DB.getLearningSittingId() &&
+                        !DB.hasLearnedAllVerses();
+                    if (hasUnlearned) {
+                        setConfirm({
+                            eyebrow: "Have you learned your verses?",
+                            message:
+                                "You have not yet memorised all 5 verses from your last sitting. Are you sure you want to begin a new sitting before completing them?",
+                            onConfirm: () => {
+                                setConfirm(null);
+                                doStartNewSession();
+                            },
+                            onCancel: () => setConfirm(null),
+                        });
+                        return;
+                    }
+                    doStartNewSession();
+                }, [sessionInProgress, doStartNewSession]);
 
                 const replaySitting = useCallback(
                     async (sitting, fromSubView) => {
@@ -4618,6 +4814,9 @@
                         DB.setLastPondered(lastS, lastV);
                         DB.setLastSessionDate(today);
                         DB.timetableEnsurePrayers();
+                        DB.setLearningSitting(cs.id);
+                        DB.setLearnedVerseKeys([]);
+                        DB.timetableEnsureLearningBlock();
                         DB.clearCurrentSession();
                         setView("home");
                     },
@@ -4698,6 +4897,8 @@
                                 setTheme={setTheme}
                                 homeTab={homeTab}
                                 setHomeTab={setHomeTab}
+                                setView={setView}
+                                verseCacheRef={verseCacheRef}
                             />
                         )}
 
@@ -4748,6 +4949,20 @@
 
                         {view === "title" && cs && (
                             <TitleStep cs={cs} onSubmit={finalizeSession} />
+                        )}
+
+                        {view === "memorize" && (
+                            <MemorizeStep
+                                DB={DB}
+                                verseCacheRef={verseCacheRef}
+                                openTafsir={openTafsir}
+                                onBack={() => {
+                                    setView("home");
+                                    setHomeTab("dashboard");
+                                }}
+                                showToast={showToast}
+                                setConfirm={setConfirm}
+                            />
                         )}
 
                         {subView && (
@@ -4876,6 +5091,8 @@
                 setTheme,
                 homeTab,
                 setHomeTab,
+                setView,
+                verseCacheRef,
             }) {
                 if (homeTab === "dashboard") {
                     return (
@@ -4887,6 +5104,8 @@
                                 openHelp={openHelp}
                                 dailyDoneToday={dailyDoneToday}
                                 setHomeTab={setHomeTab}
+                                setView={setView}
+                                verseCacheRef={verseCacheRef}
                                 cs={cs}
                             />
                         </div>
@@ -5066,6 +5285,8 @@
                 openHelp,
                 dailyDoneToday,
                 setHomeTab,
+                setView,
+                verseCacheRef,
                 cs,
             }) {
                 useYjsTick();
@@ -5113,7 +5334,35 @@
                     ? "Your aims are set"
                     : "Set your horizons";
 
+                const learningSittingId = DB.getLearningSittingId();
+                const learningSitting = sessions.find((s) => s.id === learningSittingId);
+                const learnedVerseKeys = DB.getLearnedVerseKeys();
+                const learnableKeys = learningSitting?.ponderedKeys || [];
+                const learnedCount = learnedVerseKeys.length;
+                const learnableCount = learnableKeys.length;
+                const firstUnlearnedKey = learnableKeys.find(
+                    (k) => !learnedVerseKeys.includes(k),
+                );
+                const firstUnlearnedVerse = firstUnlearnedKey
+                    ? verseCacheRef.current[firstUnlearnedKey]
+                    : null;
+                const memorizePreview = learnableCount
+                    ? `${learnedCount} / ${learnableCount} learned`
+                    : "Complete a sitting to begin";
+
                 const cards = [
+                    {
+                        key: "memorize",
+                        icon: "🧠",
+                        title: "Memorise",
+                        eyebrow: learnableCount
+                            ? `${learnedCount === learnableCount ? "All learned" : learnableCount + " verses to learn"}`
+                            : "Nothing yet",
+                        preview: memorizePreview,
+                        empty: !learnableCount,
+                        helpKey: null,
+                        isMemorize: true,
+                    },
                     {
                         key: "sittings",
                         icon: "📜",
@@ -5310,38 +5559,74 @@
                                 : "Your dashboard"}
                         </div>
                         <div className="dash-grid">
-                            {cards.map((c) => (
-                                <div
-                                    key={c.key}
-                                    className="dash-card"
-                                    onClick={() => openSection(c.key)}
-                                >
-                                    <button
-                                        className="dash-card-help"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            openHelp(c.helpKey);
-                                        }}
-                                        aria-label="What is this"
-                                    >
-                                        ?
-                                    </button>
-                                    <div className="dash-card-icon">
-                                        {c.icon}
-                                    </div>
-                                    <div className="dash-card-title">
-                                        {c.title}
-                                    </div>
-                                    <div className="dash-card-eyebrow">
-                                        {c.eyebrow}
-                                    </div>
+                            {cards.map((c) =>
+                                c.isMemorize ? (
                                     <div
-                                        className={`dash-card-preview ${c.empty ? "empty" : ""}`}
+                                        key={c.key}
+                                        className="dash-card dash-card-memorize"
                                     >
-                                        {c.preview}
+                                        <div className="dash-card-icon">{c.icon}</div>
+                                        <div className="dash-card-title">{c.title}</div>
+                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
+                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
+                                            {c.preview}
+                                        </div>
+                                        {!c.empty && firstUnlearnedVerse && (
+                                            <div className="mem-card-verse"
+                                                onClick={() => setView("memorize")}
+                                            >
+                                                {firstUnlearnedVerse.arabic && (
+                                                    <div className="mem-card-arabic arabic-font">
+                                                        {firstUnlearnedVerse.arabic}
+                                                    </div>
+                                                )}
+                                                {firstUnlearnedVerse.translation && (
+                                                    <div className="mem-card-translation">
+                                                        {firstUnlearnedVerse.translation}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        {!c.empty && (
+                                            <button
+                                                className="action"
+                                                style={{ marginTop: 10, alignSelf: "center" }}
+                                                onClick={() => setView("memorize")}
+                                            >
+                                                <span className="action-text">
+                                                    {firstUnlearnedKey ? "Continue" : "Review"}
+                                                </span>
+                                                <span className="action-line" />
+                                            </button>
+                                        )}
                                     </div>
-                                </div>
-                            ))}
+                                ) : (
+                                    <div
+                                        key={c.key}
+                                        className="dash-card"
+                                        onClick={() => openSection(c.key)}
+                                    >
+                                        {c.helpKey && (
+                                            <button
+                                                className="dash-card-help"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    openHelp(c.helpKey);
+                                                }}
+                                                aria-label="What is this"
+                                            >
+                                                ?
+                                            </button>
+                                        )}
+                                        <div className="dash-card-icon">{c.icon}</div>
+                                        <div className="dash-card-title">{c.title}</div>
+                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
+                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
+                                            {c.preview}
+                                        </div>
+                                    </div>
+                                )
+                            )}
                         </div>
                     </div>
                 );
@@ -5975,7 +6260,7 @@
 
                 const verse = verses[idx];
                 const audioRef = useRef(null);
-                const autoPlayNextRef = useRef(true);
+                const autoPlayNextRef = useRef(false);
                 const [audioState, setAudioState] = useState({
                     playing: false,
                     finished: false,
@@ -6042,11 +6327,7 @@
                     a.addEventListener("timeupdate", onTime);
                     a.addEventListener("loadedmetadata", onMeta);
 
-                    if (autoPlayNextRef.current) {
-                        a.play().catch(() => {
-                            autoPlayNextRef.current = false;
-                        });
-                    }
+                    // Audio paused by default; user must press play
 
                     return () => {
                         a.pause();
@@ -6697,6 +6978,162 @@
                     </div>
                 );
             }
+
+            /* ─────────── MEMORIZE STEP ─────────── */
+            function MemorizeStep({
+                DB,
+                verseCacheRef,
+                openTafsir,
+                onBack,
+                showToast,
+                setConfirm,
+            }) {
+                const sittingId = DB.getLearningSittingId();
+                const sessions = DB.sessions.toArray();
+                const sitting = sessions.find((s) => s.id === sittingId);
+                const learnedKeys = DB.getLearnedVerseKeys();
+                const verseKeys = sitting?.ponderedKeys || [];
+                const [idx, setIdx] = useState(() => {
+                    const firstUnlearned = verseKeys.findIndex(
+                        (k) => !learnedKeys.includes(k),
+                    );
+                    return firstUnlearned >= 0 ? firstUnlearned : 0;
+                });
+                const [loadedVerse, setLoadedVerse] = useState(verseCacheRef.current[verseKeys[idx]] || null);
+
+                useEffect(() => {
+                    const cached = verseCacheRef.current[verseKeys[idx]];
+                    if (cached) {
+                        setLoadedVerse(cached);
+                        return;
+                    }
+                    if (verseKeys[idx]) {
+                        fetchVerseDetails(verseKeys[idx]).then((d) => {
+                            verseCacheRef.current[verseKeys[idx]] = d;
+                            setLoadedVerse(d);
+                        });
+                    }
+                }, [verseKeys[idx]]);
+
+                const verse = loadedVerse;
+                const total = verseKeys.length;
+                const isLearned = learnedKeys.includes(verseKeys[idx]);
+                const maxNavigable = (() => {
+                    const firstUnlearned = verseKeys.findIndex(
+                        (k) => !learnedKeys.includes(k),
+                    );
+                    if (firstUnlearned < 0) return verseKeys.length - 1;
+                    return firstUnlearned;
+                })();
+
+                const handleConfirmLearned = () => {
+                    setConfirm({
+                        eyebrow: "Are you sure?",
+                        message:
+                            "You will be asked about this verse on the Day of Judgement. Only confirm if you have truly memorised it.",
+                        onConfirm: () => {
+                            DB.markVerseLearned(verseKeys[idx]);
+                            setConfirm(null);
+                            const nextUnlearned = verseKeys.findIndex(
+                                (k, i) => i > idx && !learnedKeys.includes(k),
+                            );
+                            if (nextUnlearned >= 0) {
+                                setIdx(nextUnlearned);
+                            } else {
+                                showToast("All verses learned", "");
+                            }
+                        },
+                        onCancel: () => setConfirm(null),
+                    });
+                };
+
+                if (!sitting || !verseKeys.length) {
+                    return (
+                        <div className="step-fs">
+                            <BackButton onClick={onBack} />
+                            <div className="step-fs-body">
+                                <div className="title-step-prompt">
+                                    No verses to memorise yet.
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="step-fs">
+                        <BackButton onClick={onBack} />
+                        <div className="step-fs-top">
+                            <div className="step-fs-eyebrow">Memorise</div>
+                            <VersePositionIndicator
+                                idx={idx}
+                                total={total}
+                                reachedIdx={maxNavigable}
+                            />
+                            <div className="step-fs-ref">
+                                Surah {sitting.surahName} · {verse?.surah}:{verse?.verse}
+                            </div>
+                        </div>
+                        <VerseBody verse={verse} />
+                        <div className="step-fs-bottom">
+                            <div className="verse-nav">
+                                <button
+                                    className="verse-nav-arrow"
+                                    onClick={() => setIdx(Math.max(0, idx - 1))}
+                                    disabled={idx <= 0}
+                                    aria-label="Previous verse"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M15 6l-6 6 6 6" />
+                                    </svg>
+                                </button>
+                                <button
+                                    className="verse-nav-arrow"
+                                    onClick={() => setIdx(Math.min(maxNavigable, idx + 1))}
+                                    disabled={idx >= maxNavigable}
+                                    aria-label="Next verse"
+                                >
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M9 6l6 6-6 6" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="ponder-instruction">
+                                {isLearned
+                                    ? "You have memorised this verse."
+                                    : "Read it until it flows from your tongue without effort. Then confirm."}
+                            </div>
+                            <div className="verse-fs-actions">
+                                <button
+                                    className="action-soft"
+                                    onClick={() => openTafsir(verse?.key)}
+                                    disabled={!verse?.key}
+                                >
+                                    Tafsir
+                                </button>
+                                {!isLearned && (
+                                    <button className="action" onClick={handleConfirmLearned}>
+                                        <span className="action-text">I have memorised this verse</span>
+                                        <span className="action-line" />
+                                    </button>
+                                )}
+                                {isLearned && (
+                                    <button
+                                        className="action-soft"
+                                        onClick={() => {
+                                            DB.unmarkVerseLearned(verseKeys[idx]);
+                                            showToast("Marked unlearned", "");
+                                        }}
+                                    >
+                                        Mark unlearned
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
             /* ─────────── SUBSECTION ROUTER ─────────── */
             function SubsectionRouter({
                 subView,
@@ -7129,39 +7566,30 @@
                 }, []);
                 const all = DB.timetable.toArray();
 
-                // Timed blocks sort by time ascending, then untimed blocks by position
-                const sorted = useMemo(() => {
-                    const timed = all.filter((b) => b.time && b.time.trim());
-                    const untimed = all.filter(
-                        (b) => !b.time || !b.time.trim(),
-                    );
-                    timed.sort((a, b) => a.time.localeCompare(b.time));
-                    untimed.sort(
-                        (a, b) => (a.position ?? 0) - (b.position ?? 0),
-                    );
-                    return [...timed, ...untimed];
+                const timed = useMemo(() => {
+                    const list = all.filter((b) => b.time && b.time.trim());
+                    list.sort((a, b) => a.time.localeCompare(b.time));
+                    return list;
                 }, [all]);
 
-                const updateTime = (id, time) =>
-                    DB.timetableUpdate(id, { time });
-                const updateLabel = (id, label) =>
-                    DB.timetableUpdate(id, { label });
+                const untimed = useMemo(() => {
+                    const list = all.filter((b) => !b.time || !b.time.trim());
+                    list.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+                    return list;
+                }, [all]);
+
+                const updateTime = (id, time) => DB.timetableUpdate(id, { time });
+                const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
+                const toggleDone = (id) => DB.timetableToggleDone(id);
                 const remove = (id) => DB.timetableRemove(id);
                 const swapAdjacent = (i) => {
-                    // Swap untimed block at position i with neighbor below (i+1)
-                    const untimedList = sorted.filter(
-                        (b) => !b.time || !b.time.trim(),
-                    );
-                    const idxA = all.findIndex((b) => b.id === sorted[i].id);
-                    const idxB = all.findIndex(
-                        (b) => b.id === sorted[i + 1].id,
-                    );
+                    const list = untimed;
+                    const idxA = all.findIndex((b) => b.id === list[i].id);
+                    const idxB = all.findIndex((b) => b.id === list[i + 1].id);
                     if (idxA < 0 || idxB < 0) return;
                     DB.timetableSwapPositions(idxA, idxB);
                 };
-                const moveUp = (i) => {
-                    if (i > 0) swapAdjacent(i - 1);
-                };
+                const moveUp = (i) => { if (i > 0) swapAdjacent(i - 1); };
                 const moveDown = (i) => swapAdjacent(i);
 
                 const [newTime, setNewTime] = useState("06:00");
@@ -7173,153 +7601,116 @@
                     setNewLabel("");
                 };
 
-                // Check if a given block is untimed (so we show reorder arrows + can move it)
-                const isUntimed = (b) => !b.time || !b.time.trim();
+                const BlockRow = ({ b, i, list, isTimed }) => {
+                    const done = !!b.done;
+                    const isPrayer = b.type === "prayer";
+                    const isLearning = b.type === "learning";
+                    const isCustom = b.type === "custom";
+                    const canReorder = isCustom && !isTimed;
+                    return (
+                        <div
+                            key={b.id}
+                            className="tt-row"
+                            data-done={done ? "true" : "false"}
+                            data-prayer={isPrayer ? "true" : "false"}
+                            data-learning={isLearning ? "true" : "false"}
+                        >
+                            <button
+                                className="tt-check"
+                                data-checked={done ? "true" : "false"}
+                                onClick={() => toggleDone(b.id)}
+                                aria-label={done ? "Mark undone" : "Mark done"}
+                            >
+                                {done && (
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M5 12l5 5L20 7" />
+                                    </svg>
+                                )}
+                            </button>
+                            {isTimed && (
+                                <input
+                                    className="tt-time"
+                                    type="time"
+                                    value={b.time || ""}
+                                    placeholder="--:--"
+                                    onChange={(e) => updateTime(b.id, e.target.value)}
+                                />
+                            )}
+                            <input
+                                className="tt-label"
+                                type="text"
+                                value={b.label || ""}
+                                placeholder={isPrayer ? "" : "What you'll do…"}
+                                onChange={(e) => updateLabel(b.id, e.target.value)}
+                                readOnly={isPrayer || isLearning}
+                            />
+                            <div className="tt-controls">
+                                {canReorder && (
+                                    <>
+                                        {i > 0 && list[i - 1].type === "custom" && (
+                                            <button
+                                                className="tt-arrow"
+                                                onClick={() => moveUp(i)}
+                                                aria-label="Move up"
+                                            >
+                                                <svg viewBox="0 0 24 24">
+                                                    <path d="M6 14l6-6 6 6" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                        {i < list.length - 1 && list[i + 1].type === "custom" && (
+                                            <button
+                                                className="tt-arrow"
+                                                onClick={() => moveDown(i)}
+                                                aria-label="Move down"
+                                            >
+                                                <svg viewBox="0 0 24 24">
+                                                    <path d="M6 10l6 6 6-6" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                                {(isCustom || isLearning) && (
+                                    <button
+                                        className="tt-remove"
+                                        onClick={() => remove(b.id)}
+                                        aria-label="Remove"
+                                    >
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M6 6l12 12M18 6L6 18" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    );
+                };
 
                 return (
                     <>
+                        <div className="tt-section-title">Timed blocks</div>
                         <div className="tt-list">
-                            {sorted.map((b, i) => {
-                                const untimed = isUntimed(b);
-                                return (
-                                    <div
-                                        key={b.id}
-                                        className="tt-row"
-                                        data-prayer={
-                                            b.isPrayer ? "true" : "false"
-                                        }
-                                    >
-                                        <input
-                                            className="tt-time"
-                                            type="time"
-                                            value={b.time || ""}
-                                            placeholder="--:--"
-                                            onChange={(e) =>
-                                                updateTime(b.id, e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            className="tt-label"
-                                            type="text"
-                                            value={b.label || ""}
-                                            placeholder={
-                                                b.isPrayer
-                                                    ? ""
-                                                    : "What you'll do…"
-                                            }
-                                            onChange={(e) =>
-                                                updateLabel(
-                                                    b.id,
-                                                    e.target.value,
-                                                )
-                                            }
-                                            readOnly={b.isPrayer}
-                                        />
-                                        <div className="tt-controls">
-                                            {b.isPrayer && (
-                                                <button
-                                                    className="tt-remove tt-prayer-lock"
-                                                    style={{
-                                                        display: "inline-flex",
-                                                        opacity: 0.35,
-                                                        cursor: "default",
-                                                    }}
-                                                    disabled
-                                                    aria-label="Locked"
-                                                >
-                                                    <svg viewBox="0 0 24 24">
-                                                        <rect
-                                                            x="5"
-                                                            y="11"
-                                                            width="14"
-                                                            height="9"
-                                                            rx="2"
-                                                        />
-                                                        <path d="M8 11V8a4 4 0 018 0v3" />
-                                                    </svg>
-                                                </button>
-                                            )}
-                                            {untimed && (
-                                                <>
-                                                    {i > 0 &&
-                                                        isUntimed(
-                                                            sorted[i - 1],
-                                                        ) && (
-                                                            <button
-                                                                className="tt-arrow"
-                                                                style={{
-                                                                    display:
-                                                                        "inline-flex",
-                                                                    opacity: 0.7,
-                                                                    padding:
-                                                                        "0 2px",
-                                                                }}
-                                                                onClick={() =>
-                                                                    moveUp(i)
-                                                                }
-                                                                aria-label="Move up"
-                                                            >
-                                                                <svg viewBox="0 0 24 24">
-                                                                    <path d="M6 14l6-6 6 6" />
-                                                                </svg>
-                                                            </button>
-                                                        )}
-                                                    {i < sorted.length - 1 &&
-                                                        isUntimed(
-                                                            sorted[i + 1],
-                                                        ) && (
-                                                            <button
-                                                                className="tt-arrow"
-                                                                style={{
-                                                                    display:
-                                                                        "inline-flex",
-                                                                    opacity: 0.7,
-                                                                    padding:
-                                                                        "0 2px",
-                                                                }}
-                                                                onClick={() =>
-                                                                    moveDown(i)
-                                                                }
-                                                                aria-label="Move down"
-                                                            >
-                                                                <svg viewBox="0 0 24 24">
-                                                                    <path d="M6 10l6 6 6-6" />
-                                                                </svg>
-                                                            </button>
-                                                        )}
-                                                </>
-                                            )}
-                                            {!b.isPrayer && (
-                                                <button
-                                                    className="tt-remove"
-                                                    style={{
-                                                        display: "inline-flex",
-                                                        opacity: 1,
-                                                        marginLeft: 4,
-                                                    }}
-                                                    onClick={() => remove(b.id)}
-                                                    aria-label="Remove"
-                                                >
-                                                    <svg viewBox="0 0 24 24">
-                                                        <path d="M6 6l12 12M18 6L6 18" />
-                                                    </svg>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                            {timed.map((b, i) => (
+                                <BlockRow key={b.id} b={b} i={i} list={timed} isTimed={true} />
+                            ))}
                         </div>
-                        <div
-                            className="sub-section-label"
-                            style={{ marginTop: 12 }}
-                        >
+                        {untimed.length > 0 && (
+                            <>
+                                <div className="tt-section-divider" />
+                                <div className="tt-section-title">Checklist</div>
+                                <div className="tt-list">
+                                    {untimed.map((b, i) => (
+                                        <BlockRow key={b.id} b={b} i={i} list={untimed} isTimed={false} />
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                        <div className="sub-section-label" style={{ marginTop: 16 }}>
                             Add a block
                         </div>
-                        <div
-                            className="tt-row"
-                            style={{ background: "transparent" }}
-                        >
+                        <div className="tt-row" style={{ background: "transparent" }}>
+                            <div style={{ width: 44, flexShrink: 0 }} />
                             <input
                                 className="tt-time"
                                 type="time"
@@ -7330,11 +7721,9 @@
                                 className="tt-label"
                                 type="text"
                                 value={newLabel}
-                                placeholder="What you’ll do…"
+                                placeholder="What you'll do…"
                                 onChange={(e) => setNewLabel(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") addBlock();
-                                }}
+                                onKeyDown={(e) => { if (e.key === "Enter") addBlock(); }}
                             />
                         </div>
                         <button
@@ -7346,8 +7735,7 @@
                             <span className="action-line" />
                         </button>
                         <div className="res-meta">
-                            Set times to order blocks chronologically. Untimed
-                            blocks can be reordered freely with the arrows.
+                            Set times to order blocks chronologically. Untimed blocks appear in the checklist. Check them off as you complete them.
                         </div>
                     </>
                 );
