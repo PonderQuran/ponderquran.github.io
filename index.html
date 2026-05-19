@@ -3431,6 +3431,37 @@
                 background: var(--bg);
                 color: var(--ink);
             }
+            .sett-toggle {
+                width: 40px;
+                height: 22px;
+                border-radius: 11px;
+                border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+                background: color-mix(in oklab, var(--bg) 50%, transparent);
+                position: relative;
+                cursor: pointer;
+                padding: 0;
+                transition: all 220ms ease;
+                flex-shrink: 0;
+            }
+            .sett-toggle.on {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+            .sett-toggle-knob {
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: var(--ink-soft);
+                transition: all 220ms ease;
+                display: block;
+            }
+            .sett-toggle.on .sett-toggle-knob {
+                transform: translateX(18px);
+                background: var(--bg);
+            }
             .sett-theme-row {
                 display: flex;
                 gap: 14px;
@@ -4436,6 +4467,8 @@
 
                 DB.setLearningSitting = (id) => DB.meta.set("learningSittingId", id);
                 DB.getLearningSittingId = () => DB.meta.get("learningSittingId") || null;
+                DB.getLearningEnabled = () => DB.meta.get("learningEnabled") !== false;
+                DB.setLearningEnabled = (v) => DB.meta.set("learningEnabled", !!v);
                 DB.setLearnedVerseKeys = (keys) => {
                     const arr = DB.learnedVerseKeys || ydoc.getArray("learnedVerseKeys");
                     if (!DB.learnedVerseKeys) DB.learnedVerseKeys = arr;
@@ -4543,8 +4576,9 @@
                 /* view: which screen is showing */
                 const [view, setView] = useState("home");
 
-                /* on mount: jump straight to memorize if verses pending */
+                /* on mount: jump straight to memorize if verses pending and learning enabled */
                 useEffect(() => {
+                    if (!DB.getLearningEnabled()) return;
                     const lsid = DB.getLearningSittingId();
                     const learned = DB.getLearnedVerseKeys();
                     if (lsid && learned.length < 5) {
@@ -4862,9 +4896,11 @@
                         DB.setLastPondered(lastS, lastV);
                         DB.setLastSessionDate(today);
                         DB.timetableEnsurePrayers();
-                        DB.setLearningSitting(cs.id);
-                        DB.setLearnedVerseKeys([]);
-                        DB.timetableEnsureLearningBlock();
+                        if (DB.getLearningEnabled()) {
+                            DB.setLearningSitting(cs.id);
+                            DB.setLearnedVerseKeys([]);
+                            DB.timetableEnsureLearningBlock();
+                        }
                         DB.clearCurrentSession();
                         setView("home");
                     },
@@ -5400,8 +5436,10 @@
                     ? `${learnedCount} / ${learnableCount} learned`
                     : "Complete a sitting to begin";
 
-                const cards = [
-                    {
+                const learningEnabled = DB.getLearningEnabled();
+                const cards = [];
+                if (learningEnabled) {
+                    cards.push({
                         key: "memorize",
                         icon: "🧠",
                         title: "Memorise",
@@ -5412,7 +5450,9 @@
                         empty: !learnableCount,
                         helpKey: null,
                         isMemorize: true,
-                    },
+                    });
+                }
+                cards.push(
                     {
                         key: "sittings",
                         icon: "📜",
@@ -5467,7 +5507,7 @@
                         empty: !goalsAny,
                         helpKey: "horizons",
                     },
-                ];
+                );
 
                 function DashLockedBanner() {
                     const [t, setT] = useState(countdownToMidnight);
@@ -5689,9 +5729,9 @@
                         onClick={onClick}
                         aria-label="Settings"
                     >
-                        <svg viewBox="0 0 24 24">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="3" />
-                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.17 15a1.65 1.65 0 0 0-1.51-1H2a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.17 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.17a1.65 1.65 0 0 0 1-1.51V2a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H22a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
                     </button>
                 );
@@ -5933,9 +5973,28 @@
                                 </div>
                             </div>
                             <div className="sett-section">
-                                <div className="sett-section-label">
-                                    Questions
+                                <div className="sett-section-label">Qur’an</div>
+                                <div className="sett-row">
+                                    <span className="sett-row-label">Memorisation mode</span>
+                                    <button
+                                        className={`sett-toggle ${DB.getLearningEnabled() ? "on" : ""}`}
+                                        onClick={() => {
+                                            const next = !DB.getLearningEnabled();
+                                            DB.setLearningEnabled(next);
+                                            // force re-render
+                                            setQuestions([...DB.getQuestions()]);
+                                        }}
+                                        aria-label="Toggle memorisation mode"
+                                    >
+                                        <span className="sett-toggle-knob" />
+                                    </button>
                                 </div>
+                                <p className="sett-file-hint">
+                                    When on, the app prompts you to memorise the 5 verses from each sitting, and shows your progress on the dashboard.
+                                </p>
+                            </div>
+                            <div className="sett-section">
+                                <div className="sett-section-label">Questions</div>
                                 <p className="sett-file-hint">
                                     Customize the questions you reflect on
                                     during each sitting.
