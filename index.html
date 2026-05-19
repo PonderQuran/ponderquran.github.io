@@ -7284,10 +7284,13 @@
                 verses,
                 onBack,
                 onContinue,
+                showToast,
             }) {
                 const [selectedIdx, setSelectedIdx] = useState(
                     cs.lessonsVerseIdx ?? null,
                 );
+                const [lessons, setLessons] = useState([]);
+                const [loading, setLoading] = useState(false);
                 const ponderedVerses = verses.slice(
                     0,
                     (cs.selectedEndIdx ?? 0) + 1,
@@ -7302,17 +7305,28 @@
                     }
                 }, [selectedIdx, DB]);
 
+                const loadLessons = useCallback(
+                    async (verseKey) => {
+                        setLoading(true);
+                        setLessons([]);
+                        const data = await fetchLessons(verseKey);
+                        setLessons(data);
+                        setLoading(false);
+                        if (data.length === 0) {
+                            showToast("No lessons found", "");
+                        }
+                    },
+                    [showToast],
+                );
+
                 const selectVerse = (idx) => {
                     setSelectedIdx(idx);
+                    loadLessons(ponderedVerses[idx].key);
                 };
 
                 const deselect = () => {
                     setSelectedIdx(null);
-                };
-
-                const openQuranReflect = (verseKey) => {
-                    const url = `https://quranreflect.com/posts?tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}`;
-                    window.open(url, "_blank", "noopener,noreferrer");
+                    setLessons([]);
                 };
 
                 return (
@@ -7406,27 +7420,36 @@
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="lessons-external fade-in">
-                                            <div className="lessons-external-hint">
-                                                Read community lessons for this
-                                                verse on QuranReflect.
-                                            </div>
-                                            <button
-                                                className="lessons-external-btn action"
-                                                onClick={() =>
-                                                    openQuranReflect(
-                                                        ponderedVerses[
-                                                            selectedIdx
-                                                        ].key,
-                                                    )
-                                                }
-                                            >
-                                                <span className="action-text">
-                                                    Open QuranReflect
+                                        {loading ? (
+                                            <div className="lessons-loading fade-in">
+                                                <span className="loading-dots">
+                                                    <span />
+                                                    <span />
+                                                    <span />
                                                 </span>
-                                                <span className="action-line" />
-                                            </button>
-                                        </div>
+                                                Loading lessons
+                                            </div>
+                                        ) : lessons.length === 0 ? (
+                                            <div className="lessons-empty fade-in">
+                                                No lessons found for this verse.
+                                            </div>
+                                        ) : (
+                                            <div className="lessons-list">
+                                                {lessons.map((lesson) => (
+                                                    <div
+                                                        key={lesson.id}
+                                                        className="lessons-card fade-in"
+                                                    >
+                                                        <div className="lessons-card-author">
+                                                            {lesson.authorName}
+                                                        </div>
+                                                        <div className="lessons-card-body">
+                                                            {lesson.body}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </>
                                 )}
                             </div>
@@ -7448,7 +7471,7 @@
                             <div className="ponder-instruction">
                                 {selectedIdx == null
                                     ? "Choose a verse to explore lessons from the community."
-                                    : "Read the lessons, then return here to write your actions."}
+                                    : "Reflect on these lessons. Then continue to write your actions."}
                             </div>
                             <div
                                 style={{
