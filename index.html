@@ -4376,21 +4376,44 @@
                 }
             }
             async function fetchLessons(verseKey) {
-                try {
-                    const res = await fetch(
-                        `https://api.quranreflect.com/posts?tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`,
-                    );
-                    if (!res.ok) return [];
-                    const data = await res.json();
-                    return (data.posts || []).map((p) => ({
-                        id: p.id,
-                        body: stripHtml(p.body || p.text || ""),
-                        authorName:
-                            p.authorName || p.author?.name || "Anonymous",
-                    }));
-                } catch (e) {
-                    return [];
+                const headers = { Accept: "application/json" };
+                const query = `tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`;
+                const candidates = [
+                    `https://api.quran.com/api/v4/posts?${query}`,
+                    `https://api.quran.com/api/v4/quran_reflect/posts?${query}`,
+                    `https://api.quranreflect.com/api/posts?${query}`,
+                    `https://api.quranreflect.com/api/v1/posts?${query}`,
+                    `https://corsproxy.io/?https://api.quranreflect.com/posts?${query}`,
+                ];
+                for (const url of candidates) {
+                    try {
+                        console.log("[fetchLessons] trying", url);
+                        const res = await fetch(url, { headers });
+                        if (!res.ok) {
+                            console.log("[fetchLessons] non-ok", res.status, url);
+                            continue;
+                        }
+                        const ct = res.headers.get("content-type") || "";
+                        if (!ct.includes("application/json")) {
+                            console.log("[fetchLessons] non-json content-type", ct, url);
+                            continue;
+                        }
+                        const data = await res.json();
+                        const posts = data.posts || data.data || data.results || data;
+                        const arr = Array.isArray(posts) ? posts : [];
+                        console.log("[fetchLessons] success", url, arr.length, "items");
+                        return arr.map((p) => ({
+                            id: p.id,
+                            body: stripHtml(p.body || p.text || p.content || ""),
+                            authorName:
+                                p.authorName || p.author?.name || p.user?.name || "Anonymous",
+                        }));
+                    } catch (e) {
+                        console.log("[fetchLessons] error", url, e.message);
+                    }
                 }
+                console.log("[fetchLessons] all candidates failed");
+                return [];
             }
 
             async function fetchVersesForSession(
