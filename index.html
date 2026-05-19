@@ -1095,161 +1095,6 @@
                 flex-wrap: wrap;
             }
 
-            /* ───── Selection step ───── */
-            .select-scroll {
-                width: 100%;
-                max-width: 680px;
-                flex: 1 1 auto;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                padding: 8px 4px;
-                scrollbar-width: thin;
-                scrollbar-color: color-mix(
-                        in oklab,
-                        var(--accent) 30%,
-                        transparent
-                    )
-                    transparent;
-                -webkit-mask-image: linear-gradient(
-                    to bottom,
-                    transparent 0%,
-                    black 4%,
-                    black 96%,
-                    transparent 100%
-                );
-                mask-image: linear-gradient(
-                    to bottom,
-                    transparent 0%,
-                    black 4%,
-                    black 96%,
-                    transparent 100%
-                );
-            }
-            .select-scroll::-webkit-scrollbar {
-                width: 3px;
-            }
-            .select-scroll::-webkit-scrollbar-thumb {
-                background: color-mix(in oklab, var(--accent) 30%, transparent);
-                border-radius: 2px;
-            }
-            .select-list {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                width: 100%;
-            }
-            .select-row {
-                display: flex;
-                align-items: flex-start;
-                gap: 14px;
-                padding: 14px 16px;
-                border-radius: 14px;
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 22%, transparent);
-                background: color-mix(in oklab, var(--bg-soft) 35%, var(--bg));
-                transition: all 280ms;
-                text-align: left;
-                cursor: pointer;
-            }
-            .select-row:hover {
-                background: color-mix(in oklab, var(--bg) 30%, transparent);
-            }
-            .select-row[data-state="selected"] {
-                background: color-mix(in oklab, var(--accent) 8%, transparent);
-                border-color: color-mix(
-                    in oklab,
-                    var(--accent) 35%,
-                    transparent
-                );
-            }
-            .select-row[data-state="endpoint"] {
-                background: color-mix(in oklab, var(--accent) 14%, transparent);
-                border-color: var(--accent);
-                box-shadow: 0 0 22px
-                    color-mix(in oklab, var(--accent) 22%, transparent);
-            }
-            .select-row-num {
-                flex-shrink: 0;
-                font-family: "Inter Tight", sans-serif;
-                font-size: 10px;
-                letter-spacing: 0.18em;
-                color: var(--accent);
-                font-variant-numeric: tabular-nums;
-                opacity: 0.65;
-                min-width: 38px;
-                padding-top: 4px;
-            }
-            .select-row[data-state="selected"] .select-row-num,
-            .select-row[data-state="endpoint"] .select-row-num {
-                opacity: 1;
-            }
-            .select-row-content {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 5px;
-                min-width: 0;
-            }
-            .select-row-arabic {
-                font-family: "Amiri Quran", serif;
-                direction: rtl;
-                font-size: 17px;
-                line-height: 1.7;
-                color: var(--ink);
-                text-align: right;
-                opacity: 0.92;
-            }
-            .select-row-translation {
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-                font-size: 13px;
-                line-height: 1.45;
-                color: var(--ink-soft);
-            }
-            .select-row-mark {
-                flex-shrink: 0;
-                width: 18px;
-                height: 18px;
-                border-radius: 50%;
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 40%, transparent);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 6px;
-                transition: all 280ms;
-            }
-            .select-row[data-state="selected"] .select-row-mark {
-                background: var(--accent);
-                border-color: var(--accent);
-                box-shadow: 0 0 8px
-                    color-mix(in oklab, var(--accent) 50%, transparent);
-            }
-            .select-row[data-state="endpoint"] .select-row-mark {
-                background: var(--accent);
-                border-color: var(--ink);
-                box-shadow: 0 0 14px var(--accent);
-            }
-            .select-summary {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-            }
-            .select-summary-count {
-                font-size: 22px;
-                color: var(--ink);
-            }
-            .select-summary-hint {
-                font-size: 13px;
-                color: var(--ink-soft);
-                opacity: 0.8;
-                text-align: center;
-                max-width: 360px;
-                line-height: 1.5;
-            }
 
             /* Ponder instruction text */
             .ponder-instruction {
@@ -2866,12 +2711,6 @@
                     font-size: 9px;
                     letter-spacing: 0.22em;
                 }
-                .select-row {
-                    padding: 12px;
-                    gap: 10px;
-                }
-                .select-row-arabic {
-                    font-size: 15px;
                 }
                 .dash-section {
                     padding: 18px 4px;
@@ -3881,7 +3720,6 @@
 
             const STEPS = [
                 { id: "listen", label: "Listen" },
-                { id: "select", label: "Select" },
                 { id: "ponder", label: "Ponder" },
                 { id: "questions", label: "Questions" },
                 { id: "write", label: "Write" },
@@ -4488,7 +4326,7 @@
                 }, [cs?.id, cs?.verseKeys?.join(",")]);
 
                 /* view: which screen is showing */
-                const [view, setView] = useState("home"); // 'home' | 'listen' | 'select' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
+                const [view, setView] = useState("home"); // 'home' | 'listen' | 'ponder' | 'questions' | 'write' | 'title' | sub-sections
                 const [homeTab, setHomeTab] = useState("sitting");
                 const [subView, setSubView] = useState(null); // dashboard subsection key
                 const [returnSubView, setReturnSubView] = useState(null); // where to go back after replay
@@ -4594,7 +4432,7 @@
                         completedSteps: 0,
                         listenIdx: 0,
                         listenReached: 0,
-                        selectedEndIdx: 0,
+                        selectedEndIdx: Math.min(4, verses.length - 1),
                         ponderIdx: 0,
                         qIdx: 0,
                         writeActions: [""],
@@ -4604,151 +4442,6 @@
                     setView("listen");
                 }, [sessionInProgress, showToast]);
 
-                /* ─ helper: merge overlapping sittings ─ */
-                const mergeOverlappingSittings = useCallback(
-                    (newSittingId, ponderedKeys, finalTitle) => {
-                        const allSittings = DB.sessions.toArray();
-                        const allActions = DB.actions.toArray();
-                        const firstKey = ponderedKeys[0];
-                        const lastKey = ponderedKeys[ponderedKeys.length - 1];
-                        const fk = parseKey(firstKey),
-                            lk = parseKey(lastKey);
-                        const surah = fk.surah,
-                            startV = fk.verse,
-                            endV = lk.verse;
-
-                        const sessionsToDelete = [];
-                        const sessionsToTrim = []; // { id, newKeys }
-                        const actionsToReassign = []; // { id, newSessionId }
-                        const actionsToCreate = []; // { text, sessionId }
-                        let mergedActionIds = [];
-
-                        allSittings.forEach((s) => {
-                            if (s.id === newSittingId) return;
-                            if (!s.ponderedKeys || !s.ponderedKeys.length)
-                                return;
-                            const sFirst = parseKey(s.ponderedKeys[0]);
-                            const sLast = parseKey(
-                                s.ponderedKeys[s.ponderedKeys.length - 1],
-                            );
-                            if (sFirst.surah !== surah) return;
-                            const overlapStart = Math.max(startV, sFirst.verse);
-                            const overlapEnd = Math.min(endV, sLast.verse);
-                            if (overlapStart > overlapEnd) return;
-
-                            const fullyContained =
-                                sFirst.verse >= startV && sLast.verse <= endV;
-                            const linked = allActions.filter(
-                                (a) => a.sessionId === s.id,
-                            );
-
-                            if (fullyContained) {
-                                linked.forEach((a) =>
-                                    actionsToReassign.push({
-                                        id: a.id,
-                                        newSessionId: newSittingId,
-                                    }),
-                                );
-                                mergedActionIds.push(
-                                    ...linked.map((a) => a.id),
-                                );
-                                sessionsToDelete.push(s.id);
-                            } else {
-                                linked.forEach((a) =>
-                                    actionsToCreate.push({
-                                        text: a.text,
-                                        sessionId: newSittingId,
-                                    }),
-                                );
-                                const newKeys = [];
-                                s.ponderedKeys.forEach((k) => {
-                                    const { verse } = parseKey(k);
-                                    if (verse < startV || verse > endV)
-                                        newKeys.push(k);
-                                });
-                                if (newKeys.length > 0) {
-                                    sessionsToTrim.push({ id: s.id, newKeys });
-                                } else {
-                                    sessionsToDelete.push(s.id);
-                                }
-                            }
-                        });
-
-                        // Execute all in a single transact (no nested transacts)
-                        window.YDOC.transact(() => {
-                            // Create duplicated actions
-                            actionsToCreate.forEach((a) => {
-                                const maxRank = allActions.length
-                                    ? Math.max(
-                                          ...allActions.map((x) =>
-                                              typeof x.ranking === "number"
-                                                  ? x.ranking
-                                                  : 0,
-                                          ),
-                                      )
-                                    : -1;
-                                const newAction = {
-                                    id: uuid(),
-                                    text: a.text.trim(),
-                                    ranking: maxRank + 1,
-                                    sessionId: a.sessionId,
-                                    createdAt: Date.now(),
-                                };
-                                DB.actions.push([newAction]);
-                                mergedActionIds.push(newAction.id);
-                            });
-
-                            // Reassign actions to new sitting
-                            const arrA = DB.actions.toArray();
-                            actionsToReassign.forEach((ra) => {
-                                const ai = arrA.findIndex(
-                                    (x) => x.id === ra.id,
-                                );
-                                if (ai >= 0) {
-                                    DB.actions.delete(ai, 1);
-                                    DB.actions.insert(ai, [
-                                        {
-                                            ...arrA[ai],
-                                            sessionId: ra.newSessionId,
-                                        },
-                                    ]);
-                                }
-                            });
-
-                            // Trim sessions
-                            sessionsToTrim.forEach((t) => {
-                                const arrS = DB.sessions.toArray();
-                                const idx = arrS.findIndex(
-                                    (x) => x.id === t.id,
-                                );
-                                if (idx >= 0) {
-                                    const old = arrS[idx];
-                                    DB.sessions.delete(idx, 1);
-                                    DB.sessions.insert(idx, [
-                                        { ...old, ponderedKeys: t.newKeys },
-                                    ]);
-                                }
-                            });
-
-                            // Delete sessions (sorted descending)
-                            const arrS = DB.sessions.toArray();
-                            const deleteIndices = sessionsToDelete
-                                .map((sid) =>
-                                    arrS.findIndex((x) => x.id === sid),
-                                )
-                                .filter((i) => i >= 0)
-                                .sort((a, b) => b - a);
-                            deleteIndices.forEach((i) =>
-                                DB.sessions.delete(i, 1),
-                            );
-                        });
-
-                        return mergedActionIds;
-                    },
-                    [],
-                );
-
-                /* replay a past sitting */
                 const replaySitting = useCallback(
                     async (sitting, fromSubView) => {
                         if (sessionInProgress) return;
@@ -4791,7 +4484,7 @@
                                 completedSteps: 0,
                                 listenIdx: 0,
                                 listenReached: 0,
-                                selectedEndIdx: verseKeys.length - 1,
+                                selectedEndIdx: Math.min(4, verseKeys.length - 1),
                                 ponderIdx: 0,
                                 qIdx: 0,
                                 writeActions: prefillActions,
@@ -4828,82 +4521,19 @@
 
                 /* mark a step complete and return to home */
                 const completeStep = useCallback(
-                    (stepIdx) => {
+                    (stepIdx, nextView) => {
                         if (!cs) return;
                         const next = Math.max(cs.completedSteps, stepIdx + 1);
                         DB.setCurrentSessionField("completedSteps", next);
-
-                        if (
-                            stepIdx === 1 &&
-                            cs.isReplay &&
-                            cs.replaySittingId
-                        ) {
-                            const ponderedKeys = cs.verseKeys.slice(
-                                0,
-                                (cs.selectedEndIdx ?? 0) + 1,
-                            );
-                            const mergedActionIds = mergeOverlappingSittings(
-                                cs.replaySittingId,
-                                ponderedKeys,
-                                cs.title || "",
-                            );
-                            const existing = DB.getActionsSorted().filter(
-                                (a) => a.sessionId === cs.replaySittingId,
-                            );
-                            const existingIds = existing.map((a) => a.id);
-                            const allActionIds = [
-                                ...new Set([
-                                    ...existingIds,
-                                    ...mergedActionIds,
-                                ]),
-                            ];
-                            const allActions = DB.getActionsSorted().filter(
-                                (a) => allActionIds.includes(a.id),
-                            );
-                            const writeActions =
-                                allActions.length > 0
-                                    ? allActions.map((a) => a.text || "")
-                                    : [""];
-                            DB.setCurrentSessionField(
-                                "writeActions",
-                                writeActions,
-                            );
-                        }
-
-                        if (stepIdx === 1 && !cs.isReplay) {
-                            const ponderedKeys = cs.verseKeys.slice(
-                                0,
-                                (cs.selectedEndIdx ?? 0) + 1,
-                            );
-                            const mergedActionIds = mergeOverlappingSittings(
-                                cs.id,
-                                ponderedKeys,
-                                cs.title || "",
-                            );
-                            if (mergedActionIds.length > 0) {
-                                const allActions = DB.getActionsSorted().filter(
-                                    (a) => mergedActionIds.includes(a.id),
-                                );
-                                const writeActions =
-                                    allActions.length > 0
-                                        ? allActions.map((a) => a.text || "")
-                                        : [""];
-                                DB.setCurrentSessionField(
-                                    "writeActions",
-                                    writeActions,
-                                );
-                            }
-                        }
-
-                        setView("home");
+                        setView(nextView || "home");
                     },
-                    [cs, mergeOverlappingSittings],
+                    [cs],
                 );
 
                 /* save Write step → save actions → ask for title */
                 const submitWrite = useCallback((writeActions) => {
                     DB.setCurrentSessionField("writeActions", writeActions);
-                    DB.setCurrentSessionField("completedSteps", 5);
+                    DB.setCurrentSessionField("completedSteps", 4);
                     setView("title");
                 }, []);
 
@@ -4960,9 +4590,6 @@
                                 });
                             }
 
-                            // Update furthest pondered after merge
-                            const furthest = computeFurthestPondered(DB);
-                            DB.setLastPondered(furthest.surah, furthest.verse);
                             DB.setLastSessionDate(today);
                             DB.clearCurrentSession();
                             setView("home");
@@ -5081,18 +4708,8 @@
                                 verses={sessionVerses}
                                 versesLoading={versesLoading}
                                 onBack={goHome}
-                                onContinue={() => completeStep(0)}
+                                onContinue={() => completeStep(0, "ponder")}
                                 openTafsir={openTafsir}
-                            />
-                        )}
-
-                        {view === "select" && cs && (
-                            <SelectionStep
-                                cs={cs}
-                                DB={DB}
-                                verses={sessionVerses}
-                                onBack={goHome}
-                                onContinue={() => completeStep(1)}
                             />
                         )}
 
@@ -5102,7 +4719,7 @@
                                 DB={DB}
                                 verses={sessionVerses}
                                 onBack={goHome}
-                                onContinue={() => completeStep(2)}
+                                onContinue={() => completeStep(1)}
                                 openTafsir={openTafsir}
                                 showToast={showToast}
                             />
@@ -5114,7 +4731,7 @@
                                 DB={DB}
                                 verses={sessionVerses}
                                 onBack={goHome}
-                                onComplete={() => completeStep(3)}
+                                onComplete={() => completeStep(2)}
                                 openTafsir={openTafsir}
                                 showToast={showToast}
                             />
@@ -6607,85 +6224,6 @@
                                     </button>
                                 )}
                             </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            /* ─────────── SELECTION STEP ─────────── */
-            function SelectionStep({ cs, DB, verses, onBack, onContinue }) {
-                const total = verses.length;
-                const [endIdx, setEndIdx] = useState(cs.selectedEndIdx ?? 0);
-                useEffect(() => {
-                    DB.setCurrentSessionField("selectedEndIdx", endIdx);
-                }, [endIdx]);
-                const count = endIdx + 1;
-                return (
-                    <div className="step-fs">
-                        <BackButton onClick={onBack} />
-                        <div className="step-fs-top">
-                            <div className="step-fs-eyebrow">Select</div>
-                            <div className="step-fs-ref">
-                                Choose how far to ponder
-                            </div>
-                        </div>
-                        <div className="step-fs-body">
-                            <div className="select-scroll">
-                                <div className="select-list">
-                                    {verses.map((v, i) => {
-                                        const state =
-                                            i === endIdx
-                                                ? "endpoint"
-                                                : i <= endIdx
-                                                  ? "selected"
-                                                  : "";
-                                        return (
-                                            <button
-                                                key={v.key || i}
-                                                className="select-row"
-                                                data-state={state}
-                                                onClick={() => setEndIdx(i)}
-                                            >
-                                                <div className="select-row-num">
-                                                    {v.surah}:{v.verse ?? i + 1}
-                                                </div>
-                                                <div className="select-row-content">
-                                                    {v.arabic && (
-                                                        <div className="select-row-arabic arabic-font">
-                                                            {v.arabic}
-                                                        </div>
-                                                    )}
-                                                    {v.translation && (
-                                                        <div className="select-row-translation">
-                                                            {v.translation}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div
-                                                    className="select-row-mark"
-                                                    aria-hidden
-                                                />
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="step-fs-bottom">
-                            <div className="select-summary">
-                                <div className="select-summary-count">
-                                    {count} of {total}
-                                </div>
-                                <div className="select-summary-hint">
-                                    Less is more. The Sahaba would take just ten
-                                    verses at a time. Choose the smallest range
-                                    you can sit with deeply and act upon.
-                                </div>
-                            </div>
-                            <button className="action" onClick={onContinue}>
-                                <span className="action-text">Continue</span>
-                                <span className="action-line" />
-                            </button>
                         </div>
                     </div>
                 );
