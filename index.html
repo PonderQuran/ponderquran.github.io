@@ -1323,6 +1323,236 @@
                 color: var(--ink-soft);
             }
 
+            /* Lessons step */
+            .lessons-body {
+                width: 100%;
+                max-width: 720px;
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+                padding: 0 16px;
+            }
+            .lessons-prompt {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: clamp(16px, 1.2vw + 10px, 22px);
+                color: var(--ink-soft);
+                text-align: center;
+                line-height: 1.45;
+                opacity: 0.85;
+            }
+            .lessons-verse-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+            .lessons-verse-card {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                padding: 14px 16px;
+                border-radius: 14px;
+                border: 1px solid
+                    color-mix(in oklab, var(--accent) 16%, transparent);
+                background: color-mix(
+                    in oklab,
+                    var(--bg-soft) 40%,
+                    var(--bg)
+                );
+                cursor: pointer;
+                transition: all 250ms ease;
+                text-align: left;
+            }
+            .lessons-verse-card:hover {
+                border-color: color-mix(
+                    in oklab,
+                    var(--accent) 40%,
+                    transparent
+                );
+                background: color-mix(
+                    in oklab,
+                    var(--bg-soft) 60%,
+                    var(--bg)
+                );
+            }
+            .lessons-verse-card-ref {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 9px;
+                letter-spacing: 0.3em;
+                text-transform: uppercase;
+                color: var(--accent);
+                opacity: 0.8;
+            }
+            .lessons-verse-card-arabic {
+                font-family: "Amiri Quran", serif;
+                direction: rtl;
+                font-size: 15px;
+                line-height: 1.7;
+                color: var(--ink);
+                opacity: 0.9;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .lessons-verse-card-trans {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: 13px;
+                line-height: 1.45;
+                color: var(--ink-soft);
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .lessons-verse-card-hint {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 9px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+                margin-top: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .lessons-verse-card-hint svg {
+                width: 10px;
+                height: 10px;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                fill: none;
+            }
+            .lessons-detail-back {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-family: "Inter Tight", sans-serif;
+                font-size: 10px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+                cursor: pointer;
+                transition: color 200ms;
+                margin-bottom: 8px;
+                background: none;
+                border: none;
+                padding: 0;
+            }
+            .lessons-detail-back:hover {
+                color: var(--accent);
+            }
+            .lessons-detail-back svg {
+                width: 12px;
+                height: 12px;
+                stroke: currentColor;
+                stroke-width: 1.5;
+                fill: none;
+            }
+            .lessons-detail-verse {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 16px;
+                border-radius: 14px;
+                border: 1px solid
+                    color-mix(in oklab, var(--accent) 20%, transparent);
+                background: color-mix(
+                    in oklab,
+                    var(--bg-soft) 35%,
+                    var(--bg)
+                );
+                margin-bottom: 8px;
+            }
+            .lessons-detail-verse .verse-fs-arabic {
+                font-size: clamp(18px, 1.6vw + 12px, 26px);
+            }
+            .lessons-detail-verse .verse-fs-translation {
+                font-size: clamp(14px, 1vw + 10px, 18px);
+            }
+            .lessons-list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+            .lessons-card {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                padding: 14px 16px;
+                border-radius: 12px;
+                border: 1px solid
+                    color-mix(in oklab, var(--accent) 10%, transparent);
+                background: color-mix(
+                    in oklab,
+                    var(--bg-soft) 30%,
+                    var(--bg)
+                );
+            }
+            .lessons-card-author {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 10px;
+                letter-spacing: 0.25em;
+                text-transform: uppercase;
+                color: var(--accent);
+                opacity: 0.9;
+            }
+            .lessons-card-body {
+                font-family: "Cormorant Garamond", serif;
+                font-size: 15px;
+                line-height: 1.55;
+                color: var(--ink);
+            }
+            .lessons-empty {
+                font-family: "Cormorant Garamond", serif;
+                font-style: italic;
+                font-size: 16px;
+                color: var(--ink-faint);
+                text-align: center;
+                padding: 24px 0;
+            }
+            .lessons-loading {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 24px 0;
+                font-family: "Inter Tight", sans-serif;
+                font-size: 11px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+            }
+            .lessons-skip {
+                font-family: "Inter Tight", sans-serif;
+                font-size: 10px;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
+                color: var(--ink-faint);
+                cursor: pointer;
+                transition: color 200ms;
+                background: none;
+                border: none;
+                padding: 8px 16px;
+            }
+            .lessons-skip:hover {
+                color: var(--accent);
+            }
+            @media (max-width: 640px) {
+                .lessons-verse-card {
+                    padding: 12px 14px;
+                }
+                .lessons-detail-verse .verse-fs-arabic {
+                    font-size: 18px;
+                }
+                .lessons-detail-verse .verse-fs-translation {
+                    font-size: 14px;
+                }
+            }
+
             /* Write step */
             .write-scroll {
                 width: 100%;
@@ -3894,6 +4124,7 @@
                 { id: "listen", label: "Listen" },
                 { id: "ponder", label: "Ponder" },
                 { id: "questions", label: "Questions" },
+                { id: "lessons", label: "Lessons" },
                 { id: "write", label: "Write" },
             ];
 
@@ -4144,6 +4375,24 @@
                     return "";
                 }
             }
+            async function fetchLessons(verseKey) {
+                try {
+                    const res = await fetch(
+                        `https://api.quranreflect.com/posts?tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`,
+                    );
+                    if (!res.ok) return [];
+                    const data = await res.json();
+                    return (data.posts || []).map((p) => ({
+                        id: p.id,
+                        body: stripHtml(p.body || p.text || ""),
+                        authorName:
+                            p.authorName || p.author?.name || "Anonymous",
+                    }));
+                } catch (e) {
+                    return [];
+                }
+            }
+
             async function fetchVersesForSession(
                 surah,
                 startVerse,
@@ -4692,6 +4941,7 @@
                         selectedEndIdx: Math.min(4, verses.length - 1),
                         ponderIdx: 0,
                         qIdx: 0,
+                        lessonsVerseIdx: null,
                         writeActions: [""],
                         title: "",
                     });
@@ -4765,6 +5015,7 @@
                                 selectedEndIdx: Math.min(4, verseKeys.length - 1),
                                 ponderIdx: 0,
                                 qIdx: 0,
+                                lessonsVerseIdx: null,
                                 writeActions: prefillActions,
                                 title: prefillTitle,
                                 isReplay: true,
@@ -4811,7 +5062,7 @@
                 /* save Write step → save actions → ask for title */
                 const submitWrite = useCallback((writeActions) => {
                     DB.setCurrentSessionField("writeActions", writeActions);
-                    DB.setCurrentSessionField("completedSteps", 4);
+                    DB.setCurrentSessionField("completedSteps", 5);
                     setView("title");
                 }, []);
 
@@ -5018,6 +5269,17 @@
                                 onBack={goHome}
                                 onComplete={() => completeStep(2)}
                                 openTafsir={openTafsir}
+                                showToast={showToast}
+                            />
+                        )}
+
+                        {view === "lessons" && cs && (
+                            <LessonsStep
+                                cs={cs}
+                                DB={DB}
+                                verses={sessionVerses}
+                                onBack={goHome}
+                                onContinue={() => completeStep(3, "write")}
                                 showToast={showToast}
                             />
                         )}
@@ -6929,6 +7191,230 @@
                                         )}
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            /* ─────────── LESSONS STEP ─────────── */
+            function LessonsStep({
+                cs,
+                DB,
+                verses,
+                onBack,
+                onContinue,
+                showToast,
+            }) {
+                const [selectedIdx, setSelectedIdx] = useState(
+                    cs.lessonsVerseIdx ?? null,
+                );
+                const [lessons, setLessons] = useState([]);
+                const [loading, setLoading] = useState(false);
+                const ponderedVerses = verses.slice(
+                    0,
+                    (cs.selectedEndIdx ?? 0) + 1,
+                );
+
+                useEffect(() => {
+                    if (selectedIdx != null) {
+                        DB.setCurrentSessionField(
+                            "lessonsVerseIdx",
+                            selectedIdx,
+                        );
+                    }
+                }, [selectedIdx, DB]);
+
+                const loadLessons = useCallback(
+                    async (verseKey) => {
+                        setLoading(true);
+                        setLessons([]);
+                        const data = await fetchLessons(verseKey);
+                        setLessons(data);
+                        setLoading(false);
+                        if (data.length === 0) {
+                            showToast("No lessons found", "");
+                        }
+                    },
+                    [showToast],
+                );
+
+                const selectVerse = (idx) => {
+                    setSelectedIdx(idx);
+                    loadLessons(ponderedVerses[idx].key);
+                };
+
+                const deselect = () => {
+                    setSelectedIdx(null);
+                    setLessons([]);
+                };
+
+                return (
+                    <div className="step-fs">
+                        <BackButton onClick={onBack} />
+                        <div className="step-fs-top">
+                            <div className="step-fs-eyebrow">Lessons</div>
+                            {selectedIdx != null && (
+                                <div className="step-fs-ref">
+                                    Surah {cs.surahName} ·{" "}
+                                    {ponderedVerses[selectedIdx]?.surah}:
+                                    {ponderedVerses[selectedIdx]?.verse}
+                                </div>
+                            )}
+                        </div>
+                        <div className="step-fs-body">
+                            <div className="lessons-body">
+                                {selectedIdx == null ? (
+                                    <>
+                                        <div className="lessons-prompt fade-in">
+                                            See what scholars and seekers have
+                                            learned from the verses you
+                                            pondered.
+                                        </div>
+                                        <div className="lessons-verse-list">
+                                            {ponderedVerses.map((v, i) => (
+                                                <button
+                                                    key={v.key || i}
+                                                    className="lessons-verse-card fade-in"
+                                                    onClick={() =>
+                                                        selectVerse(i)
+                                                    }
+                                                    style={{
+                                                        animationDelay: `${i * 80}ms`,
+                                                    }}
+                                                >
+                                                    <div className="lessons-verse-card-ref">
+                                                        {v.surah}:
+                                                        {v.verse ?? i + 1}
+                                                    </div>
+                                                    {v.arabic && (
+                                                        <div className="lessons-verse-card-arabic">
+                                                            {v.arabic}
+                                                        </div>
+                                                    )}
+                                                    {v.translation && (
+                                                        <div className="lessons-verse-card-trans">
+                                                            {v.translation}
+                                                        </div>
+                                                    )}
+                                                    <div className="lessons-verse-card-hint">
+                                                        <svg viewBox="0 0 24 24">
+                                                            <path d="M12 5v14M5 12h14" />
+                                                        </svg>
+                                                        Read lessons
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            className="lessons-detail-back"
+                                            onClick={deselect}
+                                        >
+                                            <svg viewBox="0 0 24 24">
+                                                <path d="M15 6l-6 6 6 6" />
+                                            </svg>
+                                            All verses
+                                        </button>
+                                        <div className="lessons-detail-verse fade-in">
+                                            {ponderedVerses[selectedIdx]
+                                                ?.arabic && (
+                                                <div className="verse-fs-arabic">
+                                                    {
+                                                        ponderedVerses[
+                                                            selectedIdx
+                                                        ].arabic
+                                                    }
+                                                </div>
+                                            )}
+                                            {ponderedVerses[selectedIdx]
+                                                ?.translation && (
+                                                <div className="verse-fs-translation">
+                                                    {
+                                                        ponderedVerses[
+                                                            selectedIdx
+                                                        ].translation
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                        {loading ? (
+                                            <div className="lessons-loading fade-in">
+                                                <span className="loading-dots">
+                                                    <span />
+                                                    <span />
+                                                    <span />
+                                                </span>
+                                                Loading lessons
+                                            </div>
+                                        ) : lessons.length === 0 ? (
+                                            <div className="lessons-empty fade-in">
+                                                No lessons found for this verse.
+                                            </div>
+                                        ) : (
+                                            <div className="lessons-list">
+                                                {lessons.map((lesson) => (
+                                                    <div
+                                                        key={lesson.id}
+                                                        className="lessons-card fade-in"
+                                                    >
+                                                        <div className="lessons-card-author">
+                                                            {lesson.authorName}
+                                                        </div>
+                                                        <div className="lessons-card-body">
+                                                            {lesson.body}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div className="step-fs-bottom">
+                            <div
+                                className="verse-nav"
+                                style={{ visibility: "hidden" }}
+                            >
+                                <button
+                                    className="verse-nav-arrow"
+                                    disabled
+                                />
+                                <button
+                                    className="verse-nav-arrow"
+                                    disabled
+                                />
+                            </div>
+                            <div className="ponder-instruction">
+                                {selectedIdx == null
+                                    ? "Choose a verse to explore lessons from the community."
+                                    : "Reflect on these lessons. Then continue to write your actions."}
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "12px",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <button
+                                    className="lessons-skip"
+                                    onClick={onContinue}
+                                >
+                                    Skip
+                                </button>
+                                <button
+                                    className="action"
+                                    onClick={onContinue}
+                                >
+                                    <span className="action-text">
+                                        Continue
+                                    </span>
+                                    <span className="action-line" />
+                                </button>
                             </div>
                         </div>
                     </div>
