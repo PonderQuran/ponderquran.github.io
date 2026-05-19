@@ -4395,9 +4395,81 @@
                 }
             }
             async function fetchLessons(verseKey) {
-                // QuranReflect does not expose a public CORS-enabled JSON API.
-                // The frontend is a Next.js app that returns HTML and redirects by locale.
-                // We return an empty array so the UI falls back to the external-link flow.
+                const query = `tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`;
+                // Many endpoint candidates. api.quran.com already has CORS enabled for this app.
+                const candidates = [
+                    // Quran.com API paths (CORS already works for these)
+                    `https://api.quran.com/api/v4/posts?${query}`,
+                    `https://api.quran.com/api/v4/feed?${query}`,
+                    `https://api.quran.com/api/v4/qr/posts?${query}`,
+                    `https://api.quran.com/api/v4/quran_reflect/posts?${query}`,
+                    `https://api.quran.com/api/v4/user/posts?${query}`,
+                    `https://api.quran.com/api/v4/community/posts?${query}`,
+                    `https://api.quran.com/api/v4/lessons?${query}`,
+                    `https://api.quran.com/api/v4/reflections?${query}`,
+                    // QuranReflect direct paths via CORS proxy
+                    `https://corsproxy.io/?${encodeURIComponent(`https://api.quranreflect.com/en/posts?${query}`)}`,
+                    `https://corsproxy.io/?${encodeURIComponent(`https://quranreflect.com/en/posts?${query}`)}`,
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.quranreflect.com/en/posts?${query}`)}`,
+                    `https://api.allorigins.win/get?url=${encodeURIComponent(`https://quranreflect.com/en/posts?${query}`)}`,
+                ];
+                for (const url of candidates) {
+                    try {
+                        console.log("[fetchLessons] trying", url);
+                        const res = await fetch(url);
+                        if (!res.ok) {
+                            console.log("[fetchLessons] non-ok", res.status, url);
+                            continue;
+                        }
+                        let data;
+                        if (url.includes("allorigins.win")) {
+                            const wrapper = await res.json();
+                            console.log("[fetchLessons] allorigins wrapper", wrapper.status);
+                            const html = wrapper.contents || "";
+                            // Try to extract __NEXT_DATA__ from HTML
+                            const m = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
+                            if (m) {
+                                data = JSON.parse(m[1]);
+                            } else {
+                                // Try to find any JSON block with "posts" array
+                                const postsMatch = html.match(/"posts":(\[.*?\])/);
+                                if (postsMatch) {
+                                    try { data = { posts: JSON.parse(postsMatch[1]) }; } catch(e) {}
+                                }
+                            }
+                        } else {
+                            const ct = res.headers.get("content-type") || "";
+                            if (ct.includes("application/json")) {
+                                data = await res.json();
+                            } else {
+                                // Might be HTML from proxy - try to parse
+                                const text = await res.text();
+                                const m = text.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
+                                if (m) data = JSON.parse(m[1]);
+                            }
+                        }
+                        if (!data) {
+                            console.log("[fetchLessons] no parseable data", url);
+                            continue;
+                        }
+                        // Extract posts from various possible shapes
+                        let posts = data.posts || data.data?.posts || data.props?.pageProps?.posts || data.results || [];
+                        if (!Array.isArray(posts) && Array.isArray(data.data)) posts = data.data;
+                        if (!Array.isArray(posts)) {
+                            console.log("[fetchLessons] posts not array", url, Object.keys(data));
+                            continue;
+                        }
+                        console.log("[fetchLessons] SUCCESS", url, posts.length, "items");
+                        return posts.map((p) => ({
+                            id: p.id,
+                            body: stripHtml(p.body || p.text || p.content || p.summary || ""),
+                            authorName: p.authorName || p.author?.name || p.user?.name || p.name || "Anonymous",
+                        }));
+                    } catch (e) {
+                        console.log("[fetchLessons] error", url, e.message);
+                    }
+                }
+                console.log("[fetchLessons] all candidates failed");
                 return [];
             }
 
