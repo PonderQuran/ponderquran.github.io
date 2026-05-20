@@ -4298,17 +4298,12 @@
                     Auth.save(tokens);
                     localStorage.removeItem("pkce_v");
                     localStorage.removeItem("oauth_s");
-                    sessionStorage.setItem("qf_just_logged_in", "1");
+                    localStorage.removeItem("qf_return_state");
                     window.history.replaceState(
                         {},
                         document.title,
                         window.location.pathname,
                     );
-                    const returnTo = localStorage.getItem("qf_return_state");
-                    if (returnTo) {
-                        localStorage.removeItem("qf_return_state");
-                        window.location.href = returnTo;
-                    }
                 }
             }
 
@@ -5017,14 +5012,15 @@
 
                 /* view: which screen is showing */
                 const [view, setView] = useState(() => {
-                    if (sessionStorage.getItem("qf_just_logged_in")) return "lessons";
+                    if (Auth.loggedIn() && localStorage.getItem("qf_pending")) {
+                        return "lessons";
+                    }
                     return "home";
                 });
 
                 /* on mount: jump straight to memorize if verses pending and learning enabled */
                 useEffect(() => {
-                    if (sessionStorage.getItem("qf_just_logged_in")) {
-                        sessionStorage.removeItem("qf_just_logged_in");
+                    if (Auth.loggedIn() && localStorage.getItem("qf_pending")) {
                         return;
                     }
                     if (!DB.getLearningEnabled()) return;
