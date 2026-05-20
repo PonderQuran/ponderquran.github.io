@@ -4151,7 +4151,6 @@
             /* ─────────── QURAN FOUNDATION OAuth2 + Auth Module ─────────── */
             const QF = {
                 CLIENT_ID: "1de2c8be-a2dd-48e0-840c-ac0c36307938",
-                CLIENT_SECRET: ".yRXyV51YKf18DD.SNjHjIXy_p",
                 REDIRECT_URI: "https://ponderquran.github.io",
                 AUTH_BASE: "https://prelive-oauth2.quran.foundation",
                 API_BASE: "https://apis-prelive.quran.foundation",
@@ -4164,33 +4163,17 @@
                     .replace(/\//g, "_")
                     .replace(/=+$/, "");
             }
-            async function makePKCE() {
-                const verifier = b64url(
-                    crypto.getRandomValues(new Uint8Array(32)),
-                );
-                const challenge = b64url(
-                    await crypto.subtle.digest(
-                        "SHA-256",
-                        new TextEncoder().encode(verifier),
-                    ),
-                );
-                return { verifier, challenge };
-            }
 
             const Auth = {
-                save(t) {
-                    localStorage.setItem("qf_at", t.access_token);
-                    localStorage.setItem("qf_rt", t.refresh_token);
+                save(token, expiresIn) {
+                    localStorage.setItem("qf_at", token);
                     localStorage.setItem(
                         "qf_exp",
-                        Date.now() + t.expires_in * 1000,
+                        Date.now() + expiresIn * 1000,
                     );
                 },
                 token() {
                     return localStorage.getItem("qf_at");
-                },
-                refresh() {
-                    return localStorage.getItem("qf_rt");
                 },
                 expired() {
                     return (
@@ -4199,81 +4182,49 @@
                     );
                 },
                 loggedIn() {
-                    return !!this.refresh();
+                    return !!localStorage.getItem("qf_at");
                 },
                 clear() {
-                    ["qf_at", "qf_rt", "qf_exp"].forEach((k) =>
+                    ["qf_at", "qf_exp"].forEach((k) =>
                         localStorage.removeItem(k),
                     );
                 },
             };
 
+            function captureAppState() {
+                return { pending: !!localStorage.getItem("qf_pending") };
+            }
+
+            function restoreAppState(state) {
+                if (state.pending) window.__qf_redirect = true;
+            }
+
+            function updateAuthUI() {}
+
             async function qfLogin() {
-                const { verifier, challenge } = await makePKCE();
                 const state = b64url(
                     crypto.getRandomValues(new Uint8Array(16)),
                 );
-                localStorage.setItem("pkce_v", verifier);
                 localStorage.setItem("oauth_s", state);
                 const p = new URLSearchParams({
-                    response_type: "code",
+                    response_type: "token",
                     client_id: QF.CLIENT_ID,
                     redirect_uri: QF.REDIRECT_URI,
                     scope: QF.SCOPES,
                     state,
-                    nonce: b64url(crypto.getRandomValues(new Uint8Array(16))),
-                    code_challenge: challenge,
-                    code_challenge_method: "S256",
+                    nonce: b64url(
+                        crypto.getRandomValues(new Uint8Array(16)),
+                    ),
                 });
-                localStorage.setItem("qf_return_state", window.location.href);
+                localStorage.setItem(
+                    "qf_app_state",
+                    JSON.stringify(captureAppState()),
+                );
                 window.location.href = `${QF.AUTH_BASE}/oauth2/auth?${p}`;
             }
 
-            async function exchangeCode(code) {
-                const r = await fetch(
-                    `https://corsproxy.io/?url=${encodeURIComponent(`${QF.AUTH_BASE}/oauth2/token`)}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            grant_type: "authorization_code",
-                            client_id: QF.CLIENT_ID,
-                            client_secret: QF.CLIENT_SECRET,
-                            code,
-                            redirect_uri: QF.REDIRECT_URI,
-                            code_verifier: localStorage.getItem("pkce_v"),
-                        }),
-                    },
-                );
-                return r.json();
-            }
-
-            async function refreshToken() {
-                const r = await fetch(
-                    `https://corsproxy.io/?url=${encodeURIComponent(`${QF.AUTH_BASE}/oauth2/token`)}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            grant_type: "refresh_token",
-                            client_id: QF.CLIENT_ID,
-                            client_secret: QF.CLIENT_SECRET,
-                            refresh_token: Auth.refresh(),
-                        }),
-                    },
-                );
-                const t = await r.json();
-                if (t.access_token) Auth.save(t);
-                return t;
-            }
-
             async function getToken() {
-                if (Auth.expired()) await refreshToken();
-                return Auth.token();
+                return localStorage.getItem("qf_at");
             }
 
             function qfLogout() {
@@ -4281,29 +4232,24 @@
             }
 
             async function handleCallback() {
-                const p = new URLSearchParams(window.location.search);
-                const code = p.get("code");
-                if (!code) return;
-                window.__qf_redirect = !!localStorage.getItem("qf_pending");
-                const state = p.get("state");
-                if (state === localStorage.getItem("oauth_s")) {
-                    try {
-                        const tokens = await exchangeCode(code);
-                        if (tokens.access_token) {
-                            Auth.save(tokens);
-                        }
-                    } catch (e) {
-                        console.warn("Token exchange failed:", e);
-                    }
-                }
-                localStorage.removeItem("qf_return_state");
-                localStorage.removeItem("pkce_v");
-                localStorage.removeItem("oauth_s");
+                const hash = window.location.hash.substring(1);
+                if (!hash.includes("access_token")) return;
+                const params = new URLSearchParams(hash);
+                const token = params.get("access_token");
+                const expiresIn = parseInt(params.get("expires_in") || "3600");
+                if (!token) return;
+                Auth.save(token, expiresIn);
                 window.history.replaceState(
                     {},
                     document.title,
                     window.location.pathname,
                 );
+                updateAuthUI();
+                const saved = localStorage.getItem("qf_app_state");
+                if (saved) {
+                    localStorage.removeItem("qf_app_state");
+                    restoreAppState(JSON.parse(saved));
+                }
             }
 
             function stripHtml(str) {
