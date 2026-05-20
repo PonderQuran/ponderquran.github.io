@@ -4283,24 +4283,26 @@
             async function handleCallback() {
                 const p = new URLSearchParams(window.location.search);
                 const code = p.get("code");
-                const state = p.get("state");
                 if (!code) return;
-                if (state !== localStorage.getItem("oauth_s")) {
-                    console.error("OAuth state mismatch");
-                    return;
+                const state = p.get("state");
+                if (state === localStorage.getItem("oauth_s")) {
+                    try {
+                        const tokens = await exchangeCode(code);
+                        if (tokens.access_token) {
+                            Auth.save(tokens);
+                            localStorage.removeItem("pkce_v");
+                            localStorage.removeItem("oauth_s");
+                        }
+                    } catch (e) {
+                        console.warn("Token exchange failed:", e);
+                    }
                 }
-                const tokens = await exchangeCode(code);
-                if (tokens.access_token) {
-                    Auth.save(tokens);
-                    localStorage.removeItem("pkce_v");
-                    localStorage.removeItem("oauth_s");
-                    localStorage.removeItem("qf_return_state");
-                    window.history.replaceState(
-                        {},
-                        document.title,
-                        window.location.pathname,
-                    );
-                }
+                localStorage.removeItem("qf_return_state");
+                window.history.replaceState(
+                    {},
+                    document.title,
+                    window.location.pathname,
+                );
             }
 
             function stripHtml(str) {
@@ -5008,7 +5010,8 @@
 
                 /* view: which screen is showing */
                 const [view, setView] = useState(() => {
-                    if (Auth.loggedIn() && localStorage.getItem("qf_pending")) {
+                    const pending = localStorage.getItem("qf_pending");
+                    if (pending) {
                         return "lessons";
                     }
                     return "home";
@@ -5016,9 +5019,8 @@
 
                 /* on mount: jump straight to memorize if verses pending and learning enabled */
                 useEffect(() => {
-                    if (Auth.loggedIn() && localStorage.getItem("qf_pending")) {
-                        return;
-                    }
+                    const pending = localStorage.getItem("qf_pending");
+                    if (pending) return;
                     if (!DB.getLearningEnabled()) return;
                     const lsid = DB.getLearningSittingId();
                     const learned = DB.getLearnedVerseKeys();
