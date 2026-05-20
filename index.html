@@ -4297,7 +4297,7 @@
                     Auth.save(tokens);
                     localStorage.removeItem("pkce_v");
                     localStorage.removeItem("oauth_s");
-                    localStorage.setItem("qf_just_logged_in", "1");
+                    sessionStorage.setItem("qf_just_logged_in", "1");
                     window.history.replaceState(
                         {},
                         document.title,
@@ -5010,16 +5010,16 @@
                 }, [cs?.id, cs?.verseKeys?.join(",")]);
 
                 /* view: which screen is showing */
-                const [view, setView] = useState("home");
+                const [view, setView] = useState(() => {
+                    if (sessionStorage.getItem("qf_just_logged_in")) return "lessons";
+                    return "home";
+                });
 
                 /* on mount: jump straight to memorize if verses pending and learning enabled */
                 useEffect(() => {
-                    if (localStorage.getItem("qf_just_logged_in")) {
-                        localStorage.removeItem("qf_just_logged_in");
-                        if (cs) {
-                            setView("lessons");
-                            return;
-                        }
+                    if (sessionStorage.getItem("qf_just_logged_in")) {
+                        sessionStorage.removeItem("qf_just_logged_in");
+                        return;
                     }
                     if (!DB.getLearningEnabled()) return;
                     const lsid = DB.getLearningSittingId();
@@ -7491,15 +7491,19 @@
 
                 const selectVerse = (idx) => {
                     if (!loggedIn) {
-                        localStorage.setItem("qf_pending_verse_idx", idx);
+                        const key = cs.verseKeys[idx];
+                        const { surah, verse } = parseKey(key);
+                        localStorage.setItem(
+                            "qf_pending",
+                            JSON.stringify({ surah, verse, idx }),
+                        );
                         qfLogin();
                         return;
                     }
                     setSelectedIdx(idx);
-                    loadLessons(
-                        ponderedVerses[idx].surah,
-                        ponderedVerses[idx].verse,
-                    );
+                    const key = cs.verseKeys[idx];
+                    const { surah, verse } = parseKey(key);
+                    loadLessons(surah, verse);
                 };
 
                 const deselect = () => {
@@ -7508,7 +7512,10 @@
                 };
 
                 const handleLogin = async () => {
-                    localStorage.setItem("qf_pending_verse_idx", "-1");
+                    localStorage.setItem(
+                        "qf_pending",
+                        JSON.stringify({ idx: -1 }),
+                    );
                     await qfLogin();
                 };
                 const handleLogout = () => {
@@ -7519,15 +7526,15 @@
 
                 useEffect(() => {
                     if (!loggedIn) return;
-                    const pending = localStorage.getItem(
-                        "qf_pending_verse_idx",
-                    );
-                    if (pending != null) {
-                        localStorage.removeItem("qf_pending_verse_idx");
-                        const idx = parseInt(pending, 10);
-                        if (idx >= 0 && idx < ponderedVerses.length) {
-                            selectVerse(idx);
-                        }
+                    const raw = localStorage.getItem("qf_pending");
+                    if (raw != null) {
+                        localStorage.removeItem("qf_pending");
+                        try {
+                            const { idx } = JSON.parse(raw);
+                            if (idx >= 0 && idx < ponderedVerses.length) {
+                                selectVerse(idx);
+                            }
+                        } catch (e) {}
                     }
                 }, [loggedIn]);
 
