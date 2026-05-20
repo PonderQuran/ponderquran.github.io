@@ -4227,6 +4227,7 @@
                     code_challenge: challenge,
                     code_challenge_method: "S256",
                 });
+                localStorage.setItem("qf_return_state", window.location.href);
                 window.location.href = `${QF.AUTH_BASE}/oauth2/auth?${p}`;
             }
 
@@ -4303,6 +4304,11 @@
                         document.title,
                         window.location.pathname,
                     );
+                    const returnTo = localStorage.getItem("qf_return_state");
+                    if (returnTo) {
+                        localStorage.removeItem("qf_return_state");
+                        window.location.href = returnTo;
+                    }
                 }
             }
 
