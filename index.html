@@ -1526,25 +1526,6 @@
                 text-transform: uppercase;
                 color: var(--ink-faint);
             }
-            .lessons-external {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 14px;
-                padding: 20px 0;
-                text-align: center;
-            }
-            .lessons-external-hint {
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-                font-size: 15px;
-                color: var(--ink-soft);
-                max-width: 400px;
-                line-height: 1.5;
-            }
-            .lessons-external-btn {
-                display: inline-flex;
-            }
             .lessons-skip {
                 font-family: "Inter Tight", sans-serif;
                 font-size: 10px;
@@ -4395,82 +4376,21 @@
                 }
             }
             async function fetchLessons(verseKey) {
-                const query = `tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`;
-                // Many endpoint candidates. api.quran.com already has CORS enabled for this app.
-                const candidates = [
-                    // Quran.com API paths (CORS already works for these)
-                    `https://api.quran.com/api/v4/posts?${query}`,
-                    `https://api.quran.com/api/v4/feed?${query}`,
-                    `https://api.quran.com/api/v4/qr/posts?${query}`,
-                    `https://api.quran.com/api/v4/quran_reflect/posts?${query}`,
-                    `https://api.quran.com/api/v4/user/posts?${query}`,
-                    `https://api.quran.com/api/v4/community/posts?${query}`,
-                    `https://api.quran.com/api/v4/lessons?${query}`,
-                    `https://api.quran.com/api/v4/reflections?${query}`,
-                    // QuranReflect direct paths via CORS proxy
-                    `https://corsproxy.io/?${encodeURIComponent(`https://api.quranreflect.com/en/posts?${query}`)}`,
-                    `https://corsproxy.io/?${encodeURIComponent(`https://quranreflect.com/en/posts?${query}`)}`,
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.quranreflect.com/en/posts?${query}`)}`,
-                    `https://api.allorigins.win/get?url=${encodeURIComponent(`https://quranreflect.com/en/posts?${query}`)}`,
-                ];
-                for (const url of candidates) {
-                    try {
-                        console.log("[fetchLessons] trying", url);
-                        const res = await fetch(url);
-                        if (!res.ok) {
-                            console.log("[fetchLessons] non-ok", res.status, url);
-                            continue;
-                        }
-                        let data;
-                        if (url.includes("allorigins.win")) {
-                            const wrapper = await res.json();
-                            console.log("[fetchLessons] allorigins wrapper", wrapper.status);
-                            const html = wrapper.contents || "";
-                            // Try to extract __NEXT_DATA__ from HTML
-                            const m = html.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
-                            if (m) {
-                                data = JSON.parse(m[1]);
-                            } else {
-                                // Try to find any JSON block with "posts" array
-                                const postsMatch = html.match(/"posts":(\[.*?\])/);
-                                if (postsMatch) {
-                                    try { data = { posts: JSON.parse(postsMatch[1]) }; } catch(e) {}
-                                }
-                            }
-                        } else {
-                            const ct = res.headers.get("content-type") || "";
-                            if (ct.includes("application/json")) {
-                                data = await res.json();
-                            } else {
-                                // Might be HTML from proxy - try to parse
-                                const text = await res.text();
-                                const m = text.match(/<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/);
-                                if (m) data = JSON.parse(m[1]);
-                            }
-                        }
-                        if (!data) {
-                            console.log("[fetchLessons] no parseable data", url);
-                            continue;
-                        }
-                        // Extract posts from various possible shapes
-                        let posts = data.posts || data.data?.posts || data.props?.pageProps?.posts || data.results || [];
-                        if (!Array.isArray(posts) && Array.isArray(data.data)) posts = data.data;
-                        if (!Array.isArray(posts)) {
-                            console.log("[fetchLessons] posts not array", url, Object.keys(data));
-                            continue;
-                        }
-                        console.log("[fetchLessons] SUCCESS", url, posts.length, "items");
-                        return posts.map((p) => ({
-                            id: p.id,
-                            body: stripHtml(p.body || p.text || p.content || p.summary || ""),
-                            authorName: p.authorName || p.author?.name || p.user?.name || p.name || "Anonymous",
-                        }));
-                    } catch (e) {
-                        console.log("[fetchLessons] error", url, e.message);
-                    }
+                try {
+                    const res = await fetch(
+                        `https://api.quranreflect.com/posts?tab=trending&filter[postTypeIds]=2&filters[ayahKeys][]=${encodeURIComponent(verseKey)}&limit=10`,
+                    );
+                    if (!res.ok) return [];
+                    const data = await res.json();
+                    return (data.posts || []).map((p) => ({
+                        id: p.id,
+                        body: stripHtml(p.body || p.text || ""),
+                        authorName:
+                            p.authorName || p.author?.name || "Anonymous",
+                    }));
+                } catch (e) {
+                    return [];
                 }
-                console.log("[fetchLessons] all candidates failed");
-                return [];
             }
 
             async function fetchVersesForSession(
@@ -4694,7 +4614,9 @@
                 DB.timetableEnsurePrayers = () => {
                     const existing = DB.timetable.toArray();
                     const hasPrayer = (name) =>
-                        existing.some((b) => b.type === "prayer" && b.label === name);
+                        existing.some(
+                            (b) => b.type === "prayer" && b.label === name,
+                        );
                     const missing = window.PRAYER_BLOCKS.filter(
                         (n) => !hasPrayer(n),
                     );
@@ -4794,12 +4716,18 @@
                     DB.timetableUpdate(id, { done: !arr[idx].done });
                 };
 
-                DB.setLearningSitting = (id) => DB.meta.set("learningSittingId", id);
-                DB.getLearningSittingId = () => DB.meta.get("learningSittingId") || null;
-                DB.getLearningEnabled = () => DB.meta.get("learningEnabled") !== false;
-                DB.setLearningEnabled = (v) => DB.meta.set("learningEnabled", !!v);
+                DB.setLearningSitting = (id) =>
+                    DB.meta.set("learningSittingId", id);
+                DB.getLearningSittingId = () =>
+                    DB.meta.get("learningSittingId") || null;
+                DB.getLearningEnabled = () =>
+                    DB.meta.get("learningEnabled") !== false;
+                DB.setLearningEnabled = (v) =>
+                    DB.meta.set("learningEnabled", !!v);
                 DB.setLearnedVerseKeys = (keys) => {
-                    const arr = DB.learnedVerseKeys || ydoc.getArray("learnedVerseKeys");
+                    const arr =
+                        DB.learnedVerseKeys ||
+                        ydoc.getArray("learnedVerseKeys");
                     if (!DB.learnedVerseKeys) DB.learnedVerseKeys = arr;
                     arr.delete(0, arr.length);
                     keys.forEach((k) => arr.push([k]));
@@ -4814,7 +4742,8 @@
                     const arr = DB.getLearnedVerseKeys();
                     if (!arr.includes(key)) {
                         if (!DB.learnedVerseKeys) {
-                            DB.learnedVerseKeys = ydoc.getArray("learnedVerseKeys");
+                            DB.learnedVerseKeys =
+                                ydoc.getArray("learnedVerseKeys");
                         }
                         DB.learnedVerseKeys.push([key]);
                     }
@@ -4855,7 +4784,8 @@
                 const lastSessionDate = DB.getLastSessionDate();
                 const sessionInProgress = !!cs;
                 const dailyDoneToday =
-                    (!sessionInProgress || (cs && cs.isReplay)) && lastSessionDate === todayStr();
+                    (!sessionInProgress || (cs && cs.isReplay)) &&
+                    lastSessionDate === todayStr();
 
                 /* in-memory verse cache (re-fetched on session start; ephemeral) */
                 const verseCacheRef = useRef({}); // { 'S:V': details }
@@ -5032,8 +4962,7 @@
                 const startNewSession = useCallback(() => {
                     if (sessionInProgress) return;
                     const hasUnlearned =
-                        DB.getLearningSittingId() &&
-                        !DB.hasLearnedAllVerses();
+                        DB.getLearningSittingId() && !DB.hasLearnedAllVerses();
                     if (hasUnlearned) {
                         setConfirm({
                             eyebrow: "Have you learned your verses?",
@@ -5092,7 +5021,10 @@
                                 completedSteps: 0,
                                 listenIdx: 0,
                                 listenReached: 0,
-                                selectedEndIdx: Math.min(4, verseKeys.length - 1),
+                                selectedEndIdx: Math.min(
+                                    4,
+                                    verseKeys.length - 1,
+                                ),
                                 ponderIdx: 0,
                                 qIdx: 0,
                                 lessonsVerseIdx: null,
@@ -5763,7 +5695,9 @@
                     : "Set your horizons";
 
                 const learningSittingId = DB.getLearningSittingId();
-                const learningSitting = sessions.find((s) => s.id === learningSittingId);
+                const learningSitting = sessions.find(
+                    (s) => s.id === learningSittingId,
+                );
                 const learnedVerseKeys = DB.getLearnedVerseKeys();
                 const learnableKeys = learningSitting?.ponderedKeys || [];
                 const learnedCount = learnedVerseKeys.length;
@@ -5997,24 +5931,39 @@
                                         key={c.key}
                                         className="dash-card dash-card-memorize"
                                     >
-                                        <div className="dash-card-icon">{c.icon}</div>
-                                        <div className="dash-card-title">{c.title}</div>
-                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
-                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
+                                        <div className="dash-card-icon">
+                                            {c.icon}
+                                        </div>
+                                        <div className="dash-card-title">
+                                            {c.title}
+                                        </div>
+                                        <div className="dash-card-eyebrow">
+                                            {c.eyebrow}
+                                        </div>
+                                        <div
+                                            className={`dash-card-preview ${c.empty ? "empty" : ""}`}
+                                        >
                                             {c.preview}
                                         </div>
                                         {!c.empty && firstUnlearnedVerse && (
-                                            <div className="mem-card-verse"
-                                                onClick={() => setView("memorize")}
+                                            <div
+                                                className="mem-card-verse"
+                                                onClick={() =>
+                                                    setView("memorize")
+                                                }
                                             >
                                                 {firstUnlearnedVerse.arabic && (
                                                     <div className="mem-card-arabic arabic-font">
-                                                        {firstUnlearnedVerse.arabic}
+                                                        {
+                                                            firstUnlearnedVerse.arabic
+                                                        }
                                                     </div>
                                                 )}
                                                 {firstUnlearnedVerse.translation && (
                                                     <div className="mem-card-translation">
-                                                        {firstUnlearnedVerse.translation}
+                                                        {
+                                                            firstUnlearnedVerse.translation
+                                                        }
                                                     </div>
                                                 )}
                                             </div>
@@ -6022,11 +5971,18 @@
                                         {!c.empty && (
                                             <button
                                                 className="action"
-                                                style={{ marginTop: 10, alignSelf: "center" }}
-                                                onClick={() => setView("memorize")}
+                                                style={{
+                                                    marginTop: 10,
+                                                    alignSelf: "center",
+                                                }}
+                                                onClick={() =>
+                                                    setView("memorize")
+                                                }
                                             >
                                                 <span className="action-text">
-                                                    {firstUnlearnedKey ? "Continue" : "Review"}
+                                                    {firstUnlearnedKey
+                                                        ? "Continue"
+                                                        : "Review"}
                                                 </span>
                                                 <span className="action-line" />
                                             </button>
@@ -6050,14 +6006,22 @@
                                                 ?
                                             </button>
                                         )}
-                                        <div className="dash-card-icon">{c.icon}</div>
-                                        <div className="dash-card-title">{c.title}</div>
-                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
-                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
+                                        <div className="dash-card-icon">
+                                            {c.icon}
+                                        </div>
+                                        <div className="dash-card-title">
+                                            {c.title}
+                                        </div>
+                                        <div className="dash-card-eyebrow">
+                                            {c.eyebrow}
+                                        </div>
+                                        <div
+                                            className={`dash-card-preview ${c.empty ? "empty" : ""}`}
+                                        >
                                             {c.preview}
                                         </div>
                                     </div>
-                                )
+                                ),
                             )}
                         </div>
                     </div>
@@ -6071,7 +6035,14 @@
                         onClick={onClick}
                         aria-label="Settings"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
                             <circle cx="12" cy="12" r="3" />
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.17 15a1.65 1.65 0 0 0-1.51-1H2a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.17 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.17a1.65 1.65 0 0 0 1-1.51V2a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H22a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
@@ -6317,14 +6288,19 @@
                             <div className="sett-section">
                                 <div className="sett-section-label">Qur’an</div>
                                 <div className="sett-row">
-                                    <span className="sett-row-label">Memorisation mode</span>
+                                    <span className="sett-row-label">
+                                        Memorisation mode
+                                    </span>
                                     <button
                                         className={`sett-toggle ${DB.getLearningEnabled() ? "on" : ""}`}
                                         onClick={() => {
-                                            const next = !DB.getLearningEnabled();
+                                            const next =
+                                                !DB.getLearningEnabled();
                                             DB.setLearningEnabled(next);
                                             // force re-render
-                                            setQuestions([...DB.getQuestions()]);
+                                            setQuestions([
+                                                ...DB.getQuestions(),
+                                            ]);
                                         }}
                                         aria-label="Toggle memorisation mode"
                                     >
@@ -6332,11 +6308,15 @@
                                     </button>
                                 </div>
                                 <p className="sett-file-hint">
-                                    When on, the app prompts you to memorise the 5 verses from each sitting, and shows your progress on the dashboard.
+                                    When on, the app prompts you to memorise the
+                                    5 verses from each sitting, and shows your
+                                    progress on the dashboard.
                                 </p>
                             </div>
                             <div className="sett-section">
-                                <div className="sett-section-label">Questions</div>
+                                <div className="sett-section-label">
+                                    Questions
+                                </div>
                                 <p className="sett-file-hint">
                                     Customize the questions you reflect on
                                     during each sitting.
@@ -7277,7 +7257,7 @@
                 );
             }
 
-/* ─────────── LESSONS STEP ─────────── */
+            /* ─────────── LESSONS STEP ─────────── */
             function LessonsStep({
                 cs,
                 DB,
@@ -7459,14 +7439,8 @@
                                 className="verse-nav"
                                 style={{ visibility: "hidden" }}
                             >
-                                <button
-                                    className="verse-nav-arrow"
-                                    disabled
-                                />
-                                <button
-                                    className="verse-nav-arrow"
-                                    disabled
-                                />
+                                <button className="verse-nav-arrow" disabled />
+                                <button className="verse-nav-arrow" disabled />
                             </div>
                             <div className="ponder-instruction">
                                 {selectedIdx == null
@@ -7486,10 +7460,7 @@
                                 >
                                     Skip
                                 </button>
-                                <button
-                                    className="action"
-                                    onClick={onContinue}
-                                >
+                                <button className="action" onClick={onContinue}>
                                     <span className="action-text">
                                         Continue
                                     </span>
@@ -7674,7 +7645,9 @@
                     );
                     return firstUnlearned >= 0 ? firstUnlearned : 0;
                 });
-                const [loadedVerse, setLoadedVerse] = useState(verseCacheRef.current[verseKeys[idx]] || null);
+                const [loadedVerse, setLoadedVerse] = useState(
+                    verseCacheRef.current[verseKeys[idx]] || null,
+                );
 
                 useEffect(() => {
                     const cached = verseCacheRef.current[verseKeys[idx]];
@@ -7746,7 +7719,8 @@
                                 reachedIdx={maxNavigable}
                             />
                             <div className="step-fs-ref">
-                                Surah {sitting.surahName} · {verse?.surah}:{verse?.verse}
+                                Surah {sitting.surahName} · {verse?.surah}:
+                                {verse?.verse}
                             </div>
                         </div>
                         <VerseBody verse={verse} />
@@ -7764,7 +7738,9 @@
                                 </button>
                                 <button
                                     className="verse-nav-arrow"
-                                    onClick={() => setIdx(Math.min(maxNavigable, idx + 1))}
+                                    onClick={() =>
+                                        setIdx(Math.min(maxNavigable, idx + 1))
+                                    }
                                     disabled={idx >= maxNavigable}
                                     aria-label="Next verse"
                                 >
@@ -7787,8 +7763,13 @@
                                     Tafsir
                                 </button>
                                 {!isLearned && (
-                                    <button className="action" onClick={handleConfirmLearned}>
-                                        <span className="action-text">I have memorised this verse</span>
+                                    <button
+                                        className="action"
+                                        onClick={handleConfirmLearned}
+                                    >
+                                        <span className="action-text">
+                                            I have memorised this verse
+                                        </span>
                                         <span className="action-line" />
                                     </button>
                                 )}
@@ -7796,7 +7777,9 @@
                                     <button
                                         className="action-soft"
                                         onClick={() => {
-                                            DB.unmarkVerseLearned(verseKeys[idx]);
+                                            DB.unmarkVerseLearned(
+                                                verseKeys[idx],
+                                            );
                                             showToast("Marked unlearned", "");
                                         }}
                                     >
@@ -8235,7 +8218,16 @@
             }
 
             /* ── Tomorrow (timetable) ── */
-            function BlockRow({ b, i, list, toggleDone, updateLabel, remove, moveUp, moveDown }) {
+            function BlockRow({
+                b,
+                i,
+                list,
+                toggleDone,
+                updateLabel,
+                remove,
+                moveUp,
+                moveDown,
+            }) {
                 const done = !!b.done;
                 const type = b.type || "custom";
                 const isPrayer = type === "prayer";
@@ -8320,12 +8312,21 @@
                 }, []);
                 const all = DB.timetableArr();
 
-                const prayerOrder = { Fajr: 0, Dhuhr: 1, "ʿAsr": 2, Maghrib: 3, "ʿIshāʾ": 4 };
+                const prayerOrder = {
+                    Fajr: 0,
+                    Dhuhr: 1,
+                    ʿAsr: 2,
+                    Maghrib: 3,
+                    ʿIshāʾ: 4,
+                };
                 const sorted = useMemo(() => {
                     const list = [...all];
                     list.sort((a, b) => {
                         if (a.type === "prayer" && b.type === "prayer") {
-                            return (prayerOrder[a.label] || 0) - (prayerOrder[b.label] || 0);
+                            return (
+                                (prayerOrder[a.label] || 0) -
+                                (prayerOrder[b.label] || 0)
+                            );
                         }
                         if (a.type === "prayer") return -1;
                         if (b.type === "prayer") return 1;
@@ -8337,18 +8338,25 @@
                 const total = sorted.length;
                 const doneCount = sorted.filter((b) => b.done).length;
 
-                const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
+                const updateLabel = (id, label) =>
+                    DB.timetableUpdate(id, { label });
                 const toggleDone = (id) => DB.timetableToggleDone(id);
                 const remove = (id) => DB.timetableRemove(id);
                 const moveUp = (i) => {
                     const idxA = all.findIndex((b) => b.id === sorted[i].id);
-                    const idxB = all.findIndex((b) => b.id === sorted[i - 1].id);
-                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
+                    const idxB = all.findIndex(
+                        (b) => b.id === sorted[i - 1].id,
+                    );
+                    if (idxA >= 0 && idxB >= 0)
+                        DB.timetableSwapPositions(idxA, idxB);
                 };
                 const moveDown = (i) => {
                     const idxA = all.findIndex((b) => b.id === sorted[i].id);
-                    const idxB = all.findIndex((b) => b.id === sorted[i + 1].id);
-                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
+                    const idxB = all.findIndex(
+                        (b) => b.id === sorted[i + 1].id,
+                    );
+                    if (idxA >= 0 && idxB >= 0)
+                        DB.timetableSwapPositions(idxA, idxB);
                 };
 
                 const [newLabel, setNewLabel] = useState("");
@@ -8361,10 +8369,16 @@
                 return (
                     <>
                         <div className="tt-summary">
-                            <span className="tt-summary-count">{doneCount}</span>
+                            <span className="tt-summary-count">
+                                {doneCount}
+                            </span>
                             <span className="tt-summary-sep">/</span>
                             <span className="tt-summary-count">{total}</span>
-                            <span className="tt-summary-label">{doneCount === total && total > 0 ? "All done" : "tasks"}</span>
+                            <span className="tt-summary-label">
+                                {doneCount === total && total > 0
+                                    ? "All done"
+                                    : "tasks"}
+                            </span>
                         </div>
 
                         <div className="tt-list">
@@ -8385,20 +8399,31 @@
 
                         {total === 0 && (
                             <div className="tt-empty">
-                                <div className="tt-empty-text">Nothing planned yet.</div>
-                                <div className="tt-empty-hint">Add your prayers, tasks, or anything you want to accomplish.</div>
+                                <div className="tt-empty-text">
+                                    Nothing planned yet.
+                                </div>
+                                <div className="tt-empty-hint">
+                                    Add your prayers, tasks, or anything you
+                                    want to accomplish.
+                                </div>
                             </div>
                         )}
 
                         <div className="tt-add-row">
-                            <div className="tt-check" data-checked="false" style={{ opacity: 0.25, cursor: "default" }}></div>
+                            <div
+                                className="tt-check"
+                                data-checked="false"
+                                style={{ opacity: 0.25, cursor: "default" }}
+                            ></div>
                             <input
                                 className="tt-label"
                                 type="text"
                                 value={newLabel}
                                 placeholder="What you’ll do…"
                                 onChange={(e) => setNewLabel(e.target.value)}
-                                onKeyDown={(e) => { if (e.key === "Enter") addBlock(); }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") addBlock();
+                                }}
                             />
                             <button
                                 className="tt-add-btn"
