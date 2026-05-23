@@ -1323,236 +1323,6 @@
                 color: var(--ink-soft);
             }
 
-            /* Lessons step */
-            .lessons-body {
-                width: 100%;
-                max-width: 720px;
-                display: flex;
-                flex-direction: column;
-                gap: 18px;
-                padding: 0 16px;
-            }
-            .lessons-prompt {
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-                font-size: clamp(16px, 1.2vw + 10px, 22px);
-                color: var(--ink-soft);
-                text-align: center;
-                line-height: 1.45;
-                opacity: 0.85;
-            }
-            .lessons-verse-list {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                width: 100%;
-            }
-            .lessons-verse-card {
-                display: flex;
-                flex-direction: column;
-                gap: 6px;
-                padding: 14px 16px;
-                border-radius: 14px;
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 16%, transparent);
-                background: color-mix(
-                    in oklab,
-                    var(--bg-soft) 40%,
-                    var(--bg)
-                );
-                cursor: pointer;
-                transition: all 250ms ease;
-                text-align: left;
-            }
-            .lessons-verse-card:hover {
-                border-color: color-mix(
-                    in oklab,
-                    var(--accent) 40%,
-                    transparent
-                );
-                background: color-mix(
-                    in oklab,
-                    var(--bg-soft) 60%,
-                    var(--bg)
-                );
-            }
-            .lessons-verse-card-ref {
-                font-family: "Inter Tight", sans-serif;
-                font-size: 9px;
-                letter-spacing: 0.3em;
-                text-transform: uppercase;
-                color: var(--accent);
-                opacity: 0.8;
-            }
-            .lessons-verse-card-arabic {
-                font-family: "Amiri Quran", serif;
-                direction: rtl;
-                font-size: 15px;
-                line-height: 1.7;
-                color: var(--ink);
-                opacity: 0.9;
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-            .lessons-verse-card-trans {
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-                font-size: 13px;
-                line-height: 1.45;
-                color: var(--ink-soft);
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-            .lessons-verse-card-hint {
-                font-family: "Inter Tight", sans-serif;
-                font-size: 9px;
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                color: var(--ink-faint);
-                margin-top: 4px;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-            }
-            .lessons-verse-card-hint svg {
-                width: 10px;
-                height: 10px;
-                stroke: currentColor;
-                stroke-width: 1.5;
-                fill: none;
-            }
-            .lessons-detail-back {
-                display: inline-flex;
-                align-items: center;
-                gap: 6px;
-                font-family: "Inter Tight", sans-serif;
-                font-size: 10px;
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                color: var(--ink-faint);
-                cursor: pointer;
-                transition: color 200ms;
-                margin-bottom: 8px;
-                background: none;
-                border: none;
-                padding: 0;
-            }
-            .lessons-detail-back:hover {
-                color: var(--accent);
-            }
-            .lessons-detail-back svg {
-                width: 12px;
-                height: 12px;
-                stroke: currentColor;
-                stroke-width: 1.5;
-                fill: none;
-            }
-            .lessons-detail-verse {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                padding: 16px;
-                border-radius: 14px;
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 20%, transparent);
-                background: color-mix(
-                    in oklab,
-                    var(--bg-soft) 35%,
-                    var(--bg)
-                );
-                margin-bottom: 8px;
-            }
-            .lessons-detail-verse .verse-fs-arabic {
-                font-size: clamp(18px, 1.6vw + 12px, 26px);
-            }
-            .lessons-detail-verse .verse-fs-translation {
-                font-size: clamp(14px, 1vw + 10px, 18px);
-            }
-            .lessons-list {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-                width: 100%;
-            }
-            .lessons-card {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                padding: 14px 16px;
-                border-radius: 12px;
-                border: 1px solid
-                    color-mix(in oklab, var(--accent) 10%, transparent);
-                background: color-mix(
-                    in oklab,
-                    var(--bg-soft) 30%,
-                    var(--bg)
-                );
-            }
-            .lessons-card-author {
-                font-family: "Inter Tight", sans-serif;
-                font-size: 10px;
-                letter-spacing: 0.25em;
-                text-transform: uppercase;
-                color: var(--accent);
-                opacity: 0.9;
-            }
-            .lessons-card-body {
-                font-family: "Cormorant Garamond", serif;
-                font-size: 15px;
-                line-height: 1.55;
-                color: var(--ink);
-            }
-            .lessons-empty {
-                font-family: "Cormorant Garamond", serif;
-                font-style: italic;
-                font-size: 16px;
-                color: var(--ink-faint);
-                text-align: center;
-                padding: 24px 0;
-            }
-            .lessons-loading {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                padding: 24px 0;
-                font-family: "Inter Tight", sans-serif;
-                font-size: 11px;
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                color: var(--ink-faint);
-            }
-            .lessons-skip {
-                font-family: "Inter Tight", sans-serif;
-                font-size: 10px;
-                letter-spacing: 0.2em;
-                text-transform: uppercase;
-                color: var(--ink-faint);
-                cursor: pointer;
-                transition: color 200ms;
-                background: none;
-                border: none;
-                padding: 8px 16px;
-            }
-            .lessons-skip:hover {
-                color: var(--accent);
-            }
-            @media (max-width: 640px) {
-                .lessons-verse-card {
-                    padding: 12px 14px;
-                }
-                .lessons-detail-verse .verse-fs-arabic {
-                    font-size: 18px;
-                }
-                .lessons-detail-verse .verse-fs-translation {
-                    font-size: 14px;
-                }
-            }
-
             /* Write step */
             .write-scroll {
                 width: 100%;
@@ -4124,7 +3894,6 @@
                 { id: "listen", label: "Listen" },
                 { id: "ponder", label: "Ponder" },
                 { id: "questions", label: "Questions" },
-                { id: "lessons", label: "Lessons" },
                 { id: "write", label: "Write" },
             ];
 
@@ -4148,166 +3917,6 @@
                 const [s, v] = k.split(":").map(Number);
                 return { surah: s, verse: v };
             }
-            /* ─────────── QURAN FOUNDATION OAuth2 + Auth Module ─────────── */
-            const QF = {
-                CLIENT_ID: "1de2c8be-a2dd-48e0-840c-ac0c36307938",
-                CLIENT_SECRET: ".yRXyV51YKf18DD.SNjHjIXy_p",
-                REDIRECT_URI: "https://ponderquran.github.io",
-                AUTH_BASE: "https://prelive-oauth2.quran.foundation",
-                API_BASE: "https://apis-prelive.quran.foundation",
-                SCOPES: "openid offline_access post",
-            };
-
-            function b64url(buf) {
-                return btoa(String.fromCharCode(...new Uint8Array(buf)))
-                    .replace(/\+/g, "-")
-                    .replace(/\//g, "_")
-                    .replace(/=+$/, "");
-            }
-            async function makePKCE() {
-                const verifier = b64url(
-                    crypto.getRandomValues(new Uint8Array(32)),
-                );
-                const challenge = b64url(
-                    await crypto.subtle.digest(
-                        "SHA-256",
-                        new TextEncoder().encode(verifier),
-                    ),
-                );
-                return { verifier, challenge };
-            }
-
-            const Auth = {
-                save(t) {
-                    localStorage.setItem("qf_at", t.access_token);
-                    localStorage.setItem("qf_rt", t.refresh_token);
-                    localStorage.setItem(
-                        "qf_exp",
-                        Date.now() + t.expires_in * 1000,
-                    );
-                },
-                token() {
-                    return localStorage.getItem("qf_at");
-                },
-                refresh() {
-                    return localStorage.getItem("qf_rt");
-                },
-                expired() {
-                    return (
-                        Date.now() >
-                        parseInt(localStorage.getItem("qf_exp") || "0") - 60000
-                    );
-                },
-                loggedIn() {
-                    return !!localStorage.getItem("qf_at");
-                },
-                clear() {
-                    ["qf_at", "qf_rt", "qf_exp"].forEach((k) =>
-                        localStorage.removeItem(k),
-                    );
-                },
-            };
-
-            let __qf_redirect = false;
-
-            async function qfLogin() {
-                const { verifier, challenge } = await makePKCE();
-                const state = b64url(
-                    crypto.getRandomValues(new Uint8Array(16)),
-                );
-                localStorage.setItem("pkce_v", verifier);
-                localStorage.setItem("oauth_s", state);
-                localStorage.setItem("qf_app_state", "1");
-                const p = new URLSearchParams({
-                    response_type: "code",
-                    client_id: QF.CLIENT_ID,
-                    redirect_uri: QF.REDIRECT_URI,
-                    scope: QF.SCOPES,
-                    state,
-                    nonce: b64url(crypto.getRandomValues(new Uint8Array(16))),
-                    code_challenge: challenge,
-                    code_challenge_method: "S256",
-                });
-                window.location.href = `${QF.AUTH_BASE}/oauth2/auth?${p}`;
-            }
-
-            async function exchangeCode(code) {
-                const r = await fetch(
-                    `https://corsproxy.io/?url=${encodeURIComponent(`${QF.AUTH_BASE}/oauth2/token`)}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            grant_type: "authorization_code",
-                            client_id: QF.CLIENT_ID,
-                            client_secret: QF.CLIENT_SECRET,
-                            code,
-                            redirect_uri: QF.REDIRECT_URI,
-                            code_verifier: localStorage.getItem("pkce_v"),
-                        }),
-                    },
-                );
-                return r.json();
-            }
-
-            async function refreshToken() {
-                const r = await fetch(
-                    `https://corsproxy.io/?url=${encodeURIComponent(`${QF.AUTH_BASE}/oauth2/token`)}`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: new URLSearchParams({
-                            grant_type: "refresh_token",
-                            client_id: QF.CLIENT_ID,
-                            client_secret: QF.CLIENT_SECRET,
-                            refresh_token: Auth.refresh(),
-                        }),
-                    },
-                );
-                const t = await r.json();
-                if (t.access_token) Auth.save(t);
-                return t;
-            }
-
-            async function getToken() {
-                if (Auth.expired()) await refreshToken();
-                return Auth.token();
-            }
-
-            function qfLogout() {
-                Auth.clear();
-            }
-
-            async function handleCallback() {
-                if (localStorage.getItem("qf_app_state")) {
-                    localStorage.removeItem("qf_app_state");
-                    __qf_redirect = true;
-                }
-                const p = new URLSearchParams(window.location.search);
-                const code = p.get("code");
-                if (!code) return;
-                const state = p.get("state");
-                if (state === localStorage.getItem("oauth_s")) {
-                    try {
-                        const tokens = await exchangeCode(code);
-                        if (tokens.access_token) Auth.save(tokens);
-                    } catch (e) {
-                        console.warn("Token exchange failed:", e);
-                    }
-                }
-                localStorage.removeItem("pkce_v");
-                localStorage.removeItem("oauth_s");
-                window.history.replaceState(
-                    {},
-                    document.title,
-                    window.location.pathname,
-                );
-            }
-
             function stripHtml(str) {
                 if (!str) return "";
                 const t = document.createElement("div");
@@ -4535,43 +4144,6 @@
                     return "";
                 }
             }
-            async function fetchLessons(chapterId, verseNumber) {
-                try {
-                    if (!Auth.loggedIn()) return [];
-                    const token = await getToken();
-                    const params = new URLSearchParams({
-                        "filter[references][0][chapterId]": chapterId,
-                        "filter[references][0][from]": verseNumber,
-                        "filter[references][0][to]": verseNumber,
-                        "filter[postTypeIds]": 2,
-                        tab: "trending",
-                        limit: 10,
-                    });
-                    const res = await fetch(
-                        `${QF.API_BASE}/quran-reflect/v1/posts/feed?${params}`,
-                        {
-                            headers: {
-                                "x-auth-token": token,
-                                "x-client-id": QF.CLIENT_ID,
-                                Accept: "application/json",
-                            },
-                        },
-                    );
-                    if (!res.ok) return [];
-                    const data = await res.json();
-                    return (data.data || []).map((p) => ({
-                        id: p.id,
-                        body: stripHtml(p.body || ""),
-                        authorName:
-                            p.author?.firstName ||
-                            p.author?.username ||
-                            "Anonymous",
-                    }));
-                } catch (e) {
-                    return [];
-                }
-            }
-
             async function fetchVersesForSession(
                 surah,
                 startVerse,
@@ -4793,9 +4365,7 @@
                 DB.timetableEnsurePrayers = () => {
                     const existing = DB.timetable.toArray();
                     const hasPrayer = (name) =>
-                        existing.some(
-                            (b) => b.type === "prayer" && b.label === name,
-                        );
+                        existing.some((b) => b.type === "prayer" && b.label === name);
                     const missing = window.PRAYER_BLOCKS.filter(
                         (n) => !hasPrayer(n),
                     );
@@ -4895,18 +4465,12 @@
                     DB.timetableUpdate(id, { done: !arr[idx].done });
                 };
 
-                DB.setLearningSitting = (id) =>
-                    DB.meta.set("learningSittingId", id);
-                DB.getLearningSittingId = () =>
-                    DB.meta.get("learningSittingId") || null;
-                DB.getLearningEnabled = () =>
-                    DB.meta.get("learningEnabled") !== false;
-                DB.setLearningEnabled = (v) =>
-                    DB.meta.set("learningEnabled", !!v);
+                DB.setLearningSitting = (id) => DB.meta.set("learningSittingId", id);
+                DB.getLearningSittingId = () => DB.meta.get("learningSittingId") || null;
+                DB.getLearningEnabled = () => DB.meta.get("learningEnabled") !== false;
+                DB.setLearningEnabled = (v) => DB.meta.set("learningEnabled", !!v);
                 DB.setLearnedVerseKeys = (keys) => {
-                    const arr =
-                        DB.learnedVerseKeys ||
-                        ydoc.getArray("learnedVerseKeys");
+                    const arr = DB.learnedVerseKeys || ydoc.getArray("learnedVerseKeys");
                     if (!DB.learnedVerseKeys) DB.learnedVerseKeys = arr;
                     arr.delete(0, arr.length);
                     keys.forEach((k) => arr.push([k]));
@@ -4921,8 +4485,7 @@
                     const arr = DB.getLearnedVerseKeys();
                     if (!arr.includes(key)) {
                         if (!DB.learnedVerseKeys) {
-                            DB.learnedVerseKeys =
-                                ydoc.getArray("learnedVerseKeys");
+                            DB.learnedVerseKeys = ydoc.getArray("learnedVerseKeys");
                         }
                         DB.learnedVerseKeys.push([key]);
                     }
@@ -4963,8 +4526,7 @@
                 const lastSessionDate = DB.getLastSessionDate();
                 const sessionInProgress = !!cs;
                 const dailyDoneToday =
-                    (!sessionInProgress || (cs && cs.isReplay)) &&
-                    lastSessionDate === todayStr();
+                    (!sessionInProgress || (cs && cs.isReplay)) && lastSessionDate === todayStr();
 
                 /* in-memory verse cache (re-fetched on session start; ephemeral) */
                 const verseCacheRef = useRef({}); // { 'S:V': details }
@@ -5012,17 +4574,10 @@
                 }, [cs?.id, cs?.verseKeys?.join(",")]);
 
                 /* view: which screen is showing */
-                const [view, setView] = useState(() => {
-                    if (__qf_redirect) return "lessons";
-                    return "home";
-                });
+                const [view, setView] = useState("home");
 
-                /* on mount: clear flag + guard against memorize override */
+                /* on mount: jump straight to memorize if verses pending and learning enabled */
                 useEffect(() => {
-                    if (__qf_redirect) {
-                        __qf_redirect = false;
-                        return;
-                    }
                     if (!DB.getLearningEnabled()) return;
                     const lsid = DB.getLearningSittingId();
                     const learned = DB.getLearnedVerseKeys();
@@ -5137,7 +4692,6 @@
                         selectedEndIdx: Math.min(4, verses.length - 1),
                         ponderIdx: 0,
                         qIdx: 0,
-                        lessonsVerseIdx: null,
                         writeActions: [""],
                         title: "",
                     });
@@ -5148,7 +4702,8 @@
                 const startNewSession = useCallback(() => {
                     if (sessionInProgress) return;
                     const hasUnlearned =
-                        DB.getLearningSittingId() && !DB.hasLearnedAllVerses();
+                        DB.getLearningSittingId() &&
+                        !DB.hasLearnedAllVerses();
                     if (hasUnlearned) {
                         setConfirm({
                             eyebrow: "Have you learned your verses?",
@@ -5207,13 +4762,9 @@
                                 completedSteps: 0,
                                 listenIdx: 0,
                                 listenReached: 0,
-                                selectedEndIdx: Math.min(
-                                    4,
-                                    verseKeys.length - 1,
-                                ),
+                                selectedEndIdx: Math.min(4, verseKeys.length - 1),
                                 ponderIdx: 0,
                                 qIdx: 0,
-                                lessonsVerseIdx: null,
                                 writeActions: prefillActions,
                                 title: prefillTitle,
                                 isReplay: true,
@@ -5260,7 +4811,7 @@
                 /* save Write step → save actions → ask for title */
                 const submitWrite = useCallback((writeActions) => {
                     DB.setCurrentSessionField("writeActions", writeActions);
-                    DB.setCurrentSessionField("completedSteps", 5);
+                    DB.setCurrentSessionField("completedSteps", 4);
                     setView("title");
                 }, []);
 
@@ -5467,17 +5018,6 @@
                                 onBack={goHome}
                                 onComplete={() => completeStep(2)}
                                 openTafsir={openTafsir}
-                                showToast={showToast}
-                            />
-                        )}
-
-                        {view === "lessons" && cs && (
-                            <LessonsStep
-                                cs={cs}
-                                DB={DB}
-                                verses={sessionVerses}
-                                onBack={goHome}
-                                onContinue={() => completeStep(3, "write")}
                                 showToast={showToast}
                             />
                         )}
@@ -5881,9 +5421,7 @@
                     : "Set your horizons";
 
                 const learningSittingId = DB.getLearningSittingId();
-                const learningSitting = sessions.find(
-                    (s) => s.id === learningSittingId,
-                );
+                const learningSitting = sessions.find((s) => s.id === learningSittingId);
                 const learnedVerseKeys = DB.getLearnedVerseKeys();
                 const learnableKeys = learningSitting?.ponderedKeys || [];
                 const learnedCount = learnedVerseKeys.length;
@@ -6117,39 +5655,24 @@
                                         key={c.key}
                                         className="dash-card dash-card-memorize"
                                     >
-                                        <div className="dash-card-icon">
-                                            {c.icon}
-                                        </div>
-                                        <div className="dash-card-title">
-                                            {c.title}
-                                        </div>
-                                        <div className="dash-card-eyebrow">
-                                            {c.eyebrow}
-                                        </div>
-                                        <div
-                                            className={`dash-card-preview ${c.empty ? "empty" : ""}`}
-                                        >
+                                        <div className="dash-card-icon">{c.icon}</div>
+                                        <div className="dash-card-title">{c.title}</div>
+                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
+                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
                                             {c.preview}
                                         </div>
                                         {!c.empty && firstUnlearnedVerse && (
-                                            <div
-                                                className="mem-card-verse"
-                                                onClick={() =>
-                                                    setView("memorize")
-                                                }
+                                            <div className="mem-card-verse"
+                                                onClick={() => setView("memorize")}
                                             >
                                                 {firstUnlearnedVerse.arabic && (
                                                     <div className="mem-card-arabic arabic-font">
-                                                        {
-                                                            firstUnlearnedVerse.arabic
-                                                        }
+                                                        {firstUnlearnedVerse.arabic}
                                                     </div>
                                                 )}
                                                 {firstUnlearnedVerse.translation && (
                                                     <div className="mem-card-translation">
-                                                        {
-                                                            firstUnlearnedVerse.translation
-                                                        }
+                                                        {firstUnlearnedVerse.translation}
                                                     </div>
                                                 )}
                                             </div>
@@ -6157,18 +5680,11 @@
                                         {!c.empty && (
                                             <button
                                                 className="action"
-                                                style={{
-                                                    marginTop: 10,
-                                                    alignSelf: "center",
-                                                }}
-                                                onClick={() =>
-                                                    setView("memorize")
-                                                }
+                                                style={{ marginTop: 10, alignSelf: "center" }}
+                                                onClick={() => setView("memorize")}
                                             >
                                                 <span className="action-text">
-                                                    {firstUnlearnedKey
-                                                        ? "Continue"
-                                                        : "Review"}
+                                                    {firstUnlearnedKey ? "Continue" : "Review"}
                                                 </span>
                                                 <span className="action-line" />
                                             </button>
@@ -6192,22 +5708,14 @@
                                                 ?
                                             </button>
                                         )}
-                                        <div className="dash-card-icon">
-                                            {c.icon}
-                                        </div>
-                                        <div className="dash-card-title">
-                                            {c.title}
-                                        </div>
-                                        <div className="dash-card-eyebrow">
-                                            {c.eyebrow}
-                                        </div>
-                                        <div
-                                            className={`dash-card-preview ${c.empty ? "empty" : ""}`}
-                                        >
+                                        <div className="dash-card-icon">{c.icon}</div>
+                                        <div className="dash-card-title">{c.title}</div>
+                                        <div className="dash-card-eyebrow">{c.eyebrow}</div>
+                                        <div className={`dash-card-preview ${c.empty ? "empty" : ""}`}>
                                             {c.preview}
                                         </div>
                                     </div>
-                                ),
+                                )
                             )}
                         </div>
                     </div>
@@ -6221,14 +5729,7 @@
                         onClick={onClick}
                         aria-label="Settings"
                     >
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="3" />
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.17 15a1.65 1.65 0 0 0-1.51-1H2a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.17 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.17a1.65 1.65 0 0 0 1-1.51V2a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H22a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
@@ -6474,19 +5975,14 @@
                             <div className="sett-section">
                                 <div className="sett-section-label">Qur’an</div>
                                 <div className="sett-row">
-                                    <span className="sett-row-label">
-                                        Memorisation mode
-                                    </span>
+                                    <span className="sett-row-label">Memorisation mode</span>
                                     <button
                                         className={`sett-toggle ${DB.getLearningEnabled() ? "on" : ""}`}
                                         onClick={() => {
-                                            const next =
-                                                !DB.getLearningEnabled();
+                                            const next = !DB.getLearningEnabled();
                                             DB.setLearningEnabled(next);
                                             // force re-render
-                                            setQuestions([
-                                                ...DB.getQuestions(),
-                                            ]);
+                                            setQuestions([...DB.getQuestions()]);
                                         }}
                                         aria-label="Toggle memorisation mode"
                                     >
@@ -6494,15 +5990,11 @@
                                     </button>
                                 </div>
                                 <p className="sett-file-hint">
-                                    When on, the app prompts you to memorise the
-                                    5 verses from each sitting, and shows your
-                                    progress on the dashboard.
+                                    When on, the app prompts you to memorise the 5 verses from each sitting, and shows your progress on the dashboard.
                                 </p>
                             </div>
                             <div className="sett-section">
-                                <div className="sett-section-label">
-                                    Questions
-                                </div>
+                                <div className="sett-section-label">Questions</div>
                                 <p className="sett-file-hint">
                                     Customize the questions you reflect on
                                     during each sitting.
@@ -7443,312 +6935,6 @@
                 );
             }
 
-            /* ─────────── LESSONS STEP ─────────── */
-            function LessonsStep({
-                cs,
-                DB,
-                verses,
-                onBack,
-                onContinue,
-                showToast,
-            }) {
-                const [selectedIdx, setSelectedIdx] = useState(
-                    cs.lessonsVerseIdx ?? null,
-                );
-                const [lessons, setLessons] = useState([]);
-                const [loading, setLoading] = useState(false);
-                const [loggedIn, setLoggedIn] = useState(() => Auth.loggedIn());
-                const ponderedVerses = verses.slice(
-                    0,
-                    (cs.selectedEndIdx ?? 0) + 1,
-                );
-
-                const refreshAuth = () => setLoggedIn(Auth.loggedIn());
-
-                useEffect(() => {
-                    if (selectedIdx != null) {
-                        DB.setCurrentSessionField(
-                            "lessonsVerseIdx",
-                            selectedIdx,
-                        );
-                    }
-                }, [selectedIdx, DB]);
-
-                const loadLessons = useCallback(
-                    async (chapterId, verseNumber) => {
-                        setLoading(true);
-                        setLessons([]);
-                        const data = await fetchLessons(chapterId, verseNumber);
-                        setLessons(data);
-                        setLoading(false);
-                        if (data.length === 0) {
-                            showToast("No lessons found", "");
-                        }
-                    },
-                    [showToast],
-                );
-
-                const selectVerse = (idx) => {
-                    if (!loggedIn) {
-                        const key = cs.verseKeys[idx];
-                        const { surah, verse } = parseKey(key);
-                        localStorage.setItem(
-                            "qf_pending",
-                            JSON.stringify({ surah, verse, idx }),
-                        );
-                        qfLogin();
-                        return;
-                    }
-                    setSelectedIdx(idx);
-                    const key = cs.verseKeys[idx];
-                    const { surah, verse } = parseKey(key);
-                    loadLessons(surah, verse);
-                };
-
-                const deselect = () => {
-                    setSelectedIdx(null);
-                    setLessons([]);
-                };
-
-                const handleLogin = async () => {
-                    localStorage.setItem(
-                        "qf_pending",
-                        JSON.stringify({ idx: -1 }),
-                    );
-                    await qfLogin();
-                };
-                const handleLogout = () => {
-                    qfLogout();
-                    refreshAuth();
-                    deselect();
-                };
-
-                useEffect(() => {
-                    if (!loggedIn) return;
-                    const raw = localStorage.getItem("qf_pending");
-                    if (raw != null) {
-                        localStorage.removeItem("qf_pending");
-                        try {
-                            const { idx } = JSON.parse(raw);
-                            if (idx >= 0 && idx < ponderedVerses.length) {
-                                selectVerse(idx);
-                            }
-                        } catch (e) {}
-                    }
-                }, [loggedIn]);
-
-                return (
-                    <div className="step-fs">
-                        <BackButton onClick={onBack} />
-                        <div className="step-fs-top">
-                            <div className="step-fs-eyebrow">Lessons</div>
-                            {loggedIn && (
-                                <button
-                                    onClick={handleLogout}
-                                    style={{
-                                        fontFamily: '"Inter Tight", sans-serif',
-                                        fontSize: "9px",
-                                        letterSpacing: "0.25em",
-                                        textTransform: "uppercase",
-                                        color: "var(--ink-faint)",
-                                        cursor: "pointer",
-                                        transition: "color 200ms",
-                                        opacity: 0.6,
-                                        marginTop: "2px",
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.target.style.color = "var(--accent)";
-                                        e.target.style.opacity = "1";
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.target.style.color =
-                                            "var(--ink-faint)";
-                                        e.target.style.opacity = "0.6";
-                                    }}
-                                >
-                                    Logout
-                                </button>
-                            )}
-                            {selectedIdx != null && (
-                                <div className="step-fs-ref">
-                                    Surah {cs.surahName} ·{" "}
-                                    {ponderedVerses[selectedIdx]?.surah}:
-                                    {ponderedVerses[selectedIdx]?.verse}
-                                </div>
-                            )}
-                        </div>
-                        <div className="step-fs-body">
-                            <div className="lessons-body">
-                                {selectedIdx == null ? (
-                                    <>
-                                        <div className="lessons-prompt fade-in">
-                                            See what scholars and seekers have
-                                            learned from the verses you
-                                            pondered.
-                                        </div>
-                                        {!loggedIn && (
-                                            <div
-                                                style={{
-                                                    textAlign: "center",
-                                                    padding: "12px 0 4px",
-                                                }}
-                                            >
-                                                <button
-                                                    className="action"
-                                                    onClick={handleLogin}
-                                                >
-                                                    <span className="action-text">
-                                                        Login with Quran.com
-                                                    </span>
-                                                    <span className="action-line" />
-                                                </button>
-                                            </div>
-                                        )}
-                                        <div className="lessons-verse-list">
-                                            {ponderedVerses.map((v, i) => (
-                                                <button
-                                                    key={v.key || i}
-                                                    className="lessons-verse-card fade-in"
-                                                    onClick={() =>
-                                                        selectVerse(i)
-                                                    }
-                                                    style={{
-                                                        animationDelay: `${i * 80}ms`,
-                                                    }}
-                                                >
-                                                    <div className="lessons-verse-card-ref">
-                                                        {v.surah}:
-                                                        {v.verse ?? i + 1}
-                                                    </div>
-                                                    {v.arabic && (
-                                                        <div className="lessons-verse-card-arabic">
-                                                            {v.arabic}
-                                                        </div>
-                                                    )}
-                                                    {v.translation && (
-                                                        <div className="lessons-verse-card-trans">
-                                                            {v.translation}
-                                                        </div>
-                                                    )}
-                                                    <div className="lessons-verse-card-hint">
-                                                        <svg viewBox="0 0 24 24">
-                                                            <path d="M12 5v14M5 12h14" />
-                                                        </svg>
-                                                        {loggedIn
-                                                            ? "Read lessons"
-                                                            : "Login to read lessons"}
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button
-                                            className="lessons-detail-back"
-                                            onClick={deselect}
-                                        >
-                                            <svg viewBox="0 0 24 24">
-                                                <path d="M15 6l-6 6 6 6" />
-                                            </svg>
-                                            All verses
-                                        </button>
-                                        <div className="lessons-detail-verse fade-in">
-                                            {ponderedVerses[selectedIdx]
-                                                ?.arabic && (
-                                                <div className="verse-fs-arabic">
-                                                    {
-                                                        ponderedVerses[
-                                                            selectedIdx
-                                                        ].arabic
-                                                    }
-                                                </div>
-                                            )}
-                                            {ponderedVerses[selectedIdx]
-                                                ?.translation && (
-                                                <div className="verse-fs-translation">
-                                                    {
-                                                        ponderedVerses[
-                                                            selectedIdx
-                                                        ].translation
-                                                    }
-                                                </div>
-                                            )}
-                                        </div>
-                                        {loading ? (
-                                            <div className="lessons-loading fade-in">
-                                                <span className="loading-dots">
-                                                    <span />
-                                                    <span />
-                                                    <span />
-                                                </span>
-                                                Loading lessons
-                                            </div>
-                                        ) : lessons.length === 0 ? (
-                                            <div className="lessons-empty fade-in">
-                                                No lessons found for this verse.
-                                            </div>
-                                        ) : (
-                                            <div className="lessons-list">
-                                                {lessons.map((lesson) => (
-                                                    <div
-                                                        key={lesson.id}
-                                                        className="lessons-card fade-in"
-                                                    >
-                                                        <div className="lessons-card-author">
-                                                            {lesson.authorName}
-                                                        </div>
-                                                        <div className="lessons-card-body">
-                                                            {lesson.body}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                        <div className="step-fs-bottom">
-                            <div
-                                className="verse-nav"
-                                style={{ visibility: "hidden" }}
-                            >
-                                <button className="verse-nav-arrow" disabled />
-                                <button className="verse-nav-arrow" disabled />
-                            </div>
-                            <div className="ponder-instruction">
-                                {selectedIdx == null
-                                    ? loggedIn
-                                        ? "Choose a verse to explore lessons from the community."
-                                        : "Login with your Quran.com account to see lessons for these verses."
-                                    : "Reflect on these lessons. Then continue to write your actions."}
-                            </div>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    gap: "12px",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <button
-                                    className="lessons-skip"
-                                    onClick={onContinue}
-                                >
-                                    Skip
-                                </button>
-                                <button className="action" onClick={onContinue}>
-                                    <span className="action-text">
-                                        Continue
-                                    </span>
-                                    <span className="action-line" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
             /* ─────────── WRITE STEP ─────────── */
             function WriteStep({ cs, DB, onBack, onSave }) {
                 const [actions, setActions] = useState(() =>
@@ -7922,9 +7108,7 @@
                     );
                     return firstUnlearned >= 0 ? firstUnlearned : 0;
                 });
-                const [loadedVerse, setLoadedVerse] = useState(
-                    verseCacheRef.current[verseKeys[idx]] || null,
-                );
+                const [loadedVerse, setLoadedVerse] = useState(verseCacheRef.current[verseKeys[idx]] || null);
 
                 useEffect(() => {
                     const cached = verseCacheRef.current[verseKeys[idx]];
@@ -7996,8 +7180,7 @@
                                 reachedIdx={maxNavigable}
                             />
                             <div className="step-fs-ref">
-                                Surah {sitting.surahName} · {verse?.surah}:
-                                {verse?.verse}
+                                Surah {sitting.surahName} · {verse?.surah}:{verse?.verse}
                             </div>
                         </div>
                         <VerseBody verse={verse} />
@@ -8015,9 +7198,7 @@
                                 </button>
                                 <button
                                     className="verse-nav-arrow"
-                                    onClick={() =>
-                                        setIdx(Math.min(maxNavigable, idx + 1))
-                                    }
+                                    onClick={() => setIdx(Math.min(maxNavigable, idx + 1))}
                                     disabled={idx >= maxNavigable}
                                     aria-label="Next verse"
                                 >
@@ -8040,13 +7221,8 @@
                                     Tafsir
                                 </button>
                                 {!isLearned && (
-                                    <button
-                                        className="action"
-                                        onClick={handleConfirmLearned}
-                                    >
-                                        <span className="action-text">
-                                            I have memorised this verse
-                                        </span>
+                                    <button className="action" onClick={handleConfirmLearned}>
+                                        <span className="action-text">I have memorised this verse</span>
                                         <span className="action-line" />
                                     </button>
                                 )}
@@ -8054,9 +7230,7 @@
                                     <button
                                         className="action-soft"
                                         onClick={() => {
-                                            DB.unmarkVerseLearned(
-                                                verseKeys[idx],
-                                            );
+                                            DB.unmarkVerseLearned(verseKeys[idx]);
                                             showToast("Marked unlearned", "");
                                         }}
                                     >
@@ -8495,16 +7669,7 @@
             }
 
             /* ── Tomorrow (timetable) ── */
-            function BlockRow({
-                b,
-                i,
-                list,
-                toggleDone,
-                updateLabel,
-                remove,
-                moveUp,
-                moveDown,
-            }) {
+            function BlockRow({ b, i, list, toggleDone, updateLabel, remove, moveUp, moveDown }) {
                 const done = !!b.done;
                 const type = b.type || "custom";
                 const isPrayer = type === "prayer";
@@ -8589,21 +7754,12 @@
                 }, []);
                 const all = DB.timetableArr();
 
-                const prayerOrder = {
-                    Fajr: 0,
-                    Dhuhr: 1,
-                    ʿAsr: 2,
-                    Maghrib: 3,
-                    ʿIshāʾ: 4,
-                };
+                const prayerOrder = { Fajr: 0, Dhuhr: 1, "ʿAsr": 2, Maghrib: 3, "ʿIshāʾ": 4 };
                 const sorted = useMemo(() => {
                     const list = [...all];
                     list.sort((a, b) => {
                         if (a.type === "prayer" && b.type === "prayer") {
-                            return (
-                                (prayerOrder[a.label] || 0) -
-                                (prayerOrder[b.label] || 0)
-                            );
+                            return (prayerOrder[a.label] || 0) - (prayerOrder[b.label] || 0);
                         }
                         if (a.type === "prayer") return -1;
                         if (b.type === "prayer") return 1;
@@ -8615,25 +7771,18 @@
                 const total = sorted.length;
                 const doneCount = sorted.filter((b) => b.done).length;
 
-                const updateLabel = (id, label) =>
-                    DB.timetableUpdate(id, { label });
+                const updateLabel = (id, label) => DB.timetableUpdate(id, { label });
                 const toggleDone = (id) => DB.timetableToggleDone(id);
                 const remove = (id) => DB.timetableRemove(id);
                 const moveUp = (i) => {
                     const idxA = all.findIndex((b) => b.id === sorted[i].id);
-                    const idxB = all.findIndex(
-                        (b) => b.id === sorted[i - 1].id,
-                    );
-                    if (idxA >= 0 && idxB >= 0)
-                        DB.timetableSwapPositions(idxA, idxB);
+                    const idxB = all.findIndex((b) => b.id === sorted[i - 1].id);
+                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
                 };
                 const moveDown = (i) => {
                     const idxA = all.findIndex((b) => b.id === sorted[i].id);
-                    const idxB = all.findIndex(
-                        (b) => b.id === sorted[i + 1].id,
-                    );
-                    if (idxA >= 0 && idxB >= 0)
-                        DB.timetableSwapPositions(idxA, idxB);
+                    const idxB = all.findIndex((b) => b.id === sorted[i + 1].id);
+                    if (idxA >= 0 && idxB >= 0) DB.timetableSwapPositions(idxA, idxB);
                 };
 
                 const [newLabel, setNewLabel] = useState("");
@@ -8646,16 +7795,10 @@
                 return (
                     <>
                         <div className="tt-summary">
-                            <span className="tt-summary-count">
-                                {doneCount}
-                            </span>
+                            <span className="tt-summary-count">{doneCount}</span>
                             <span className="tt-summary-sep">/</span>
                             <span className="tt-summary-count">{total}</span>
-                            <span className="tt-summary-label">
-                                {doneCount === total && total > 0
-                                    ? "All done"
-                                    : "tasks"}
-                            </span>
+                            <span className="tt-summary-label">{doneCount === total && total > 0 ? "All done" : "tasks"}</span>
                         </div>
 
                         <div className="tt-list">
@@ -8676,31 +7819,20 @@
 
                         {total === 0 && (
                             <div className="tt-empty">
-                                <div className="tt-empty-text">
-                                    Nothing planned yet.
-                                </div>
-                                <div className="tt-empty-hint">
-                                    Add your prayers, tasks, or anything you
-                                    want to accomplish.
-                                </div>
+                                <div className="tt-empty-text">Nothing planned yet.</div>
+                                <div className="tt-empty-hint">Add your prayers, tasks, or anything you want to accomplish.</div>
                             </div>
                         )}
 
                         <div className="tt-add-row">
-                            <div
-                                className="tt-check"
-                                data-checked="false"
-                                style={{ opacity: 0.25, cursor: "default" }}
-                            ></div>
+                            <div className="tt-check" data-checked="false" style={{ opacity: 0.25, cursor: "default" }}></div>
                             <input
                                 className="tt-label"
                                 type="text"
                                 value={newLabel}
                                 placeholder="What you’ll do…"
                                 onChange={(e) => setNewLabel(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") addBlock();
-                                }}
+                                onKeyDown={(e) => { if (e.key === "Enter") addBlock(); }}
                             />
                             <button
                                 className="tt-add-btn"
@@ -8978,7 +8110,7 @@
                 );
             }
 
-            /* ─────────── BOOT ──────────-─ */
+            /* ─────────── BOOT ─────────── */
             async function startApp() {
                 // wait for Yjs to be loaded (it loads via type=module, async)
                 let waitedMs = 0;
@@ -9015,7 +8147,7 @@
                     document.getElementById("orbit-mount"),
                 ).render(<MiranRoot />);
             }
-            handleCallback().then(startApp);
+            startApp();
         </script>
     </body>
 </html>
