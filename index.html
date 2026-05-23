@@ -6436,7 +6436,10 @@
                     a.addEventListener("timeupdate", onTime);
                     a.addEventListener("loadedmetadata", onMeta);
 
-                    // Audio paused by default; user must press play
+                    // Auto-play when chaining verses (user clicked play or previous verse ended naturally)
+                    if (autoPlayNextRef.current) {
+                        a.play().catch(() => {});
+                    }
 
                     return () => {
                         a.pause();
